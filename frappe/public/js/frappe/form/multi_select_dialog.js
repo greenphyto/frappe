@@ -617,6 +617,10 @@ frappe.ui.form.MultiSelectDialog = class MultiSelectDialog {
 		if (parent_names.length) {
 			filters.push(["parent", "in", parent_names]);
 		}
+		else
+		{
+			filters.push(["parent", "in", [] ]);
+		}
 	}
 
 	add_custom_child_filters(filters) {
