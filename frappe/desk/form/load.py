@@ -145,7 +145,7 @@ def add_comments(doc, docinfo):
 
 	comments = frappe.get_all(
 		"Comment",
-		fields=["name", "creation", "content", "owner", "comment_type"],
+		fields=["name", "creation", "content", "owner", "comment_type","reference_doctype"],
 		filters={"reference_doctype": doc.doctype, "reference_name": doc.name},
 	)
 
@@ -164,13 +164,17 @@ def add_comments(doc, docinfo):
 			docinfo.attachment_logs.append(c)
 
 		elif c.comment_type in ("Info", "Edit", "Label"):
-			docinfo.info_logs.append(c)
+			if c.comment_type == "Label" and c.reference_doctype == "Material Request":
+				print("skip")
+			else:
+				docinfo.info_logs.append(c)
 
 		elif c.comment_type == "Like":
 			docinfo.like_logs.append(c)
 
 		elif c.comment_type == "Workflow":
-			docinfo.workflow_logs.append(c)
+			c.content = " has changed the status to " + c.content
+			docinfo.workflow_logs.append( c)
 
 		frappe.utils.add_user_info(c.owner, docinfo.user_info)
 
