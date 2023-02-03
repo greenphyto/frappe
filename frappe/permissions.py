@@ -270,19 +270,22 @@ def get_user_permissions(user):
 	return get_user_permissions(user)
 
 
-def has_user_permission(doc, user=None):
+def has_user_permission(doc, user=None, fromWorkflow=0):
 	"""Returns True if User is allowed to view considering User Permissions"""
 	from frappe.core.doctype.user_permission.user_permission import get_user_permissions
 
 	user_permissions = get_user_permissions(user)
+	#print(user_permissions)
 
 	if not user_permissions:
 		# no user permission rules specified for this doctype
 		return True
 
-	# user can create own role permissions, so nothing applies
-	if get_role_permissions("User Permission", user=user).get("write"):
-		return True
+	if( fromWorkflow==0):
+ 		# user can create own role permissions, so nothing applies
+		if get_role_permissions("User Permission", user=user).get("write"):
+			#print(fromWorkflow + " This one is applied " + user)
+			return True
 
 	apply_strict_user_permissions = frappe.get_system_settings("apply_strict_user_permissions")
 

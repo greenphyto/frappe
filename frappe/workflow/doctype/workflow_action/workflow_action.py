@@ -440,12 +440,15 @@ def filter_allowed_users(users, doc, transition):
 	"""Filters list of users by checking if user has access to doc and
 	if the user satisfies 'workflow transision self approval' condition
 	"""
-	from frappe.permissions import has_permission
+	from frappe.permissions import has_permission, has_user_permission
 
 	filtered_users = []
 	for user in users:
 		if has_approval_access(user, doc, transition) and has_permission(doctype=doc, user=user):
-			filtered_users.append(user)
+			
+			if  has_user_permission(doc, user,1):
+					#print(user + "here")
+					filtered_users.append(user)
 	return filtered_users
 
 
