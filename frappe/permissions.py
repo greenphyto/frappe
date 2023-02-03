@@ -196,6 +196,8 @@ def get_doc_permissions(doc, user=None, ptype=None):
 			permissions["create"] = 0
 		else:
 			permissions = {}
+	else:
+		permissions = {}
 
 	return permissions
 
