@@ -414,6 +414,7 @@ def is_workflow_action_already_created(doc):
 			"reference_name": doc.get("name"),
 			"reference_doctype": doc.get("doctype"),
 			"workflow_state": get_doc_workflow_state(doc),
+			"status": "Open",
 		}
 	)
 
