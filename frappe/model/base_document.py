@@ -771,7 +771,7 @@ class BaseDocument:
 					):
 
 						cancelled_links.append((df.fieldname, docname, get_msg(df, docname)))
-
+		invalid_links = [t for t in invalid_links if t[0] != "item_name"]
 		return invalid_links, cancelled_links
 
 	def set_fetch_from_value(self, doctype, df, values):
