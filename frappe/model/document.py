@@ -887,7 +887,7 @@ class Document(BaseDocument):
 			return
 
 		invalid_links, cancelled_links = self.get_invalid_links()
-
+		invalid_links = [t for t in invalid_links if t[0] != "item_name"]
 		for d in self.get_all_children():
 			result = d.get_invalid_links(is_submittable=self.meta.is_submittable)
 			invalid_links.extend(result[0])
