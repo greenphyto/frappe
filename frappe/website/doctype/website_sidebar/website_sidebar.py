@@ -28,3 +28,4 @@ class WebsiteSidebar(Document):
 
 		out += items_without_group
 		return out
+	

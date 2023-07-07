@@ -158,8 +158,11 @@ body[data-route^="Module"] .main-menu {
 }
 
 .layout-side-section {
+	padding-top: 10px;  // customised css
 	font-size: var(--text-md);
 	padding-right: 30px;
+  background-color: #f5fafe;  // customised css
+  border-radius: var(--border-radius-lg);  // customised css
 
 	> .divider {
 		display: none !important;

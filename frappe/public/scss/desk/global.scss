@@ -385,7 +385,7 @@ kbd {
 
 	.standard-sidebar-section .standard-sidebar-label {
 		margin-bottom: var(--margin-md);
-		margin-top: var(--margin-sm);
+		// margin-top: var(--margin-sm);
 	}
 
 	.standard-sidebar-item {
@@ -406,18 +406,21 @@ kbd {
 		}
 
 		&:focus {
-			background-color: var(--sidebar-select-color);
+      background-color: #ebf5ff;  // customised css
+			// background-color: var(--sidebar-select-color);
 			outline: 0;
 			text-decoration: none;
 		}
 
 		&:hover {
-			background-color: var(--sidebar-select-color);
+      background-color: rgba(0, 0, 0, 0.1);  // customised css
+			// background-color: var(--sidebar-select-color);
 			text-decoration: none;
 		}
 
 		&.selected {
-			background-color: var(--sidebar-select-color);
+      background-color: #ebf5ff;  // customised css
+			// background-color: var(--sidebar-select-color);
 		}
 
 		a {

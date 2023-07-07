@@ -7,8 +7,7 @@
  "field_order": [
   "title",
   "route",
-  "group",
-  "role"
+  "group"
  ],
  "fields": [
   {
@@ -29,17 +28,11 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Group"
-  },
-  {
-   "fieldname": "role",
-   "fieldtype": "Link",
-   "label": "Role",
-   "options": "Role"
   }
  ],
  "istable": 1,
  "links": [],
- "modified": "2023-05-31 16:19:50.156612",
+ "modified": "2023-07-07 10:25:28.428403",
  "modified_by": "Administrator",
  "module": "Website",
  "name": "Website Sidebar Item",
