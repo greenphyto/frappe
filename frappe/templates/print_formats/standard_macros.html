@@ -202,7 +202,12 @@ data-fieldname="{{ df.fieldname }}" data-fieldtype="{{ df.fieldtype }}"
 		</h2>
 	</div>
 	{% endif %}
-	{%- if doc.meta.is_submittable and doc.docstatus==0 and (print_settings==None or print_settings.add_draft_heading) -%}
+	{%- if doc.meta.is_submittable and doc.workflow_state -%}
+	<div class="text-center">
+		<h4 style="margin: 0px;">{{ _(doc.workflow_state) }}</h4>
+	</div>
+	{% endif %}
+	<!-- {%- if doc.meta.is_submittable and doc.docstatus==0 and (print_settings==None or print_settings.add_draft_heading) -%}
 	<div class="text-center" document-status="draft">
 		<h4 style="margin: 0px;">{{ _("DRAFT") }}</h4>
 	</div>
@@ -211,5 +216,5 @@ data-fieldname="{{ df.fieldname }}" data-fieldtype="{{ df.fieldtype }}"
 	<div class="text-center" document-status="cancelled">
 		<h4 style="margin: 0px;">{{ _("CANCELLED") }}</h4>
 	</div>
-	{%- endif -%}
+	{%- endif -%} -->
 {%- endmacro -%}

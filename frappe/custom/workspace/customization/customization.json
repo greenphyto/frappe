@@ -1,13 +1,14 @@
 {
  "charts": [],
  "content": "[{\"type\":\"onboarding\",\"data\":{\"onboarding_name\":\"Customization\",\"col\":12}},{\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Your Shortcuts</b></span>\",\"col\":12}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customize Form\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Custom Role\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Client Script\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Server Script\",\"col\":3}},{\"type\":\"spacer\",\"data\":{\"col\":12}},{\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Reports &amp; Masters</b></span>\",\"col\":12}},{\"type\":\"card\",\"data\":{\"card_name\":\"Dashboards\",\"col\":4}},{\"type\":\"card\",\"data\":{\"card_name\":\"Form Customization\",\"col\":4}},{\"type\":\"card\",\"data\":{\"card_name\":\"Other\",\"col\":4}}]",
- "creation": "2020-03-02 15:15:03.839594",
+ "creation": "2023-07-10 14:18:56.517478",
  "docstatus": 0,
  "doctype": "Workspace",
  "for_user": "",
  "hide_custom": 0,
  "icon": "customization",
  "idx": 0,
+ "is_hidden": 1,
  "label": "Customization",
  "links": [
   {
@@ -15,6 +16,7 @@
    "is_query_report": 0,
    "label": "Dashboards",
    "link_count": 0,
+   "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
   },
@@ -56,6 +58,7 @@
    "is_query_report": 0,
    "label": "Form Customization",
    "link_count": 0,
+   "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
   },
@@ -108,6 +111,7 @@
    "is_query_report": 0,
    "label": "Other",
    "link_count": 2,
+   "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
   },
@@ -133,10 +137,11 @@
    "type": "Link"
   }
  ],
- "modified": "2022-08-28 20:56:24.980719",
+ "modified": "2023-07-10 14:19:19.414157",
  "modified_by": "Administrator",
  "module": "Custom",
  "name": "Customization",
+ "number_cards": [],
  "owner": "Administrator",
  "parent_page": "",
  "public": 1,
@@ -146,16 +151,19 @@
  "sequence_id": 8.0,
  "shortcuts": [
   {
+   "doc_view": "",
    "label": "Customize Form",
    "link_to": "Customize Form",
    "type": "DocType"
   },
   {
+   "doc_view": "",
    "label": "Custom Role",
    "link_to": "Custom Role",
    "type": "DocType"
   },
   {
+   "doc_view": "",
    "label": "Client Script",
    "link_to": "Client Script",
    "type": "DocType"
