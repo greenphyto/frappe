@@ -318,14 +318,38 @@ frappe.views.TreeView = class TreeView {
 
 		this.prepare_fields();
 
+		var parent;
+		if (node.data && node.data.value) parent=node.data.value;
+		
+		var args = $.extend({}, me.args);
+		args["parent_" + me.doctype.toLowerCase().replace(/ /g, "_")] = me.args["parent"] || parent;
+
+		if (this.opts.disable_quick_entry){
+			var doc = frappe.new_doc(me.doctype).then(()=>{
+				var v = args;
+				if (!v) return;
+	
+				v.parent = node.label;
+				v.doctype = me.doctype;
+	
+				if (node.is_root) {
+					v["is_root"] = node.is_root;
+				} else {
+					v["is_root"] = false;
+				}
+
+				if (window.cur_frm){
+					cur_frm.set_value(v);
+				}
+			});
+			return;
+		}
+
 		// the dialog
 		var d = new frappe.ui.Dialog({
 			title: __("New {0}", [__(me.doctype)]),
 			fields: me.fields,
 		});
-
-		var args = $.extend({}, me.args);
-		args["parent_" + me.doctype.toLowerCase().replace(/ /g, "_")] = me.args["parent"];
 
 		d.set_value("is_group", 0);
 		d.set_values(args);
