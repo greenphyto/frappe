@@ -171,7 +171,7 @@ body {
 		text-align: center;
 		font-size: var(--text-xl);
 		font-weight: 600;
-		margin-bottom: 2.5rem;
+		margin-bottom: 20px;
 
 		img {
 			max-height: 42px;
@@ -182,6 +182,14 @@ body {
 			margin-top: 1rem;
 			font-size: var(--text-xl);
 			color: var(--text-color);
+		}
+		.login-info{
+			font-size: 12px;
+			padding: 4px 10px;
+			color: #939393;
+			margin: auto;
+			margin-top: 15px;
+			max-width: 350px;
 		}
 	}
 
