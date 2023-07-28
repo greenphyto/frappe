@@ -78,6 +78,7 @@
    "fieldname": "description",
    "fieldtype": "Text Editor",
    "in_global_search": 1,
+   "in_list_view": 1,
    "label": "Description",
    "oldfieldname": "description",
    "oldfieldtype": "Text",
@@ -167,7 +168,7 @@
  "icon": "fa fa-check",
  "idx": 2,
  "links": [],
- "modified": "2023-07-14 14:21:15.779063",
+ "modified": "2023-07-24 14:03:15.795158",
  "modified_by": "Administrator",
  "module": "Desk",
  "name": "ToDo",
@@ -204,7 +205,6 @@
  "sort_order": "DESC",
  "states": [],
  "subject_field": "description",
- "title_field": "description",
  "track_changes": 1,
  "track_seen": 1
 }
