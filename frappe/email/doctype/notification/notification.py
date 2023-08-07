@@ -49,9 +49,12 @@ class Notification(Document):
 		path = export_module_json(self, self.is_standard, self.module)
 		if path:
 			# js
-			if not os.path.exists(path + ".md") and not os.path.exists(path + ".html"):
-				with open(path + ".md", "w") as f:
-					f.write(self.message)
+			use_ext = ".md"
+			if os.path.exists(path + ".html"):
+				use_ext = ".html"
+
+			with open(path + use_ext, "w") as f:
+				f.write(self.message)
 
 			# py
 			if not os.path.exists(path + ".py"):
