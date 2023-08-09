@@ -139,7 +139,8 @@ standard_queries = {"User": "frappe.core.doctype.user.user.user_query"}
 doc_events = {
 	"*": {
 		"after_insert": [
-			"frappe.event_streaming.doctype.event_update_log.event_update_log.notify_consumers"
+			"frappe.event_streaming.doctype.event_update_log.event_update_log.notify_consumers",
+			"frappe.workflow.doctype.workflow_action.workflow_action.process_workflow_actions"
 		],
 		"on_update": [
 			"frappe.desk.notifications.clear_doctype_notifications",
