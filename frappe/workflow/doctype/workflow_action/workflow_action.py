@@ -460,7 +460,7 @@ def get_common_email_args(doc):
 		docs = vars(doc)
 		if None in docs:
 			del docs[None]
-
+		
 		subject = frappe.render_template(email_template.subject, docs)
 		response = frappe.render_template(email_template.response, docs)
 	else:
