@@ -314,6 +314,8 @@ def get_users_next_action_data(transitions, doc):
 	for transition in transitions:
 		roles.add(transition.allowed)
 		users = get_users_with_role(transition.allowed)
+		if transition.allowed == "All" and transition.allow_self_approval:
+			users += [ frappe.session.user ]
 		filtered_users = filter_allowed_users(users, doc, transition)
 		for user in filtered_users:
 			if not user_data_map.get(user):
