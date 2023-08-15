@@ -336,8 +336,15 @@ def export_query():
 	data.pop("cmd", None)
 	data.pop("csrf_token", None)
 
+	filters = {}
 	if isinstance(data.get("filters"), str):
 		filters = json.loads(data["filters"])
+
+	filters_settings = []
+	if isinstance(data.get("filters_settings"), str):
+		filters_settings = json.loads(data["filters_settings"])
+
+	include_filters = cint(data.get("include_filters"))
 
 	if data.get("report_name"):
 		report_name = data["report_name"]
@@ -368,12 +375,34 @@ def export_query():
 
 		format_duration_fields(data)
 		xlsx_data, column_widths = build_xlsx_data(data, visible_idx, include_indentation)
+		
+		# Add filter view
+		if include_filters:
+			xlsx_data = get_filters_data(filters, filters_settings) + xlsx_data
+		
 		xlsx_file = make_xlsx(xlsx_data, "Query Report", column_widths=column_widths)
 
 		frappe.response["filename"] = report_name + ".xlsx"
 		frappe.response["filecontent"] = xlsx_file.getvalue()
 		frappe.response["type"] = "binary"
 
+def get_filters_data(filters, filters_settings):
+	if not filters:
+		return []
+	
+	filter_fields = {}
+	for d in filters_settings:
+		filter_fields[d['fieldname']] = d
+	
+	res = [[],["Filters:"]]
+	for key, val in filters.items():
+		label = key
+		if key in filter_fields:
+			label = filter_fields[key].get("label")
+
+		res.append([label, val])
+	res.append([])
+	return res
 
 def format_duration_fields(data: frappe._dict) -> None:
 	for i, col in enumerate(data.columns):
