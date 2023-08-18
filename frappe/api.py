@@ -264,3 +264,10 @@ def validate_api_key_secret(api_key, api_secret, frappe_authorization_source=Non
 def validate_auth_via_hooks():
 	for auth_hook in frappe.get_hooks("auth_hooks", []):
 		frappe.get_attr(auth_hook)()
+
+@frappe.whitelist()
+@frappe.read_only()
+def get_boot_info():
+	user_perms = frappe.utils.user.UserPermissions(frappe.session.user)
+	perm = user_perms.load_user()
+	return perm
