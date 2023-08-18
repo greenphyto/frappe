@@ -63,6 +63,11 @@ def relink(name, reference_doctype=None, reference_name=None):
 		(reference_doctype, reference_name, name),
 	)
 
+@frappe.whitelist()
+def get_boot_info():
+	user_perms = frappe.utils.user.UserPermissions(frappe.session.user)
+	perm = user_perms.load_user()
+	return perm
 
 @frappe.whitelist()
 @frappe.validate_and_sanitize_search_inputs
