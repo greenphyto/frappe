@@ -15,13 +15,13 @@ from frappe.model.workflow import (
 	send_email_alert,
 )
 from frappe.query_builder import DocType
-from frappe.utils import get_datetime, get_url
+from frappe.utils import get_datetime, get_url, cint
 from frappe.utils.background_jobs import enqueue
 from frappe.utils.data import get_link_to_form
 from frappe.utils.user import get_users_with_role
 from frappe.utils.verified_command import get_signed_params, verify_request
-
-
+from frappe.email.doctype.notification.notification import get_context
+from frappe.utils.safe_exec import get_safe_globals
 class WorkflowAction(Document):
 	pass
 
@@ -463,8 +463,12 @@ def get_common_email_args(doc):
 		if None in docs:
 			del docs[None]
 		
+		docs['frappe'] = frappe._dict(utils=get_safe_globals().get("frappe").get("utils"))
 		subject = frappe.render_template(email_template.subject, docs)
-		response = frappe.render_template(email_template.response, docs)
+		if cint(email_template.use_html):
+			response = frappe.render_template(email_template.response_html, docs)
+		else:
+			response = frappe.render_template(email_template.response, docs)
 	else:
 		subject = _("Workflow Action") + f" on {doctype}: {docname}"
 		response = get_link_to_form(doctype, docname, f"{doctype}: {docname}")

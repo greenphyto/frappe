@@ -1442,6 +1442,11 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 				default: "Excel",
 				reqd: 1,
 			},
+			{
+				label: __("Include filters"),
+				fieldname: "include_filters",
+				fieldtype: "Check",
+			}
 		];
 
 		if (this.tree_report) {
@@ -1454,7 +1459,7 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 
 		this.export_dialog = frappe.prompt(
 			export_dialog_fields,
-			({ file_format, include_indentation }) => {
+			({ file_format, include_indentation, include_filters }) => {
 				this.make_access_log("Export", file_format);
 				if (file_format === "CSV") {
 					const column_row = this.columns.reduce((acc, col) => {
@@ -1469,6 +1474,11 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 					frappe.tools.downloadify(out, null, this.report_name);
 				} else {
 					let filters = this.get_filter_values(true);
+					let filters_settings = [];
+					if (this.report_settings){
+						filters_settings = this.report_settings.filters || filters_settings;
+					}
+
 					if (frappe.urllib.get_dict("prepared_report_name")) {
 						filters = Object.assign(
 							frappe.urllib.get_dict("prepared_report_name"),
@@ -1487,6 +1497,8 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 						custom_columns: this.custom_columns.length ? this.custom_columns : [],
 						file_format_type: file_format,
 						filters: filters,
+						include_filters: include_filters,
+						filters_settings: filters_settings,
 						visible_idx,
 						include_indentation,
 					};

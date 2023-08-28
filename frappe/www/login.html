@@ -59,12 +59,12 @@
 {{ include_style('login.bundle.css') }}
 {% endblock %}
 
-{% macro logo_section() %}
+{% macro logo_section(label="Login") %}
 <div class="page-card-head">
 	<img class="app-logo" src="{{ logo }}">
 	<h4>{{ _('Login to {0}').format(app_name or _("Frappe")) }}</h4>
 	<div class="login-info">
-		Sign up to Arber Smart Facilities Management to access 3rd Party Requests or to report issues in the building
+		{{ label }} to Arber Smart Facilities Management to access 3rd Party Requests or to report issues in the building
 	</div>
 </div>
 {% endmacro %}
@@ -81,7 +81,7 @@
 	</noscript>
 	<section class='for-login'>
 		<div class="login-content page-card">
-			{{ logo_section() }}
+			{{ logo_section("Login") }}
 			<form class="form-signin form-login" role="form">
 				{%- if social_login or login_with_email_link -%}
 				<div class="page-card-body">
@@ -131,7 +131,7 @@
 	{%- if social_login -%}
 	<section class='for-email-login'>
 		<div class="login-content page-card">
-			{{ logo_section() }}
+			{{ logo_section("Login") }}
 			<form class="form-signin form-login" role="form">
 			{{ email_login_body() }}
 			</form>
@@ -146,7 +146,7 @@
 	{%- endif -%}
 	<section class='for-signup {{ "signup-disabled" if disable_signup else "" }}'>
 		<div class="login-content page-card">
-			{{ logo_section() }}
+			{{ logo_section("Sign up") }}
 			{%- if not disable_signup -%}
 			{{ signup_form_template }}
 			{%- else -%}

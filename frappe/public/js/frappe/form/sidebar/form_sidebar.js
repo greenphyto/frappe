@@ -134,6 +134,7 @@ frappe.ui.form.Sidebar = class {
 					me.sidebar.find(".auto-repeat-status").on("click", function () {
 						frappe.set_route("Form", "Auto Repeat", me.frm.doc.auto_repeat);
 					});
+					me.sidebar.find(".auto-repeat-menu").removeClass("hidden");
 				},
 			});
 		}
