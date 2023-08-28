@@ -8,6 +8,7 @@ import Spacer from "./spacer";
 import Onboarding from "./onboarding";
 import QuickList from "./quick_list";
 import NumberCard from "./number_card";
+import Calendar from "./calendar";
 
 // import tunes
 import HeaderSize from "./header_size";
@@ -24,6 +25,7 @@ frappe.workspace_block.blocks = {
 	onboarding: Onboarding,
 	quick_list: QuickList,
 	number_card: NumberCard,
+	calendar:Calendar
 };
 
 frappe.workspace_block.tunes = {
