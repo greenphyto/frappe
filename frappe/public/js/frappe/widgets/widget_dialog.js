@@ -509,9 +509,15 @@ class ShortcutDialog extends WidgetDialog {
 		}
 
 		data.label = data.label ? data.label : frappe.model.unscrub(data.link_to);
+		// data.url = 
+
+		function test_validate_url(url){
+			var exp = /^\/(?!.*\/\/)([a-zA-Z-\/]+)$/gim;
+			return validate_url(url) || exp.test(url);
+		}
 
 		if (data.url) {
-			!validate_url(data.url) &&
+			!test_validate_url(data.url) &&
 				frappe.throw({
 					message: __("<b>{0}</b> is not a valid URL", [data.url]),
 					title: __("Invalid URL"),
@@ -526,6 +532,8 @@ class ShortcutDialog extends WidgetDialog {
 		return data;
 	}
 }
+
+console.log("here")
 
 class NumberCardDialog extends WidgetDialog {
 	constructor(opts) {

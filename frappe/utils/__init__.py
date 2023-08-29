@@ -236,6 +236,8 @@ def validate_url(txt, throw=False, valid_schemes=None):
 		is_valid = is_valid and (url.scheme == valid_schemes)
 	elif isinstance(valid_schemes, (list, tuple, set)):
 		is_valid = is_valid and (url.scheme in valid_schemes)
+	elif "/" in txt:
+		is_valid = True
 
 	if not is_valid and throw:
 		frappe.throw(frappe._("'{0}' is not a valid URL").format(frappe.bold(txt)))
