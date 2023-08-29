@@ -10,6 +10,7 @@
   "subject_field",
   "start_date_field",
   "end_date_field",
+  "method",
   "column_break_5",
   "all_day"
  ],
@@ -50,13 +51,19 @@
    "fieldname": "all_day",
    "fieldtype": "Check",
    "label": "All Day"
+  },
+  {
+   "fieldname": "method",
+   "fieldtype": "Data",
+   "label": "Method"
   }
  ],
  "links": [],
- "modified": "2020-09-18 17:26:09.703215",
+ "modified": "2023-08-29 16:58:15.090722",
  "modified_by": "Administrator",
  "module": "Desk",
  "name": "Calendar View",
+ "naming_rule": "Set by user",
  "owner": "Administrator",
  "permissions": [
   {
@@ -77,5 +84,6 @@
   }
  ],
  "sort_field": "modified",
- "sort_order": "DESC"
+ "sort_order": "DESC",
+ "states": []
 }

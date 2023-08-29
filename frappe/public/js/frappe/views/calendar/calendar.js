@@ -92,6 +92,7 @@ frappe.views.CalendarView = class CalendarView extends frappe.views.ListView {
 							title: doc.subject_field,
 							allDay: doc.all_day ? 1 : 0,
 						},
+						get_events_method: doc.method
 					});
 					resolve(options);
 				});
