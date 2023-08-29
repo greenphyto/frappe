@@ -1345,6 +1345,7 @@ frappe.views.Workspace = class Workspace {
 				},
 			},
 			spacer: this.blocks["spacer"],
+			calendar: this.blocks["calendar"],
 			HeaderSize: frappe.workspace_block.tunes["header_size"],
 		};
 
