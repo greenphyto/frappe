@@ -57,7 +57,7 @@ export default class Calendar extends Block {
 		if (!this.calendar_page){
 			var wrapper = $(this._element).find(".calendar-wrapper");
 			if (frappe.run_calendar){
-				this.calendar_page = frappe.run_calendar(wrapper);
+				this.calendar_page = frappe.run_calendar(wrapper, this.data.calendar_name);
 			}
 		}
 		return this._element;
@@ -71,7 +71,6 @@ export default class Calendar extends Block {
 		this.wrapper = this._element;
 		var element = this.wrapper;
 		var calendar_name = $(element).find(".calendar-name").text();
-		console.log(71, this.wrapper, calendar_name);
 
 		return {
 			calendar_name: calendar_name,
@@ -105,7 +104,6 @@ export default class Calendar extends Block {
 		const tag = document.createElement("DIV");
 
 		let cls = this._data.calendar_name || "calendar-view";
-		cls = frappe.scrub(cls);
 		tag.innerHTML = `
 			<div class='calendar-name'>${cls}</div>
 			<div class='calendar-wrapper'></div>
@@ -113,7 +111,6 @@ export default class Calendar extends Block {
 
 		tag.classList.add("ce-header");
 		tag.classList.add("ce-calendar");
-		tag.classList.add(cls);
 
 		if (!this.readOnly) {
 			tag.contentEditable = true;
