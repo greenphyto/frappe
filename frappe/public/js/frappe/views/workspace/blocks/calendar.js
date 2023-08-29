@@ -54,6 +54,12 @@ export default class Calendar extends Block {
 		}
 		$(this._element).find(".calendar-name").hide();
 		$(this._element).find(".calendar-wrapper").show();
+		if (!this.calendar_page){
+			var wrapper = $(this._element).find(".calendar-wrapper");
+			if (frappe.run_calendar){
+				this.calendar_page = frappe.run_calendar(wrapper);
+			}
+		}
 		return this._element;
 	}
 
