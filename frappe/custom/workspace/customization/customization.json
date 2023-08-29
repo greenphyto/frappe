@@ -137,7 +137,7 @@
    "type": "Link"
   }
  ],
- "modified": "2023-07-10 14:19:19.414157",
+ "modified": "2023-08-29 12:34:20.334694",
  "modified_by": "Administrator",
  "module": "Custom",
  "name": "Customization",
@@ -148,7 +148,7 @@
  "quick_lists": [],
  "restrict_to_domain": "",
  "roles": [],
- "sequence_id": 8.0,
+ "sequence_id": 16.0,
  "shortcuts": [
   {
    "doc_view": "",
