@@ -14,7 +14,7 @@ def login_via_google(code: str, state: str):
 
 @frappe.whitelist(allow_guest=True)
 def login_via_google_mobile(code: str, state: str):
-	login_via_oauth2("google", code, state, decoder=decoder_compat)
+	login_via_oauth2("google", code, state, decoder=decoder_compat, mobile=1)
 
 @frappe.whitelist(allow_guest=True)
 def login_via_github(code: str, state: str):

@@ -376,6 +376,7 @@ override_whitelisted_methods = {
 	"frappe.core.doctype.file.file.zip_files": "frappe.core.api.file.zip_files",
 	# Legacy (& Consistency) OAuth2 APIs
 	"frappe.www.login.login_via_google": "frappe.integrations.oauth2_logins.login_via_google",
+	"frappe.www.login.login_via_google_mobile": "frappe.integrations.oauth2_logins.login_via_google_mobile",
 	"frappe.www.login.login_via_github": "frappe.integrations.oauth2_logins.login_via_github",
 	"frappe.www.login.login_via_facebook": "frappe.integrations.oauth2_logins.login_via_facebook",
 	"frappe.www.login.login_via_frappe": "frappe.integrations.oauth2_logins.login_via_frappe",

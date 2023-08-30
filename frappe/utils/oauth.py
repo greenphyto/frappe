@@ -175,6 +175,7 @@ def login_oauth_user(
 	email_id: str | None = None,
 	key: str | None = None,
 	generate_login_token: bool = False,
+	mobile=0
 ):
 	# json.loads data and state
 	if isinstance(data, str):
@@ -183,7 +184,6 @@ def login_oauth_user(
 	if isinstance(state, str):
 		state = base64.b64decode(state)
 		state = json.loads(state.decode("utf-8"))
-
 	if not (state and state["token"]):
 		frappe.respond_as_web_page(_("Invalid Request"), _("Token is missing"), http_status_code=417)
 		return
@@ -224,11 +224,14 @@ def login_oauth_user(
 
 	else:
 		redirect_to = state.get("redirect_to")
-		redirect_post_login(
-			desk_user=frappe.local.response.get("message") == "Logged In",
-			redirect_to=redirect_to,
-			provider=provider,
-		)
+		if mobile:
+			redirect_to_mobile(user, redirect_to)
+		else:
+			redirect_post_login(
+				desk_user=frappe.local.response.get("message") == "Logged In",
+				redirect_to=redirect_to,
+				provider=provider,
+			)
 
 def get_login_by_token(user, redirect_to=None):
 	generate_login_token = True
@@ -348,3 +351,12 @@ def redirect_post_login(
 		redirect_to = frappe.utils.get_url(desk_uri if desk_user else "/me")
 
 	frappe.local.response["location"] = redirect_to
+
+def redirect_to_mobile(user=None, intent_link=""):
+	from frappe.www.login import _generate_temporary_login_link
+	user = user or frappe.session.user
+	login_link = _generate_temporary_login_link(user, 300) #only 5 minutes
+	# use placeholder after login_link=placeholder
+	url = intent_link.replace("placeholder", login_link)
+	frappe.local.response["type"] = "redirect"
+	frappe.local.response["location"] = url
