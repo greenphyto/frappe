@@ -279,7 +279,7 @@ def get_boot_info():
 
 @frappe.whitelist(allow_guest=True)
 @frappe.read_only()
-def get_social_login_providers(redirect_to):
+def get_social_login_providers(redirect_to, mobile=0):
 	providers = frappe.get_all(
 		"Social Login Key",
 		filters={"enable_social_login": 1},
@@ -304,7 +304,7 @@ def get_social_login_providers(redirect_to):
 				{
 					"name": provider.name,
 					"provider_name": provider.provider_name,
-					"auth_url": get_oauth2_authorize_url(provider.name, redirect_to),
+					"auth_url": get_oauth2_authorize_url(provider.name, redirect_to, mobile=mobile),
 					"icon": icon,
 				}
 			)

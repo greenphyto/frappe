@@ -11,6 +11,7 @@ import frappe
 import frappe.utils
 from frappe import _
 from frappe.utils.password import get_decrypted_password
+from frappe.utils import cint
 
 if TYPE_CHECKING:
 	from frappe.core.doctype.user.user import User
@@ -20,7 +21,7 @@ class SignupDisabledError(frappe.PermissionError):
 	...
 
 
-def get_oauth2_providers() -> dict[str, dict]:
+def get_oauth2_providers(mobile=0) -> dict[str, dict]:
 	out = {}
 	providers = frappe.get_all("Social Login Key", fields=["*"])
 	for provider in providers:
@@ -28,6 +29,10 @@ def get_oauth2_providers() -> dict[str, dict]:
 		if provider.custom_base_url:
 			authorize_url = provider.base_url + provider.authorize_url
 			access_token_url = provider.base_url + provider.access_token_url
+		if cint(mobile) and provider.redirect_url:
+			# temporary from google only
+			provider.redirect_url = provider.redirect_url.replace("login_via_google", "login_via_google_mobile")
+
 		out[provider.name] = {
 			"flow_params": {
 				"name": provider.name,
@@ -59,7 +64,7 @@ def get_oauth_keys(provider: str) -> dict[str, str]:
 	}
 
 
-def get_oauth2_authorize_url(provider: str, redirect_to: str) -> str:
+def get_oauth2_authorize_url(provider: str, redirect_to: str, mobile=0) -> str:
 	flow = get_oauth2_flow(provider)
 
 	state = {
@@ -70,7 +75,7 @@ def get_oauth2_authorize_url(provider: str, redirect_to: str) -> str:
 
 	# relative to absolute url
 	data = {
-		"redirect_uri": get_redirect_uri(provider),
+		"redirect_uri": get_redirect_uri(provider, mobile=mobile),
 		"state": base64.b64encode(bytes(json.dumps(state).encode("utf-8"))),
 	}
 
@@ -97,14 +102,14 @@ def get_oauth2_flow(provider: str):
 	return OAuth2Service(**params)
 
 
-def get_redirect_uri(provider: str) -> str:
+def get_redirect_uri(provider: str, mobile=0) -> str:
 	keys = frappe.conf.get(f"{provider}_login")
 
 	if keys and keys.get("redirect_uri"):
 		# this should be a fully qualified redirect uri
 		return keys["redirect_uri"]
 
-	oauth2_providers = get_oauth2_providers()
+	oauth2_providers = get_oauth2_providers(mobile)
 	redirect_uri = oauth2_providers[provider]["redirect_uri"]
 
 	# this uses the site's url + the relative redirect uri
@@ -225,6 +230,28 @@ def login_oauth_user(
 			provider=provider,
 		)
 
+def get_login_by_token(user, redirect_to=None):
+	generate_login_token = True
+	frappe.local.login_manager.user = user
+	frappe.local.login_manager.post_login()
+
+	# because of a GET request!
+	frappe.db.commit()
+
+	if frappe.utils.cint(generate_login_token):
+		login_token = frappe.generate_hash(length=32)
+		frappe.cache().set_value(
+			f"login_token:{login_token}", frappe.local.session.sid, expires_in_sec=120
+		)
+
+		frappe.response["login_token"] = login_token
+
+	else:
+		redirect_to = redirect_to
+		redirect_post_login(
+			desk_user=frappe.local.response.get("message") == "Logged In",
+			redirect_to=redirect_to,
+		)
 
 def get_user_record(user: str, data: dict) -> "User":
 	try:
