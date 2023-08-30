@@ -277,7 +277,7 @@ def get_boot_info():
 	perm = user_perms.load_user()
 	return perm
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 @frappe.read_only()
 def get_social_login_providers(redirect_to):
 	providers = frappe.get_all(
