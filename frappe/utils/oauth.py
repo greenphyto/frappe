@@ -224,7 +224,7 @@ def login_oauth_user(
 
 	else:
 		redirect_to = state.get("redirect_to")
-		intent_link = unquote(frappe.local.cookie_manager.get_cookie("redirect_to"))
+		intent_link = unquote( frappe.request.cookies.get("redirect_to") )
 		if intent_link:
 			redirect_to_mobile(user, intent_link)
 		else:
