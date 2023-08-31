@@ -4,7 +4,7 @@
 import base64
 import json
 from typing import TYPE_CHECKING, Callable
-
+from urllib.parse import unquote
 import jwt
 
 import frappe
@@ -224,8 +224,9 @@ def login_oauth_user(
 
 	else:
 		redirect_to = state.get("redirect_to")
-		if mobile:
-			redirect_to_mobile(user, redirect_to)
+		intent_link = unquote(frappe.local.cookie_manager.get_cookie("redirect_to"))
+		if intent_link:
+			redirect_to_mobile(user, intent_link)
 		else:
 			redirect_post_login(
 				desk_user=frappe.local.response.get("message") == "Logged In",
