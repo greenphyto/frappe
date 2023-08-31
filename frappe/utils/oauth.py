@@ -116,9 +116,9 @@ def get_redirect_uri(provider: str, mobile=0) -> str:
 	return frappe.utils.get_url(redirect_uri)
 
 
-def login_via_oauth2(provider: str, code: str, state: str, decoder: Callable | None = None):
+def login_via_oauth2(provider: str, code: str, state: str, decoder: Callable | None = None, mobile=0):
 	info = get_info_via_oauth(provider, code, decoder)
-	login_oauth_user(info, provider=provider, state=state)
+	login_oauth_user(info, provider=provider, state=state, mobile=mobile)
 
 
 def login_via_oauth2_id_token(
