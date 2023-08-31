@@ -173,3 +173,14 @@ def login_via_key(key: str):
 			http_status_code=403,
 			indicator_color="red",
 		)
+
+@frappe.whitelist(allow_guest=True, methods=["GET"])
+@rate_limit(limit=5, seconds=60 * 60)
+def login_via_mobile_key(key: str):
+	cache_key = f"one_time_login_key:{key}"
+	email = frappe.cache().get_value(cache_key)
+
+	if email:
+		return True
+	else:
+		frappe.throw(_("The link you trying to login is invalid or expired."))

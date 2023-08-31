@@ -357,6 +357,7 @@ def redirect_to_mobile(user=None, intent_link=""):
 	from frappe.www.login import _generate_temporary_login_link
 	user = user or frappe.session.user
 	login_link = _generate_temporary_login_link(user, 300) #only 5 minutes
+	login_link = login_link.replace("login_via_key", "login_via_mobile_key")
 	# use placeholder after login_link=placeholder
 	url = intent_link.replace("placeholder", login_link)
 	frappe.local.response["type"] = "redirect"
