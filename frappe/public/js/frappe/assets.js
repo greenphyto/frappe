@@ -137,6 +137,22 @@ frappe.assets = {
 		});
 	},
 
+	check_exists: function (items, callback) {
+		// this is virtual page load, only get the the source
+		// *without* the template
+
+		frappe.call({
+			type: "GET",
+			method: "frappe.client.get_exists_js",
+			args: {
+				items: items,
+			},
+			callback: function (r) {
+				callback(r.message);
+			},
+		});
+	},
+
 	add: function (src, txt) {
 		if ("localStorage" in window) {
 			try {
