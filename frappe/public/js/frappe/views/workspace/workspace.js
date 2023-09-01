@@ -371,11 +371,16 @@ frappe.views.Workspace = class Workspace {
 
 	after_render_page(){
 		// custom public JS
+		var me = this;
 		var workspace_title = frappe.scrub(frappe.workspace.page.title);
 		var src = `/assets/erpnext/js/workspace/${workspace_title}.js`;
 		frappe.assets.check_exists([src], r=>{ 
 			if (r[src]){
-				frappe.require(src);
+				frappe.require(src).then(()=>{
+					if (frappe.custom_workspace){
+						frappe.custom_workspace(me);
+					}
+				});
 			}
 		});
 
