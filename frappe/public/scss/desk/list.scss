@@ -83,11 +83,11 @@
 	}
 
 	.level-left {
-		flex: 4;
+		flex: 14;
 		min-width: 80%;
 	}
 	.level-right {
-		flex: 1.5;
+		flex: 2;
 		overflow: visible;
 	}
 
@@ -144,6 +144,14 @@
 		padding: 15px 0px 15px 15px;
 	}
 }
+
+@media (max-width: 767px) {
+	.list-row {
+		.level-right {
+			flex: 4;
+		}
+	}
+  }
 
 .list-row-head {
 	@extend .list-row;

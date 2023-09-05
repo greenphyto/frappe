@@ -355,12 +355,14 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 		// Screen with low density no of columns 4
 		// Screen with medium density no of columns 6
 		// Screen with high density no of columns 8
-		let total_fields = 6;
+		let total_fields = 10;
 
-		if (window.innerWidth <= 1366) {
+		if (window.innerWidth <= 736) {
 			total_fields = 4;
+		}else if (window.innerWidth <= 1366) {
+			total_fields = 8;
 		} else if (window.innerWidth >= 1920) {
-			total_fields = 10;
+			total_fields = 12;
 		}
 
 		this.columns = this.columns.slice(0, this.list_view_settings.total_fields || total_fields);
