@@ -425,10 +425,8 @@ def get_filters_data(filters={}, filters_info=[], filters_settings={}):
 			label_filter = "{} ({})".format(label, d[0])
 			data.append(label_filter)
 
-			if d[2] == "=":
-				d[2] = "Equal"
-			elif d[2] == "!=":
-				d[2] = "Not Equal"
+			d[2] = get_filter_operation(d[2])
+			
 			data.append(d[2])
 
 			if type(d[3]) == list:
@@ -439,6 +437,22 @@ def get_filters_data(filters={}, filters_info=[], filters_settings={}):
 			res.append(data)
 	res.append([])
 	return res
+
+def get_filter_operation(opr):
+	cond = {
+		"=":"Equals",
+		"!=":"Not Equals",
+		"like": "Like",
+		"not like": "Not Like",
+		"in": "In",
+		"not in": "Not In",
+		"is": "Is"
+	}
+
+	if opr in cond:
+		return cond[opr]
+	else:
+		return opr
 
 def format_duration_fields(data: frappe._dict) -> None:
 	for i, col in enumerate(data.columns):
