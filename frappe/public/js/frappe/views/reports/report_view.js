@@ -1489,6 +1489,11 @@ frappe.views.ReportView = class ReportView extends frappe.views.ListView {
 							options: ["Excel", "CSV"],
 							default: "Excel",
 						},
+						{
+							label: __("Include filters"),
+							fieldname: "include_filters",
+							fieldtype: "Check",
+						}
 					];
 
 					if (this.total_count > this.count_without_children || args.page_length) {
@@ -1499,6 +1504,8 @@ frappe.views.ReportView = class ReportView extends frappe.views.ListView {
 						});
 					}
 
+					var filters = this.get_filters_for_args();
+
 					const d = new frappe.ui.Dialog({
 						title: __("Export Report: {0}", [__(this.doctype)]),
 						fields: fields,
@@ -1506,7 +1513,9 @@ frappe.views.ReportView = class ReportView extends frappe.views.ListView {
 						primary_action: (data) => {
 							args.cmd = "frappe.desk.reportview.export_query";
 							args.file_format_type = data.file_format_type;
+							args.include_filters = data.include_filters;
 							args.title = this.report_name || this.doctype;
+							args.filters_info = filters;
 
 							if (this.add_totals_row) {
 								args.add_totals_row = 1;
