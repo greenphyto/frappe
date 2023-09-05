@@ -346,6 +346,7 @@ def export_query():
 
 	include_filters = cint(data.get("include_filters"))
 
+	report_name = ''
 	if data.get("report_name"):
 		report_name = data["report_name"]
 		frappe.permissions.can_export(
@@ -378,13 +379,17 @@ def export_query():
 		
 		# Add filter view
 		if include_filters:
-			xlsx_data = get_filters_data(filters, filters_settings=filters_settings) + xlsx_data
+			xlsx_data = add_title_report(report_name) + get_filters_data(filters, filters_settings=filters_settings) + xlsx_data
 		
 		xlsx_file = make_xlsx(xlsx_data, "Query Report", column_widths=column_widths)
 
 		frappe.response["filename"] = report_name + ".xlsx"
 		frappe.response["filecontent"] = xlsx_file.getvalue()
 		frappe.response["type"] = "binary"
+
+def add_title_report(title):
+	res = [["Report:"], [title]]
+	return res
 
 def get_filters_data(filters={}, filters_info=[], filters_settings={}):
 	# filters: is dict type filter, usually on report page (custom report, etc)
@@ -421,7 +426,9 @@ def get_filters_data(filters={}, filters_info=[], filters_settings={}):
 			data.append(label_filter)
 
 			if d[2] == "=":
-				d[2] = "equal"
+				d[2] = "Equal"
+			elif d[2] == "!=":
+				d[2] = "Not Equal"
 			data.append(d[2])
 
 			if type(d[3]) == list:

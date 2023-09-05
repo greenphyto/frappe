@@ -15,7 +15,7 @@ from frappe.model.base_document import get_controller
 from frappe.model.db_query import DatabaseQuery
 from frappe.model.utils import is_virtual_doctype
 from frappe.utils import add_user_info, cstr, format_duration, cint
-from frappe.desk.query_report import get_filters_data
+from frappe.desk.query_report import get_filters_data, add_title_report
 
 @frappe.whitelist()
 @frappe.read_only()
@@ -414,7 +414,7 @@ def export_query():
 		from frappe.utils.xlsxutils import make_xlsx
 
 		if include_filters:
-			data = get_filters_data(filters_info=filters_info) + data
+			data = add_title_report(title) + get_filters_data(filters_info=filters_info) + data
 
 		xlsx_file = make_xlsx(data, doctype)
 
