@@ -14,8 +14,8 @@ from frappe.model import child_table_fields, default_fields, optional_fields
 from frappe.model.base_document import get_controller
 from frappe.model.db_query import DatabaseQuery
 from frappe.model.utils import is_virtual_doctype
-from frappe.utils import add_user_info, cstr, format_duration
-
+from frappe.utils import add_user_info, cstr, format_duration, cint
+from frappe.desk.query_report import get_filters_data
 
 @frappe.whitelist()
 @frappe.read_only()
@@ -342,6 +342,14 @@ def export_query():
 	title = frappe.form_dict.title
 	frappe.form_dict.pop("title", None)
 
+	filters_info = frappe.form_dict.get('filters_info') or []
+	if isinstance(filters_info, str):
+		filters_info = json.loads(filters_info)
+	frappe.form_dict.pop("filters_info", None)
+
+	include_filters = cint(frappe.form_dict.get("include_filters"))
+	frappe.form_dict.pop("include_filters", None)
+	
 	form_params = get_form_params()
 	form_params["limit_page_length"] = None
 	form_params["as_list"] = True
@@ -404,6 +412,9 @@ def export_query():
 	elif file_format_type == "Excel":
 
 		from frappe.utils.xlsxutils import make_xlsx
+
+		if include_filters:
+			data = get_filters_data(filters_info=filters_info) + data
 
 		xlsx_file = make_xlsx(data, doctype)
 

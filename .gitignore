@@ -194,3 +194,4 @@ cypress/videos
 
 # JetBrains IDEs
 .idea/
+test_script.py

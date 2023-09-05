@@ -378,7 +378,7 @@ def export_query():
 		
 		# Add filter view
 		if include_filters:
-			xlsx_data = get_filters_data(filters, filters_settings) + xlsx_data
+			xlsx_data = get_filters_data(filters, filters_settings=filters_settings) + xlsx_data
 		
 		xlsx_file = make_xlsx(xlsx_data, "Query Report", column_widths=column_widths)
 
@@ -386,8 +386,10 @@ def export_query():
 		frappe.response["filecontent"] = xlsx_file.getvalue()
 		frappe.response["type"] = "binary"
 
-def get_filters_data(filters, filters_settings):
-	if not filters:
+def get_filters_data(filters={}, filters_info=[], filters_settings={}):
+	# filters: is dict type filter, usually on report page (custom report, etc)
+	# filters_info: is list filter value, usually on report view (list view, tree view, etc)
+	if not filters and not filters_info:
 		return []
 	
 	filter_fields = {}
@@ -395,12 +397,39 @@ def get_filters_data(filters, filters_settings):
 		filter_fields[d['fieldname']] = d
 	
 	res = [[],["Filters:"]]
-	for key, val in filters.items():
-		label = key
-		if key in filter_fields:
-			label = filter_fields[key].get("label")
+	if filters:
+		for key, val in filters.items():
+			label = key
+			if key in filter_fields:
+				label = filter_fields[key].get("label")
 
-		res.append([label, val])
+			res.append([label, val])
+
+	elif filters_info:
+		label_filter = ""
+		meta_list = {}
+		for d in filters_info:
+			data = []
+			doctype = d[0]
+			fieldname = d[1]
+			if not meta_list.get(doctype):
+				meta_list[doctype] = frappe.get_meta(doctype)
+
+			field = meta_list[doctype].get_field(fieldname)
+			label = field.label or fieldname
+			label_filter = "{} ({})".format(label, d[0])
+			data.append(label_filter)
+
+			if d[2] == "=":
+				d[2] = "equal"
+			data.append(d[2])
+
+			if type(d[3]) == list:
+				data += d[3]
+			else:
+				data.append(d[3])
+
+			res.append(data)
 	res.append([])
 	return res
 
