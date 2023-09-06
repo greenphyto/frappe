@@ -71,7 +71,9 @@
   "brand_logo",
   "uidvalidity",
   "uidnext",
-  "no_failed"
+  "no_failed",
+  "exception_section",
+  "exception_list"
  ],
  "fields": [
   {
@@ -611,12 +613,23 @@
    "label": "Connected User",
    "mandatory_depends_on": "eval: doc.auth_method === \"OAuth\"",
    "options": "User"
+  },
+  {
+   "description": "Split with comma \",\"\n<br>\nFor email address listed here will not be able to receive email",
+   "fieldname": "exception_list",
+   "fieldtype": "Small Text",
+   "label": "Exception List"
+  },
+  {
+   "fieldname": "exception_section",
+   "fieldtype": "Section Break",
+   "label": "Exception"
   }
  ],
  "icon": "fa fa-inbox",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-12-28 14:56:18.754804",
+ "modified": "2023-09-06 17:23:58.147117",
  "modified_by": "Administrator",
  "module": "Email",
  "name": "Email Account",

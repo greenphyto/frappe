@@ -39,8 +39,17 @@ class EmailQueue(Document):
 
 	def set_recipients(self, recipients):
 		self.set("recipients", [])
+		excp_list = self.get_exception_list()
 		for r in recipients:
-			self.append("recipients", {"recipient": r.strip(), "status": "Not Sent"})
+			email = r.strip()
+			if email not in excp_list:
+				self.append("recipients", {"recipient": r.strip(), "status": "Not Sent"})
+
+	def get_exception_list(self):
+		excp = []
+		doc = self.get_email_account()
+		excp = (doc.get("exception_list") or "").replace(" ", "").split(",")
+		return excp
 
 	def on_trash(self):
 		self.prevent_email_queue_delete()
@@ -66,7 +75,8 @@ class EmailQueue(Document):
 		doc = frappe.new_doc(cls.DOCTYPE)
 		doc.update(data)
 		doc.set_recipients(recipients)
-		doc.insert(ignore_permissions=ignore_permissions)
+		if doc.get("recipients"):
+			doc.insert(ignore_permissions=ignore_permissions)
 		return doc
 
 	@classmethod
