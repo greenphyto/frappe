@@ -1248,7 +1248,7 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 	get_filter_values(raise) {
 		// check for mandatory property for filters added via UI
 		const mandatory = this.filters.filter((f) => f.df.reqd || f.df.mandatory);
-		const missing_mandatory = mandatory.filter((f) => !f.get_value());
+		const missing_mandatory = mandatory.filter((f) => (!f.get_value()&&!f.df.hidden) );
 		if (raise && missing_mandatory.length > 0) {
 			let message = __("Please set filters");
 			this.hide_loading_screen();
@@ -1925,6 +1925,9 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 
 	toggle_filter_display(fieldname, flag) {
 		this.$page.find(`div[data-fieldname=${fieldname}]`).toggleClass("hide-control", flag);
+		// also hide filter df
+		var filter = this.get_filter(fieldname);
+		filter.toggle(!flag);
 	}
 
 	toggle_report(flag) {
