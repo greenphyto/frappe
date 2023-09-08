@@ -13,6 +13,7 @@
   "is_active",
   "override_status",
   "send_email_alert",
+  "send_pending_approval",
   "states_head",
   "states",
   "transition_rules",
@@ -94,15 +95,22 @@
    "fieldtype": "Data",
    "label": "Workflow State Field",
    "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "send_pending_approval",
+   "fieldtype": "Check",
+   "label": "Send pending approval"
   }
  ],
  "icon": "fa fa-random",
  "idx": 1,
  "links": [],
- "modified": "2020-12-17 20:35:16.898040",
+ "modified": "2023-09-07 17:29:52.282024",
  "modified_by": "Administrator",
  "module": "Workflow",
  "name": "Workflow",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
@@ -119,5 +127,6 @@
  "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "ASC",
+ "states": [],
  "track_changes": 1
 }

@@ -103,7 +103,7 @@ def process_workflow_actions(doc, state):
 
 	if send_email_alert(workflow):
 		enqueue(
-			send_workflow_action_email, queue="short", users_data=list(user_data_map.values()), doc=doc
+			send_workflow_action_email, now=0, queue="short", users_data=list(user_data_map.values()), doc=doc
 		)
 
 
@@ -355,15 +355,21 @@ def create_workflow_actions_for_roles(roles, doc):
 def send_workflow_action_email(users_data, doc):
 	common_args = get_common_email_args(doc)
 	message = common_args.pop("message", None)
+	# not yet add settings to enable this
+	pendings = get_list_pending_document()
 	for d in users_data:
 		email_args = {
 			"recipients": [d.get("email")],
-			"args": {"actions": list(deduplicate_actions(d.get("possible_actions"))), "message": message},
+			"args": {
+				"actions": list(deduplicate_actions(d.get("possible_actions"))), 
+				"message": message,
+				"pendings":pendings,
+			},
 			"reference_name": doc.name,
 			"reference_doctype": doc.doctype,
 		}
 		email_args.update(common_args)
-		enqueue(method=frappe.sendmail, queue="short", **email_args)
+		enqueue(method=frappe.sendmail, now=0,  queue="short", **email_args)
 
 
 def deduplicate_actions(action_list):
@@ -496,3 +502,47 @@ def get_state_optional_field_value(workflow_name, state):
 	return frappe.get_cached_value(
 		"Workflow Document State", {"parent": workflow_name, "state": state}, "is_optional_state"
 	)
+
+def get_list_pending_document(user=None):
+	if not user:
+		user = frappe.session.user
+	
+	# get list workflow action
+	roles = frappe.get_roles()
+
+	actions = frappe.db.sql("""
+		select 
+			w.reference_name, w.reference_doctype
+		from 
+			`tabWorkflow Action` w
+		left join 
+			`tabWorkflow Action Permitted Role` wr on wr.parent = w.name
+		where 
+			w.status = 'Open'
+			and wr.role in %(roles)s
+	""",{"roles":roles}, as_dict=1)
+
+	next_actions = {}
+	for d in actions:
+		temp = get_next_action(d.reference_doctype , d.reference_name, user)
+		if temp:
+			next_actions[(d.reference_doctype , d.reference_name)] = temp
+
+	return next_actions
+
+def get_next_action(doctype, name, user):
+	doc = frappe.get_doc(doctype, name)
+	workflow = get_workflow_name(doc.get("doctype"))
+	if not workflow:
+		return
+
+	next_possible_transitions = get_next_possible_transitions(
+		workflow, get_doc_workflow_state(doc), doc
+	)
+
+	user_data_map, roles = get_users_next_action_data(next_possible_transitions, doc)
+
+	if not user_data_map or (user not in user_data_map and user != 'Administrator'):
+		return
+
+	return user_data_map.get(user)
