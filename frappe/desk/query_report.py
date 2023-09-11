@@ -380,7 +380,7 @@ def export_query():
 		# Add filter view
 		if include_filters:
 			xlsx_data = add_title_report(report_name) + get_filters_data(filters, filters_settings=filters_settings) + xlsx_data
-		
+
 		xlsx_file = make_xlsx(xlsx_data, "Query Report", column_widths=column_widths)
 
 		frappe.response["filename"] = report_name + ".xlsx"
@@ -395,15 +395,16 @@ def get_filters_data(filters={}, filters_info=[], filters_settings={}):
 	# filters: is dict type filter, usually on report page (custom report, etc)
 	# filters_info: is list filter value, usually on report view (list view, tree view, etc)
 	if not filters and not filters_info:
-		return []
+		return [[]]
 	
 	filter_fields = {}
 	for d in filters_settings:
 		filter_fields[d['fieldname']] = d
 	
-	res = [[],["Filters:"]]
+	res = [[''],["Filters:"]]
 	if filters:
 		for key, val in filters.items():
+			val = val or ""
 			label = key
 			if key in filter_fields:
 				label = filter_fields[key].get("label")
@@ -435,7 +436,7 @@ def get_filters_data(filters={}, filters_info=[], filters_settings={}):
 				data.append(d[3])
 
 			res.append(data)
-	res.append([])
+	res.append([''])
 	return res
 
 def get_filter_operation(opr):
