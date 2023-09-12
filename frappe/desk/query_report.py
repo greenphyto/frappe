@@ -395,21 +395,30 @@ def get_filters_data(filters={}, filters_info=[], filters_settings={}):
 	# filters: is dict type filter, usually on report page (custom report, etc)
 	# filters_info: is list filter value, usually on report view (list view, tree view, etc)
 	if not filters and not filters_info:
-		return [[]]
+		return [['']]
 	
 	filter_fields = {}
 	for d in filters_settings:
-		filter_fields[d['fieldname']] = d
+		if d.get("fieldname"):
+			filter_fields[d['fieldname']] = d
 	
 	res = [[''],["Filters:"]]
 	if filters:
 		for key, val in filters.items():
 			val = val or ""
 			label = key
+			data = []
 			if key in filter_fields:
 				label = filter_fields[key].get("label")
 
-			res.append([label, val])
+			data.append(label)
+			if type(val) == list:
+				data += val
+			else:
+				data.append(val)
+			
+
+			res.append(data)
 
 	elif filters_info:
 		label_filter = ""
