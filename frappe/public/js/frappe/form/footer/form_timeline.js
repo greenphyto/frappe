@@ -112,8 +112,8 @@ class FormTimeline extends BaseTimeline {
 
 	set_document_info() {
 		// TODO: handle creation via automation
-		const creation = comment_when(this.frm.doc.creation);
-		let creation_message = frappe.utils.is_current_user(this.frm.doc.owner)
+		const creation = this.frm.doc.creation;
+		let creation_message = frappe.utils.is_current_user( frappe.datetime.global_date_format(this.frm.doc.owner) )
 			? __("You created this {0}", [creation], "Form timeline")
 			: __(
 					"{0} created this {1}",
@@ -121,7 +121,7 @@ class FormTimeline extends BaseTimeline {
 					"Form timeline"
 			  );
 
-		const modified = comment_when(this.frm.doc.modified);
+		const modified = frappe.datetime.global_date_format(this.frm.doc.modified);
 		let modified_message = frappe.utils.is_current_user(this.frm.doc.modified_by)
 			? __("You edited this {0}", [modified], "Form timeline")
 			: __(
