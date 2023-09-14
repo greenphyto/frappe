@@ -320,7 +320,12 @@ frappe.search.SearchDialog = class {
 	get_link(result) {
 		let link = "";
 		if (result.route) {
-			link = `href="/app/${result.route.join("/")}"`;
+			if (result.route[0] == "Form" && result.route.length > 2){
+				var url = frappe.utils.get_form_link(result.route[1], result.route[2]);
+				link = `href="${url}" `;
+			}else{
+				link = `href="/app/${ result.route.join("/") }" `;
+			}
 		} else if (result.data_path) {
 			link = `data-path=${result.data_path}"`;
 		}
