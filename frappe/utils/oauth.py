@@ -224,9 +224,10 @@ def login_oauth_user(
 
 	else:
 		redirect_to = state.get("redirect_to")
-		intent_link = unquote( frappe.request.cookies.get("redirect_to") )
-		if intent_link:
-			redirect_to_mobile(user, intent_link)
+		if frappe.request.cookies.get("redirect_to"):
+			intent_link = unquote( frappe.request.cookies.get("redirect_to") )
+			if intent_link:
+				redirect_to_mobile(user, intent_link)
 		else:
 			redirect_post_login(
 				desk_user=frappe.local.response.get("message") == "Logged In",
