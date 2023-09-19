@@ -660,7 +660,6 @@ def sendmail(
 	text_content = None
 	if template:
 		message, text_content = get_email_from_template(template, args)
-	print(message)
 	message = content or message
 
 	if as_markdown:

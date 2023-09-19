@@ -526,6 +526,16 @@ def get_list_pending_document(user=None):
 	for d in actions:
 		temp = get_next_action(d.reference_doctype , d.reference_name, user)
 		if temp:
+			if temp.get('possible_actions'):
+				already_add = []
+				actions_new = []
+				for act in temp['possible_actions']:
+					if act.get("action_link") not in already_add:
+						already_add.append(act['action_link'])
+						actions_new.append(act)
+				
+				temp['possible_actions'] = actions_new
+			
 			next_actions[(d.reference_doctype , d.reference_name)] = temp
 
 	return next_actions

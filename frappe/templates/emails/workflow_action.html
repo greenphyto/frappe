@@ -5,33 +5,33 @@
 		<a class="btn {% if action.is_primary %} btn-primary {% endif %}" style="margin-right: 10px" href="{{ action.action_link }}">{{_(action.action_name)}}</a>
 		{% endfor %}
 	</p>
+	<!-- pendings start -->
+	{% if pendings %}
+	<h3>Pending document:</h3>
+	<table border="1" style="width: 100%;">
+		<thead>
+			<tr>
+				<th style="width: 30%;">Reff. Type</th>
+				<th style="width: 40%;">Reff. Name</th>
+				<th style="width: 30%;">Action</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for key, data in pendings.items() %}
+			<tr>
+				<td>{{ key[0] }}</td>
+				<td>{{ key[1] }}</td>
+				<td>
+					{% for act in data.possible_actions %}
+						<a href="{{act.action_link}}">{{ act.action_name }}</a>
+					{% endfor %}
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<!-- pendings end -->
 </div>
-<!-- pendings start -->
-{% if pendings %}
-<h3>Pending document:</h3>
-<table border="1" style="width: 100%;">
-	<thead>
-		<tr>
-			<th style="width: 30%;">Reff. Type</th>
-			<th style="width: 40%;">Reff. Name</th>
-			<th style="width: 30%;">Action</th>
-		</tr>
-	</thead>
-	<tbody>
-		{% for key, data in pendings.items() %}
-		<tr>
-			<td>{{ key[0] }}</td>
-			<td>{{ key[1] }}</td>
-			<td>
-				{% for act in data.possible_actions %}
-					<a href="{{act.action_link}}">{{ act.action_name }}</a>
-				{% endfor %}
-			</td>
-		</tr>
-		{% endfor %}
-	</tbody>
-</table>
-<!-- pendings end -->
 
 
 {% endif  %}
