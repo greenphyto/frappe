@@ -17,7 +17,7 @@ from frappe.model.workflow import (
 from frappe.query_builder import DocType
 from frappe.utils import get_datetime, get_url
 from frappe.utils.background_jobs import enqueue
-from frappe.utils.data import get_link_to_form
+from frappe.utils.data import get_link_to_form, get_url_to_list
 from frappe.utils.user import get_users_with_role
 from frappe.utils.verified_command import get_signed_params, verify_request
 
@@ -364,6 +364,8 @@ def send_workflow_action_email(users_data, doc):
 				"actions": list(deduplicate_actions(d.get("possible_actions"))), 
 				"message": message,
 				"pendings":pendings,
+				"doctype": doc.get("doctype"),
+				"list_url": get_url_to_list(doc.get("doctype") or "/")
 			},
 			"reference_name": doc.name,
 			"reference_doctype": doc.doctype,

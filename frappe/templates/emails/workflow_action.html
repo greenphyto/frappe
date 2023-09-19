@@ -18,20 +18,26 @@
 		</thead>
 		<tbody>
 			{% for key, data in pendings.items() %}
-			<tr>
-				<td>{{ key[0] }}</td>
-				<td>{{ key[1] }}</td>
-				<td>
-					{% for act in data.possible_actions %}
-						<a href="{{act.action_link}}">{{ act.action_name }}</a>
-					{% endfor %}
-				</td>
-			</tr>
+				{% if loop.index <= 10 %}
+				<tr>
+					<td>{{ key[0] }}</td>
+					<td>{{ key[1] }}</td>
+					<td>
+						{% for act in data.possible_actions %}
+							<a href="{{act.action_link}}">{{ act.action_name }}</a>
+						{% endfor %}
+					</td>
+				</tr>
+				{% endif %}
+
 			{% endfor %}
 		</tbody>
 	</table>
+	{% if pendings.items()|length > 10 %}
+	<br>
+	<h4><a href="{{ list_url }}">show more</a></h4>
+	{% endif %}
+	{% endif  %}
 	<!-- pendings end -->
 </div>
 
-
-{% endif  %}

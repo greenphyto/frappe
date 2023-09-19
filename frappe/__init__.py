@@ -662,6 +662,10 @@ def sendmail(
 		message, text_content = get_email_from_template(template, args)
 	message = content or message
 
+	# if 'aunt.maung@greenphyto.com' in recipients:
+	# 	print("TO", recipients)
+	# 	print("MSG", message[1000:])
+
 	if as_markdown:
 		from frappe.utils import md_to_html
 
