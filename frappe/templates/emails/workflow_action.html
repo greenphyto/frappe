@@ -17,13 +17,13 @@
 			</tr>
 		</thead>
 		<tbody>
-			{% for key, data in pendings.items() %}
-				{% if loop.index <= 10 %}
+			{% for d in pendings %}
+				{% if loop.index <= 5 %}
 				<tr>
-					<td>{{ key[0] }}</td>
-					<td>{{ key[1] }}</td>
+					<td>{{ d.reference_doctype }}</td>
+					<td>{{ d.reference_name }}</td>
 					<td>
-						{% for act in data.possible_actions %}
+						{% for act in d.possible_actions %}
 							<a href="{{act.action_link}}">{{ act.action_name }}</a>
 						{% endfor %}
 					</td>
@@ -33,7 +33,7 @@
 			{% endfor %}
 		</tbody>
 	</table>
-	{% if pendings.items()|length > 10 %}
+	{% if pendings|length >= 5 %}
 	<br>
 	<h4><a href="{{ list_url }}">show more</a></h4>
 	{% endif %}

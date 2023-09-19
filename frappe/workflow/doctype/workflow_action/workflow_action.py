@@ -20,6 +20,8 @@ from frappe.utils.background_jobs import enqueue
 from frappe.utils.data import get_link_to_form, get_url_to_list
 from frappe.utils.user import get_users_with_role
 from frappe.utils.verified_command import get_signed_params, verify_request
+from frappe.core.doctype.role.role import get_info_based_on_role
+
 
 
 class WorkflowAction(Document):
@@ -356,8 +358,9 @@ def send_workflow_action_email(users_data, doc):
 	common_args = get_common_email_args(doc)
 	message = common_args.pop("message", None)
 	# not yet add settings to enable this
-	pendings = get_list_pending_document()
+	pending_data = get_list_pending_document(doc.doctype)
 	for d in users_data:
+		pendings = pending_data.get(d.get("email"))
 		email_args = {
 			"recipients": [d.get("email")],
 			"args": {
@@ -505,40 +508,81 @@ def get_state_optional_field_value(workflow_name, state):
 		"Workflow Document State", {"parent": workflow_name, "state": state}, "is_optional_state"
 	)
 
-def get_list_pending_document(user=None):
-	if not user:
-		user = frappe.session.user
+def get_list_pending_document(doctype):
 	
 	# get list workflow action
-	roles = frappe.get_roles()
-
 	actions = frappe.db.sql("""
 		select 
-			w.reference_name, w.reference_doctype
-		from 
-			`tabWorkflow Action` w
+			w.reference_name, w.reference_doctype, ws.role
+						 
+		from `tabWorkflow Action Permitted Role` ws
+		left join
+			`tabWorkflow Action` w on w.name = ws.parent
 		left join 
 			`tabWorkflow Action Permitted Role` wr on wr.parent = w.name
 		where 
 			w.status = 'Open'
-			and wr.role in %(roles)s
-	""",{"roles":roles}, as_dict=1)
+			and w.reference_doctype = %(doctype)s
+		limit 6
+	""",{"doctype":doctype}, as_dict=1, debug=0)
+
+
 
 	next_actions = {}
+
+	# find roles
+	roles = []
+	data_map = {}
+	role_map = {}
 	for d in actions:
-		temp = get_next_action(d.reference_doctype , d.reference_name, user)
-		if temp:
-			if temp.get('possible_actions'):
+		if d.role not in role_map:
+			role_map[d.role] = get_info_based_on_role(d.role, "name")
+
+		data = role_map[d.role]
+		key = (d.reference_doctype, d.reference_name)
+		if key not in data_map:
+			data_map[key] = data
+		else:
+			for u in data:
+				if u not in data_map[key]:
+					data_map[key].append(u)
+
+	# print(549, data_map)	
+
+	# convert to key by user
+	reference_map = {}
+	for key, users in data_map.items():
+		for user in users:
+			if user not in reference_map:
+				reference_map[user] = [key]
+			else:
+				reference_map[user] += [key]
+
+	# print(564, reference_map)
+	# find user
+	for user, value in reference_map.items():
+		for reff in value:
+			reference_doctype = reff[0]
+			reference_name = reff[1]
+			temp = get_next_action(reference_doctype , reference_name, user)
+			if temp:
+				k = user
 				already_add = []
 				actions_new = []
-				for act in temp['possible_actions']:
-					if act.get("action_link") not in already_add:
-						already_add.append(act['action_link'])
-						actions_new.append(act)
+				if temp.get('possible_actions'):
+					for act in temp['possible_actions']:
+						if act.get("action_name") not in already_add:
+							already_add.append(act.get("action_name"))
+							actions_new.append(act)
+					
+					temp['possible_actions'] = actions_new
 				
-				temp['possible_actions'] = actions_new
-			
-			next_actions[(d.reference_doctype , d.reference_name)] = temp
+				temp['reference_doctype'] = reference_doctype
+				temp['reference_name'] = reference_name
+				if k not in next_actions:
+					next_actions[k] = [temp]
+				else:
+					next_actions[k] += [temp]
 
 	return next_actions
 
