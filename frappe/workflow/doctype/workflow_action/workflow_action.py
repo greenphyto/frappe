@@ -83,14 +83,16 @@ def process_workflow_actions(doc, state):
 
 	if is_workflow_action_already_created(doc):
 		return
+	
+	workflow_state = get_doc_workflow_state(doc)
 
 	update_completed_workflow_actions(
-		doc, workflow=workflow, workflow_state=get_doc_workflow_state(doc)
+		doc, workflow=workflow, workflow_state=workflow_state
 	)
 	clear_doctype_notifications("Workflow Action")
 
 	next_possible_transitions = get_next_possible_transitions(
-		workflow, get_doc_workflow_state(doc), doc
+		workflow, workflow_state, doc
 	)
 
 	if not next_possible_transitions:
@@ -358,7 +360,9 @@ def send_workflow_action_email(users_data, doc):
 	common_args = get_common_email_args(doc)
 	message = common_args.pop("message", None)
 	# not yet add settings to enable this
-	pending_data = get_list_pending_document(doc.doctype)
+	state_field = get_doc_workflow_state_field(doc)
+	state = doc.get(state_field)
+	pending_data = get_list_pending_document(doc.doctype, state, doc.name)
 	for d in users_data:
 		pendings = pending_data.get(d.get("email"))
 		email_args = {
@@ -368,7 +372,7 @@ def send_workflow_action_email(users_data, doc):
 				"message": message,
 				"pendings":pendings,
 				"doctype": doc.get("doctype"),
-				"list_url": get_url_to_list(doc.get("doctype") or "/")
+				"list_url": get_url_to_list(doc.get("doctype") or "/") + "?{}={}".format(state_field, state)
 			},
 			"reference_name": doc.name,
 			"reference_doctype": doc.doctype,
@@ -447,6 +451,10 @@ def get_doc_workflow_state(doc):
 	workflow_state_field = get_workflow_state_field(workflow_name)
 	return doc.get(workflow_state_field)
 
+def get_doc_workflow_state_field(doc):
+	workflow_name = get_workflow_name(doc.get("doctype"))
+	workflow_state_field = get_workflow_state_field(workflow_name)
+	return workflow_state_field
 
 def filter_allowed_users(users, doc, transition):
 	"""Filters list of users by checking if user has access to doc and
@@ -508,12 +516,20 @@ def get_state_optional_field_value(workflow_name, state):
 		"Workflow Document State", {"parent": workflow_name, "state": state}, "is_optional_state"
 	)
 
-def get_list_pending_document(doctype):
-	
+def get_list_pending_document(doctype, state, cur_name=""):
+
+	list_doc = frappe.db.get_list("Workflow Action", {
+		"status":"Open",
+		"reference_doctype":doctype,
+		"workflow_state":state,
+		"reference_name":['!=', cur_name ],
+	}, order_by="modified desc", limit=6, debug=1)
+	list_doc = [x.name for x in list_doc]
+
 	# get list workflow action
 	actions = frappe.db.sql("""
 		select 
-			w.reference_name, w.reference_doctype, ws.role
+			w.reference_name, w.reference_doctype, ws.role, w.name
 						 
 		from `tabWorkflow Action Permitted Role` ws
 		left join
@@ -521,12 +537,12 @@ def get_list_pending_document(doctype):
 		left join 
 			`tabWorkflow Action Permitted Role` wr on wr.parent = w.name
 		where 
-			w.status = 'Open'
-			and w.reference_doctype = %(doctype)s
-		limit 6
-	""",{"doctype":doctype}, as_dict=1, debug=0)
-
-
+			w.name in %(list_doc)s
+		order by 
+			w.modified desc
+	""",{
+		"list_doc":list_doc
+	}, as_dict=1, debug=1)
 
 	next_actions = {}
 
