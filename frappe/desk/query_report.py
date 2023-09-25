@@ -77,7 +77,7 @@ def get_report_result(report, filters):
 
 @frappe.read_only()
 def generate_report_result(
-	report, filters=None, user=None, custom_columns=None, is_tree=False, parent_field=None
+	report, filters=None, user=None, custom_columns=None, remove_columns=None, is_tree=False, parent_field=None
 ):
 	user = user or frappe.session.user
 	filters = filters or []
@@ -102,6 +102,12 @@ def generate_report_result(
 	if custom_columns:
 		for custom_column in custom_columns:
 			columns.insert(custom_column["insert_after_index"] + 1, custom_column)
+
+	# remove column
+	if remove_columns:
+		for column in columns:
+			if column.get("fieldname") in remove_columns:
+				columns.remove(column)
 
 	# all columns which are not in original report
 	report_custom_columns = [
@@ -223,6 +229,7 @@ def run(
 	custom_columns=None,
 	is_tree=False,
 	parent_field=None,
+	remove_columns=None
 ):
 	report = get_report_doc(report_name)
 	if not user:
@@ -251,7 +258,7 @@ def run(
 			dn = ""
 		result = get_prepared_report_result(report, filters, dn, user)
 	else:
-		result = generate_report_result(report, filters, user, custom_columns, is_tree, parent_field)
+		result = generate_report_result(report, filters, user, custom_columns, remove_columns, is_tree, parent_field)
 		add_data_to_monitor(report=report.reference_report or report.name)
 
 	result["add_total_row"] = report.add_total_row and not result.get("skip_total_row", False)
@@ -273,7 +280,6 @@ def add_custom_column_data(custom_columns, result):
 				row[column.get("fieldname")] = custom_column_data.get(key).get(row_reference)
 
 	return result
-
 
 def get_prepared_report_result(report, filters, dn="", user=None):
 	latest_report_data = {}
@@ -356,6 +362,7 @@ def export_query():
 
 	file_format_type = data.get("file_format_type")
 	custom_columns = frappe.parse_json(data.get("custom_columns", "[]"))
+	remove_columns = frappe.parse_json(data.get("remove_columns", "[]"))
 	include_indentation = data.get("include_indentation")
 	visible_idx = data.get("visible_idx")
 
@@ -363,7 +370,7 @@ def export_query():
 		visible_idx = json.loads(visible_idx)
 
 	if file_format_type == "Excel":
-		data = run(report_name, filters, custom_columns=custom_columns)
+		data = run(report_name, filters, custom_columns=custom_columns, remove_columns=remove_columns)
 		data = frappe._dict(data)
 		if not data.columns:
 			frappe.respond_as_web_page(

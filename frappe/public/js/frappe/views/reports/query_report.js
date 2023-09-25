@@ -898,6 +898,7 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 	}
 
 	render_datatable() {
+		const me = this;
 		let data = this.data;
 		let columns = this.columns.filter((col) => !col.hidden);
 
@@ -929,6 +930,11 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 				hooks: {
 					columnTotal: frappe.utils.report_column_total,
 				},
+				events: {
+					onRemoveColumn(column) {
+						me.on_remove_column(column);
+					}
+				}
 			};
 
 			if (this.report_settings.get_datatable_options) {
@@ -942,6 +948,16 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 		}
 		if (this.report_settings.after_datatable_render) {
 			this.report_settings.after_datatable_render(this.datatable);
+		}
+	}
+
+	on_remove_column(column){
+		if (!column.fieldname) return;
+
+		if (!this.remove_columns){
+			this.remove_columns = [column.fieldname];
+		}else{
+			this.remove_columns.push(column.fieldname);
 		}
 	}
 
@@ -1466,6 +1482,7 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 						cmd: "frappe.desk.query_report.export_query",
 						report_name: this.report_name,
 						custom_columns: this.custom_columns.length ? this.custom_columns : [],
+						remove_columns: this.remove_columns && this.remove_columns.length ? this.remove_columns : [],
 						file_format_type: file_format,
 						filters: filters,
 						include_filters: include_filters,
