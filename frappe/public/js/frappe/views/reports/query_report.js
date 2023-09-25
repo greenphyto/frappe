@@ -163,6 +163,7 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 		frappe.run_serially([
 			() => this.get_report_doc(),
 			() => this.get_report_settings(),
+			() => this.clear_custom_data(),
 			() => this.setup_progress_bar(),
 			() => this.setup_page_head(),
 			() => this.refresh_report(route_options),
@@ -907,6 +908,10 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 		})
 	}
 
+	clear_custom_data(){
+		this.custom_columns = [];
+	}
+
 	render_datatable() {
 		const me = this;
 		let data = this.data;
@@ -1578,6 +1583,7 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 	}
 
 	get_menu_items() {
+		const me = this;
 		let items = [
 			{
 				label: __("Refresh"),
