@@ -215,6 +215,9 @@ def get_workflow_state_field(workflow_name):
 def send_email_alert(workflow_name):
 	return get_workflow_field_value(workflow_name, "send_email_alert")
 
+def send_pending_approval(workflow_name):
+	return get_workflow_field_value(workflow_name, "send_pending_approval")
+
 
 def get_workflow_field_value(workflow_name, field):
 	value = frappe.cache().hget("workflow_" + workflow_name, field)

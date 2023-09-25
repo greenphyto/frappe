@@ -10,12 +10,13 @@ from frappe.model.workflow import (
 	apply_workflow,
 	get_workflow_name,
 	get_workflow_state_field,
+	send_pending_approval,
 	has_approval_access,
 	is_transition_condition_satisfied,
 	send_email_alert,
 )
 from frappe.query_builder import DocType
-from frappe.utils import get_datetime, get_url
+from frappe.utils import get_datetime, get_url, cint
 from frappe.utils.background_jobs import enqueue
 from frappe.utils.data import get_link_to_form, get_url_to_list
 from frappe.utils.user import get_users_with_role
@@ -361,10 +362,15 @@ def send_workflow_action_email(users_data, doc):
 	message = common_args.pop("message", None)
 	# not yet add settings to enable this
 	state_field = get_doc_workflow_state_field(doc)
+	send_pendings = get_send_pending_setting(doc)
 	state = doc.get(state_field)
-	pending_data = get_list_pending_document(doc.doctype, state, doc.name)
+	if send_pendings:
+		pending_data = get_list_pending_document(doc.doctype, state, doc.name)
+	else:
+		pending_data = {}
+	
 	for d in users_data:
-		pendings = pending_data.get(d.get("email"))
+		pendings = pending_data.get(d.get("email")) or []
 		email_args = {
 			"recipients": [d.get("email")],
 			"args": {
@@ -455,6 +461,12 @@ def get_doc_workflow_state_field(doc):
 	workflow_name = get_workflow_name(doc.get("doctype"))
 	workflow_state_field = get_workflow_state_field(workflow_name)
 	return workflow_state_field
+
+def get_send_pending_setting(doc):
+	workflow_name = get_workflow_name(doc.get("doctype"))
+	get_send_pending_setting = cint(send_pending_approval(workflow_name))
+	return get_send_pending_setting
+
 
 def filter_allowed_users(users, doc, transition):
 	"""Filters list of users by checking if user has access to doc and
