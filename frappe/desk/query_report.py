@@ -105,7 +105,7 @@ def generate_report_result(
 
 	# remove column
 	if remove_columns:
-		for column in columns:
+		for column in list(columns):
 			if column.get("fieldname") in remove_columns:
 				columns.remove(column)
 
