@@ -900,7 +900,17 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 	render_datatable() {
 		const me = this;
 		let data = this.data;
-		let columns = this.columns.filter((col) => !col.hidden);
+		let columns = this.columns.filter((col) => {
+			if (!col.hidden){
+				if (me.remove_columns && col.fieldname && me.remove_columns.includes(col.fieldname)){
+					return false
+				}else{
+					return true
+				}
+			}else{
+				return false
+			}
+		});
 
 		if (this.raw_data.add_total_row && !this.report_settings.tree) {
 			data = data.slice();
