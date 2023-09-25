@@ -524,7 +524,7 @@ def get_list_pending_document(doctype, state, cur_name=""):
 		"workflow_state":state,
 		"reference_name":['!=', cur_name ],
 	}, order_by="modified desc", limit=6, debug=0)
-	list_doc = [x.name for x in list_doc]
+	list_doc = [x.name for x in list_doc] or ['']
 
 	# get list workflow action
 	actions = frappe.db.sql("""
@@ -563,8 +563,6 @@ def get_list_pending_document(doctype, state, cur_name=""):
 				if u not in data_map[key]:
 					data_map[key].append(u)
 
-	# print(549, data_map)	
-
 	# convert to key by user
 	reference_map = {}
 	for key, users in data_map.items():
@@ -574,7 +572,6 @@ def get_list_pending_document(doctype, state, cur_name=""):
 			else:
 				reference_map[user] += [key]
 
-	# print(564, reference_map)
 	# find user
 	for user, value in reference_map.items():
 		for reff in value:
