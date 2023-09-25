@@ -891,7 +891,11 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 	prepare_report_data(data) {
 		this.raw_data = data;
 		this.columns = this.prepare_columns(data.columns);
-		this.custom_columns = [];
+		if(!this.custom_columns){
+			this.custom_columns = [];
+		}else{
+			this.add_custom_column_all();
+		}
 		this.data = this.prepare_data(data.result);
 		this.linked_doctypes = this.get_linked_doctypes();
 		this.tree_report = this.data.some((d) => "indent" in d);
@@ -1647,7 +1651,7 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 											}));
 
 										d.set_df_property(
-											"field",
+											"fieldname",
 											"options",
 											options.sort(function (a, b) {
 												if (a.label < b.label) {
@@ -1665,7 +1669,7 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 							{
 								fieldtype: "Select",
 								label: __("Field"),
-								fieldname: "field",
+								fieldname: "fieldname",
 								options: [],
 							},
 							{
@@ -1677,7 +1681,7 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 						],
 						primary_action: (values) => {
 							const custom_columns = [];
-							let df = frappe.meta.get_docfield(values.doctype, values.field);
+							let df = frappe.meta.get_docfield(values.doctype, values.fieldname);
 							const insert_after_index = this.columns.findIndex(
 								(column) => column.label === values.insert_after
 							);
@@ -1696,7 +1700,7 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 							frappe.call({
 								method: "frappe.desk.query_report.get_data_for_custom_field",
 								args: {
-									field: values.field,
+									field: values.fieldname,
 									doctype: values.doctype,
 								},
 								callback: (r) => {
@@ -1707,7 +1711,7 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 										custom_columns,
 										custom_data,
 										link_field,
-										values.field,
+										values.fieldname,
 										insert_after_index
 									);
 									d.hide();
@@ -1772,6 +1776,35 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 		}
 
 		return items;
+	}
+
+	add_custom_column_all(){
+		var me = this;
+		if (!this.custom_columns) return;
+
+		frappe.call({
+			method:"frappe.desk.query_report.get_data_for_custom_field_all",
+			args:{
+				custom_columns: this.custom_columns
+			},
+			callback: r=>{
+				var data = r.message;
+				$.each(me.custom_columns, (i, column)=>{
+					var values = column;
+					const custom_columns = [column];
+					const custom_data = data[i];
+					const link_field = me.doctype_field_map[values.doctype];
+	
+					me.add_custom_column(
+						custom_columns,
+						custom_data,
+						link_field,
+						values.fieldname,
+						values.insert_after_index
+					);
+				});
+			}
+		})
 	}
 
 	add_portrait_warning(dialog) {

@@ -607,6 +607,17 @@ def get_data_for_custom_field(doctype, field):
 
 	return value_map
 
+@frappe.whitelist()
+def get_data_for_custom_field_all(custom_columns=[]):
+
+	result = []
+	custom_columns = json.loads(custom_columns)
+	for d in custom_columns:
+		res = get_data_for_custom_field(d.get("doctype"), d.get("fieldname"))
+		result.append(res)
+
+	return result
+
 
 def get_data_for_custom_report(columns):
 	doc_field_value_map = {}

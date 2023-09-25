@@ -523,7 +523,7 @@ def get_list_pending_document(doctype, state, cur_name=""):
 		"reference_doctype":doctype,
 		"workflow_state":state,
 		"reference_name":['!=', cur_name ],
-	}, order_by="modified desc", limit=6, debug=1)
+	}, order_by="modified desc", limit=6, debug=0)
 	list_doc = [x.name for x in list_doc]
 
 	# get list workflow action
@@ -542,7 +542,7 @@ def get_list_pending_document(doctype, state, cur_name=""):
 			w.modified desc
 	""",{
 		"list_doc":list_doc
-	}, as_dict=1, debug=1)
+	}, as_dict=1, debug=0)
 
 	next_actions = {}
 
