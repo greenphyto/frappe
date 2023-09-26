@@ -112,9 +112,12 @@
 		{%= __("Tags") %}
 	</li>
 </ul>
-<ul class="list-unstyled sidebar-menu">
+<ul class="list-unstyled sidebar-menu auto-repeat-menu hidden">
 	<a><li class="auto-repeat-status"><li></a>
 </ul>
+{% if(frappe.get_form_sidebar_extension_bottom) { %}
+	{{ frappe.get_form_sidebar_extension_bottom() }}
+{% } %}
 <ul class="list-unstyled sidebar-menu form-sidebar-stats">
 	<li class="flex">
 		<div class="form-stats">
