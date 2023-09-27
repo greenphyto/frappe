@@ -1178,3 +1178,7 @@ commands = [
 	rebuild_global_search,
 	run_parallel_tests,
 ]
+
+@frappe.whitelist()
+def get_quick_entry_js(doctype):
+	return frappe.get_hooks("quick_entry_js", {}).get(doctype)
