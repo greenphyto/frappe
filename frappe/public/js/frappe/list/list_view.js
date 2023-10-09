@@ -89,8 +89,8 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 		// set filters from view_user_settings or list_settings
 		if (Array.isArray(this.view_user_settings.filters)) {
 			// Priority 1: view_user_settings
-			const saved_filters = this.view_user_settings.filters;
-			this.filters = this.validate_filters(saved_filters);
+			// const saved_filters = this.view_user_settings.filters;
+			// this.filters = this.validate_filters(saved_filters);
 		} else {
 			// Priority 2: filters in listview_settings
 			this.filters = (this.settings.filters || []).map((f) => {
@@ -519,6 +519,10 @@ frappe.views.ListView = class ListView extends frappe.views.BaseList {
 				return this.filter_area
 					.clear(false)
 					.then(() => this.filter_area.set(this.filters));
+			}else{
+				return this.filter_area.clear().then(()=>{
+					this.filter_area.remove();
+				})
 			}
 		}
 
