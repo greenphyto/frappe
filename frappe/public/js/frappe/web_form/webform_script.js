@@ -94,4 +94,8 @@ frappe.ready(function () {
 			}
 		});
 	}
+
+	// current settings
+	frappe.provide('frappe.ui.Capture.OPTIONS');
+	frappe.ui.Capture.OPTIONS.direct = 1;
 });
