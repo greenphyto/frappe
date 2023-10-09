@@ -6,11 +6,16 @@ import json
 import frappe
 from frappe import safe_decode
 
+disable_user_settings = 1
+
 # dict for mapping the index and index type for the filters of different views
 filter_dict = {"doctype": 0, "docfield": 1, "operator": 2, "value": 3}
 
 
 def get_user_settings(doctype, for_update=False):
+	if disable_user_settings:
+		return "{}"
+	
 	user_settings = frappe.cache().hget("_user_settings", f"{doctype}::{frappe.session.user}")
 
 	if user_settings is None:
@@ -28,6 +33,9 @@ def get_user_settings(doctype, for_update=False):
 
 
 def update_user_settings(doctype, user_settings, for_update=False):
+	if disable_user_settings:
+		return 
+	
 	"""update user settings in cache"""
 
 	if for_update:
