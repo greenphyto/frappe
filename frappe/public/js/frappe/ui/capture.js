@@ -210,8 +210,19 @@ frappe.ui.Capture = class {
 			const data_url = frappe._.get_data_uri(me.video);
 
 			me.images.push(data_url);
-			me.setup_preview_action();
-			me.update_count();
+			me.dialog.get_primary_btn().off("click");
+
+			if (me.options.direct){
+				me.hide();
+
+				if (me.callback) {
+					me.callback(me.images);
+				}
+			}else{
+				me.render_preview();
+			}
+			// me.setup_preview_action();
+			// me.update_count();
 		});
 	}
 
@@ -222,7 +233,7 @@ frappe.ui.Capture = class {
 			return;
 		}
 
-		this.dialog.set_secondary_action_label(__("Preview"));
+		this.dialog.set_secondary_action_label(__("Back"));
 		this.dialog.set_secondary_action(() => {
 			me.dialog.get_primary_btn().off("click");
 			me.render_preview();
