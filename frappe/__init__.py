@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING, Any, Callable, Literal, Optional, overload
 
 import click
 from werkzeug.local import Local, release_local
+from urllib.parse import quote
 
 from frappe.query_builder import (
 	get_qb_engine,
@@ -2230,9 +2231,9 @@ def log_error(title=None, message=None, reference_doctype=None, reference_name=N
 
 def get_desk_link(doctype, name):
 	html = (
-		'<a href="/app/Form/{doctype}/{name}" style="font-weight: bold;">{doctype_local} {name}</a>'
+		'<a href="/app/Form/{doctype}/{name_url}" style="font-weight: bold;">{doctype_local} {name}</a>'
 	)
-	return html.format(doctype=doctype, name=name, doctype_local=_(doctype))
+	return html.format(doctype=doctype, name_url=quote(name, safe=""), name=name, doctype_local=_(doctype))
 
 
 def bold(text):
