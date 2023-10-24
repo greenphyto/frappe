@@ -122,9 +122,16 @@ frappe.ui.Capture = class {
 				let f = await read(file);
 				me.images.push(f);
 			}
-
-			me.render_preview();
-			me.dialog.show();
+			if (me.options.direct){
+				me.hide();
+	
+				if (me.callback) {
+					me.callback(me.images);
+				}
+			}else{
+				me.render_preview();
+				me.dialog.show();
+			}
 		};
 		me.input.click();
 	}
@@ -243,8 +250,7 @@ frappe.ui.Capture = class {
 	setup_remove_action() {
 		let me = this;
 		let elements = this.$template[0].getElementsByClassName("capture-remove-btn");
-
-		elements.forEach((el) => {
+		$.map(elements, (el) => {
 			el.onclick = () => {
 				let idx = parseInt(el.getAttribute("data-idx"));
 
@@ -306,7 +312,7 @@ frappe.ui.Capture = class {
 
 		this.dialog.set_primary_action(__("Submit"), () => {
 			me.hide();
-
+	
 			if (me.callback) {
 				me.callback(me.images);
 			}
