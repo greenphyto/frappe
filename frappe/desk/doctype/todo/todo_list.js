@@ -1,5 +1,5 @@
 frappe.listview_settings["ToDo"] = {
-	hide_name_column: true,
+hide_name_column: true,
 	add_fields: ["reference_type", "reference_name"],
 
 	onload: function (me) {

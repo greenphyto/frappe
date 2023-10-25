@@ -60,7 +60,7 @@ def add(args=None):
 		filters = {
 			"reference_type": args["doctype"],
 			"reference_name": args["name"],
-			"status": "Open",
+			"status": "Planned",
 			"allocated_to": assign_to,
 		}
 
@@ -80,7 +80,7 @@ def add(args=None):
 					"reference_name": args["name"],
 					"description": args.get("description"),
 					"priority": args.get("priority", "Medium"),
-					"status": "Open",
+					"status": "Planned",
 					"date": args.get("date", nowdate()),
 					"assigned_by": args.get("assigned_by", frappe.session.user),
 					"assignment_rule": args.get("assignment_rule"),
@@ -154,7 +154,7 @@ def close_all_assignments(doctype, name):
 		return False
 
 	for assign_to in assignments:
-		set_status(doctype, name, todo=assign_to.name, assign_to=assign_to.allocated_to, status="Closed")
+		set_status(doctype, name, todo=assign_to.name, assign_to=assign_to.allocated_to, status="Completed")
 
 	return True
 
