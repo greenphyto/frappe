@@ -93,12 +93,18 @@ frappe.views.Workspace = class Workspace {
 								: "private/" + frappe.router.slug(item.title)
 						}"
 						class="item-anchor ${item.is_editable ? "" : "block-click"}" title="${__(item.title)}"
+						
 					>
 						<span class="sidebar-item-icon" item-icon=${item.icon || "folder-normal"}>${frappe.utils.icon(
 			item.icon || "folder-normal",
 			"md"
 		)}</span>
-						<span class="sidebar-item-label">${__(item.title)}<span>
+						<span class="sidebar-item-label">${__(item.title)}</span>
+						<span class="open-count" style="display: none;">
+							<div class="detail-count">
+								<div class="count-value"></div>
+							</div>
+						</span>
 					</a>
 					<div class="sidebar-item-control"></div>
 				</div>
