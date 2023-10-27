@@ -32,7 +32,10 @@
   "quick_lists_tab",
   "quick_lists",
   "roles_tab",
-  "roles"
+  "roles",
+  "count_icon_tab",
+  "activate_count_icon",
+  "count_method"
  ],
  "fields": [
   {
@@ -194,11 +197,28 @@
    "fieldtype": "Table",
    "label": "Number Cards",
    "options": "Workspace Number Card"
+  },
+  {
+   "fieldname": "count_icon_tab",
+   "fieldtype": "Tab Break",
+   "label": "Count Icon"
+  },
+  {
+   "default": "0",
+   "fieldname": "activate_count_icon",
+   "fieldtype": "Check",
+   "label": "Activate Count Icon"
+  },
+  {
+   "description": "Dotted path to python function",
+   "fieldname": "count_method",
+   "fieldtype": "Data",
+   "label": "Count Method"
   }
  ],
  "in_create": 1,
  "links": [],
- "modified": "2023-04-11 14:34:24.829366",
+ "modified": "2023-10-27 14:23:05.648926",
  "modified_by": "Administrator",
  "module": "Desk",
  "name": "Workspace",

@@ -404,6 +404,8 @@ def get_workspace_sidebar_items():
 		"module",
 		"icon",
 		"is_hidden",
+		"activate_count_icon",
+		"count_method"
 	]
 	all_pages = frappe.get_all(
 		"Workspace", fields=fields, filters=filters, order_by=order_by, ignore_permissions=True

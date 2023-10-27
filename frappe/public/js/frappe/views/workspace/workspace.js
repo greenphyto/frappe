@@ -186,6 +186,7 @@ frappe.views.Workspace = class Workspace {
 		}
 
 		let $item_container = this.sidebar_item_container(item);
+		this.activate_count_icon(item, $item_container);
 		let sidebar_control = $item_container.find(".sidebar-item-control");
 
 		this.add_sidebar_actions(item, sidebar_control);
@@ -1313,6 +1314,14 @@ frappe.views.Workspace = class Workspace {
 			!this.sidebar_items[section][item.title]
 		) {
 			this.sidebar_items[section][item.title] = $sidebar_item;
+		}
+	}
+
+	async activate_count_icon(item, el){
+		if (item.activate_count_icon){
+			var count = await frappe.xcall(item.count_method);
+			el.find(".open-count").show();
+			el.find(".count-value").text(count);
 		}
 	}
 
