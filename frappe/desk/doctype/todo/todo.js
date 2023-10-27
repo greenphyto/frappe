@@ -18,11 +18,11 @@ frappe.ui.form.on("ToDo", {
 		}
 
 		if (!frm.doc.__islocal) {
-			if (frm.doc.status !== "Closed") {
+			if (frm.doc.status !== "Completed") {
 				frm.add_custom_button(
-					__("Close"),
+					__("Complete"),
 					function () {
-						frm.set_value("status", "Closed");
+						frm.set_value("status", "Completed");
 						frm.save(null, function () {
 							// back to list
 							frappe.set_route("List", "ToDo");
@@ -35,7 +35,7 @@ frappe.ui.form.on("ToDo", {
 				frm.add_custom_button(
 					__("Reopen"),
 					function () {
-						frm.set_value("status", "Open");
+						frm.set_value("status", "Planned");
 						frm.save();
 					},
 					null,
