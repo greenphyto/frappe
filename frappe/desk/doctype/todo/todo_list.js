@@ -6,7 +6,7 @@ hide_name_column: true,
 		if (!frappe.route_options) {
 			frappe.route_options = {
 				owner: frappe.session.user,
-				status: "Open",
+				status: "Planned",
 			};
 		}
 		me.page.set_title(__("To Do"));
@@ -17,7 +17,7 @@ hide_name_column: true,
 			return doc.reference_name;
 		},
 		get_label: function () {
-			return __("Open", null, "Access");
+			return __("Planned", null, "Access");
 		},
 		get_description: function (doc) {
 			return __("Open {0}", [`${__(doc.reference_type)}: ${doc.reference_name}`]);
