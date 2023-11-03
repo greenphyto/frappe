@@ -1320,7 +1320,7 @@ frappe.views.Workspace = class Workspace {
 	async activate_count_icon(item, el){
 		if (item.activate_count_icon){
 			var count = await frappe.xcall(item.count_method);
-			if ( cint(count)==0){
+			if ( cint(count)>0){
 				el.find(".open-count").show();
 				el.find(".count-value").text(count);
 			}else{
