@@ -220,7 +220,9 @@ class Engine:
 	def get_table(self, table_name: str | Table) -> Table:
 		if isinstance(table_name, Table):
 			return table_name
-		table_name = table_name.strip('"').strip("'")
+
+		table_name = table_name.strip('"')
+		table_name = table_name.strip("'")
 		if table_name not in self.tables:
 			self.tables[table_name] = frappe.qb.DocType(table_name)
 		return self.tables[table_name]
