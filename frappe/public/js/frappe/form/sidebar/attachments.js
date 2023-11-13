@@ -13,6 +13,7 @@ frappe.ui.form.Attachments = class Attachments {
 		});
 		this.add_attachment_wrapper = this.parent.find(".add-attachment-btn");
 		this.attachments_label = this.parent.find(".attachments-label");
+		this.attachments_preview = this.parent.find(".attachments-preview");
 	}
 	max_reached(raise_exception = false) {
 		const attachment_count = Object.keys(this.get_attachments()).length;
@@ -52,12 +53,60 @@ frappe.ui.form.Attachments = class Attachments {
 					? false
 					: (exists[attachment.file_name] = true);
 			});
+			var preview_image;
 			unique_attachments.forEach((attachment) => {
 				me.add_attachment(attachment);
+				if (frappe.utils.is_image_file(attachment.file_name)){
+					preview_image = attachment;
+				}
 			});
+			
+			if (preview_image){
+				this.attachments_preview
+					.show()
+					.find(".img-preview")
+					.attr("src", preview_image.file_url)
+					.on("click", function(){
+						me.show_image_detail(preview_image.file_url, preview_image.file_name);
+					}
+				);
+				this.attachments_preview.find(".subtitle").show().text(preview_image.file_name);
+			}
 		} else {
 			this.attachments_label.removeClass("has-attachments");
+			this.attachments_preview.hide();
 		}
+	}
+	show_image_detail(img_path, title_dialog="Image Preview"){
+		var d = new frappe.ui.Dialog({
+			title: __(title_dialog),
+			fields: [
+				{
+					"label" : "",
+					"fieldname": "img",
+					"fieldtype": "HTML",
+					"default": ''
+				}
+			],
+			primary_action: function() {
+				$(".download-image-preview")[0].click();
+			},
+			primary_action_label: __('Download'),
+			secondary_action: function(){
+				d.hide();
+			},
+			secondary_action_label: __("Close"),
+		});
+		d.show();
+		var wrapper = d.fields_dict.img.$wrapper;
+		wrapper.append(`
+			<div class="qr-preview-wrapper text-center" style="min-height: 6cm;">
+				<a href="${img_path}" class="download-image-preview" download>
+					<img src="${img_path}"></img>
+				</a>
+			</div>
+		`);
+
 	}
 	get_attachments() {
 		return this.frm.get_docinfo().attachments || [];
@@ -101,7 +150,7 @@ frappe.ui.form.Attachments = class Attachments {
 
 		$(`<li class="attachment-row">`)
 			.append(frappe.get_data_pill(file_label, fileid, remove_action, icon))
-			.insertAfter(this.attachments_label.addClass("has-attachments"));
+			.insertAfter(this.attachments_preview.addClass("has-attachments"));
 	}
 	get_file_url(attachment) {
 		var file_url = attachment.file_url;

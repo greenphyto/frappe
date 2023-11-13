@@ -493,3 +493,19 @@ body[data-route^="Module"] .main-menu {
 .shared-user {
 	margin-bottom: 10px;
 }
+
+.attachments-preview{
+	text-align: center;
+
+	.img-preview{
+		max-height: 200px;
+	}
+	
+	.subtitle{
+		font-size: 0.7em;
+		text-align: center;
+		padding: 0px 10px;
+		margin: 2px 0px 7px;
+		color: #7c7c7c;
+	}
+}
