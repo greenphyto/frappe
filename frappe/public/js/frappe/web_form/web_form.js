@@ -452,4 +452,19 @@ export default class WebForm extends frappe.ui.FieldGroup {
 			`);
 		}
 	}
+
+	render_image(fieldname, src_field){
+		var src = this.get_value(src_field);
+		var field = this.get_field(fieldname);
+		var wrapper = field.$wrapper;
+		if (src){
+			wrapper.removeClass("hide-control").append(`
+				<div class="image-wrapper">
+					<img src="${src}" style="max-height: 500px;">
+				</div>
+			`)
+		}else{
+			wrapper.addClass("hide-control").empty();
+		}
+	}
 }

@@ -224,10 +224,15 @@ frappe.ui.form.on("Web Form Field", {
 function get_fields_for_doctype(doctype) {
 	return new Promise((resolve) => frappe.model.with_doctype(doctype, resolve)).then(() => {
 		return frappe.meta.get_docfields(doctype).filter((df) => {
+			var allow = false;
+			if (df.fieldtype=="Image"){
+				df.fieldtype = "HTML";
+				allow = true;
+			}
 			return (
 				(frappe.model.is_value_type(df.fieldtype) &&
 					!["lft", "rgt"].includes(df.fieldname)) ||
-				["Table", "Table Multiselect"].includes(df.fieldtype)
+				["Table", "Table Multiselect"].includes(df.fieldtype) || allow
 			);
 		});
 	});
