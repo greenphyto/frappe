@@ -41,7 +41,7 @@ def get_roles_and_doctypes():
 	)
 
 	restricted_roles = ["Administrator"]
-	if frappe.session.user != "Administrator":
+	if frappe.session.user != "Administrator" and not frappe.is_admin_user():
 		custom_user_type_roles = frappe.get_all("User Type", filters={"is_standard": 0}, fields=["role"])
 		for row in custom_user_type_roles:
 			restricted_roles.append(row.role)
@@ -78,7 +78,7 @@ def get_permissions(doctype: str | None = None, role: str | None = None):
 
 	else:
 		filters = {"parent": doctype}
-		if frappe.session.user != "Administrator":
+		if frappe.session.user != "Administrator" and not frappe.is_admin_user():
 			custom_roles = frappe.get_all("Role", filters={"is_custom": 1}, pluck="name")
 			filters["role"] = ["not in", custom_roles]
 

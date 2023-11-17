@@ -27,6 +27,7 @@ from frappe.query_builder import (
 	get_query_builder,
 	patch_query_aggregation,
 	patch_query_execute,
+	DocType
 )
 from frappe.utils.caching import request_cache
 from frappe.utils.data import cstr, sbool
@@ -824,6 +825,22 @@ def write_only():
 
 	return innfn
 
+def is_admin_user():
+	if not local.conf.admin_roles:
+		return False
+	
+	user = session.user
+	table = DocType("Has Role")
+	roles = (
+		qb.from_(table)
+		.where(
+			(table.parenttype == "User") & (table.parent == user) & (table.role.notin(["All", "Guest"]))
+		)
+		.select(table.role)
+		.run(pluck=True)
+	)
+	if set(roles).intersection(set(local.conf.admin_roles)):
+		return True
 
 def only_for(roles: list[str] | tuple[str] | str, message=False):
 	"""
@@ -832,7 +849,7 @@ def only_for(roles: list[str] | tuple[str] | str, message=False):
 	:param roles: Permitted role(s)
 	"""
 
-	if local.flags.in_test or local.session.user == "Administrator":
+	if local.flags.in_test or local.session.user == "Administrator" or is_admin_user():
 		return
 
 	if isinstance(roles, str):

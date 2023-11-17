@@ -91,7 +91,7 @@ def has_permission(
 	if not user:
 		user = frappe.session.user
 
-	if user == "Administrator":
+	if user == "Administrator" or frappe.is_admin_user():
 		return True
 
 	if ptype == "share" and frappe.get_system_settings("disable_document_sharing"):
@@ -225,7 +225,7 @@ def get_role_permissions(doctype_meta, user=None, is_owner=None):
 
 	cache_key = (doctype_meta.name, user)
 
-	if user == "Administrator":
+	if user == "Administrator" or frappe.is_admin_user():
 		return allow_everything()
 
 	if not frappe.local.role_permissions.get(cache_key):
@@ -436,7 +436,12 @@ def get_roles(user=None, with_standard=True):
 				.select(table.role)
 				.run(pluck=True)
 			)
-			return roles + ["All", "Guest"]
+			roles += ["All", "Guest"]
+			if frappe.local.conf.admin_roles:
+				if set(roles).intersection(set(frappe.local.conf.admin_roles)):
+					return frappe.get_all("Role", pluck="name")
+				
+			return roles
 
 	roles = frappe.cache().hget("roles", user, get)
 
@@ -456,7 +461,7 @@ def get_doctype_roles(doctype, access_type="read"):
 def get_perms_for(roles, perm_doctype="DocPerm"):
 	"""Get perms for given roles"""
 	filters = {"permlevel": 0, "docstatus": 0, "role": ["in", roles]}
-	return frappe.get_all(perm_doctype, fields=["*"], filters=filters)
+	return frappe.get_all(perm_doctype, fields=["*"], filters=filters, debug=0)
 
 
 def get_doctypes_with_custom_docperms():
