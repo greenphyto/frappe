@@ -1083,6 +1083,13 @@ export default class GridRow {
 			field.df.onchange = (e) => {
 				field_on_change_function && field_on_change_function(e);
 				this.refresh_field(field.df.fieldname);
+
+				var idx = me.doc.idx;
+				var fieldname = field.df.fieldname;
+
+				if (me.grid.run_events){
+					me.grid.run_events(fieldname, idx, field.value);
+				}
 			};
 
 			field.df.onchange_modified = true;

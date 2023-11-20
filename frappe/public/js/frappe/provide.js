@@ -4,14 +4,14 @@
 // provide a namespace
 if (!window.frappe) window.frappe = {};
 
-frappe.provide = function (namespace) {
+frappe.provide = function (namespace, default_value={}) {
 	// docs: create a namespace //
 	var nsl = namespace.split(".");
 	var parent = window;
 	for (var i = 0; i < nsl.length; i++) {
 		var n = nsl[i];
 		if (!parent[n]) {
-			parent[n] = {};
+			parent[n] = default_value;
 		}
 		parent = parent[n];
 	}
