@@ -171,7 +171,11 @@ frappe.ui.form.ControlData = class ControlData extends frappe.ui.form.ControlInp
 		this.$input.on("change", change_handler);
 		if (this.constructor.trigger_change_on_input_event && !this.in_grid()) {
 			// debounce to avoid repeated validations on value change
-			this.$input.on("input", frappe.utils.debounce(change_handler, 500));
+			if (frappe.is_desk()){
+				this.$input.on("input", frappe.utils.debounce(change_handler, 500));
+			}else{
+				this.$input.on("focusout", frappe.utils.debounce(change_handler, 500));
+			}
 		}
 	}
 	setup_autoname_check() {
