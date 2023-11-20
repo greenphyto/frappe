@@ -1,16 +1,26 @@
 import Grid from "../grid";
+import GridWeb from "../grid_web_form";
 
 frappe.ui.form.ControlTable = class ControlTable extends frappe.ui.form.Control {
 	make() {
 		super.make();
 
 		// add title if prev field is not column / section heading or html
-		this.grid = new Grid({
-			frm: this.frm,
-			df: this.df,
-			parent: this.wrapper,
-			control: this,
-		});
+		if (frappe.is_desk()){
+			this.grid = new Grid({
+				frm: this.frm,
+				df: this.df,
+				parent: this.wrapper,
+				control: this,
+			});
+		}else{
+			this.grid = new GridWeb({
+				frm: this.frm,
+				df: this.df,
+				parent: this.wrapper,
+				control: this,
+			});
+		}
 
 		if (this.frm) {
 			this.frm.grids[this.frm.grids.length] = this;

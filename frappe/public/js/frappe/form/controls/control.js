@@ -51,3 +51,11 @@ frappe.ui.form.make_control = function (opts) {
 		console.log("Invalid Control Name: " + opts.df.fieldtype);
 	}
 };
+
+frappe.is_desk = function(){
+	if (window.location.pathname.substr(0,4) == '/app'){
+		return true;
+	}else{
+		return false;
+	}
+}
