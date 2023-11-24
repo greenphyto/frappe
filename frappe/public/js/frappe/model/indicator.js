@@ -39,6 +39,11 @@ frappe.get_indicator = function (doc, doctype) {
 	var is_submittable = frappe.model.is_submittable(doctype),
 		workflow_fieldname = frappe.workflow.get_state_fieldname(doctype);
 
+	if (settings.get_indicator) {
+		var indicator = settings.get_indicator(doc);
+		if (indicator) return indicator;
+	}
+
 	// workflow
 	if (workflow_fieldname && !without_workflow) {
 		var value = doc[workflow_fieldname];
@@ -76,11 +81,6 @@ frappe.get_indicator = function (doc, doctype) {
 		let state = meta.states.find((d) => d.title === doc.status);
 		let color_class = frappe.scrub(state.color, "-");
 		return [__(doc.status), color_class, "status,=," + doc.status];
-	}
-
-	if (settings.get_indicator) {
-		var indicator = settings.get_indicator(doc);
-		if (indicator) return indicator;
 	}
 
 	// if submittable
