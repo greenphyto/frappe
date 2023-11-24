@@ -416,7 +416,7 @@ frappe.views.Calendar = class Calendar {
 				color = frappe.ui.color.get("blue", "extra-light");
 			}
 			d.backgroundColor = color;
-			d.textColor = frappe.ui.color.get_contrast_color(color);
+			d.textColor = d.textColor || frappe.ui.color.get_contrast_color(color);
 		}
 		return d;
 	}
