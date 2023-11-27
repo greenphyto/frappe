@@ -1610,4 +1610,34 @@ Object.assign(frappe.utils, {
 			});
 		},
 	},
+	make_dragable(scrollable_id, content_id){
+		const scrollableElement = document.getElementById(scrollable_id);
+		const innerContent = document.getElementById(content_id);
+	  
+		let isDragging = false;
+		let startX, startScrollLeft;
+	  
+		innerContent.addEventListener('mousedown', (e) => {
+		  isDragging = true;
+		  startX = e.clientX;
+		  startScrollLeft = scrollableElement.scrollLeft;
+	  
+		  document.addEventListener('mousemove', handleDrag);
+		  document.addEventListener('mouseup', stopDragging);
+		});
+	  
+		function handleDrag(e) {
+		  if (!isDragging) return;
+	  
+		  const deltaX = e.clientX - startX;
+		  scrollableElement.scrollLeft = startScrollLeft - deltaX;
+		}
+	  
+		function stopDragging() {
+		  isDragging = false;
+	  
+		  document.removeEventListener('mousemove', handleDrag);
+		  document.removeEventListener('mouseup', stopDragging);
+		}
+	}
 });

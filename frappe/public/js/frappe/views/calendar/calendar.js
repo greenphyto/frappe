@@ -161,6 +161,10 @@ frappe.views.Calendar = class Calendar {
 			}
 		});
 
+		if (this.before_render && this.before_render(this));
+
+		if (this.hide_sidebar) $(".layout-side-section").hide();
+
 		$(this.parent).on("show", function () {
 			me.$cal.fullCalendar("refetchEvents");
 		});
