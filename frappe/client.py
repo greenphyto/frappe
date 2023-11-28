@@ -463,19 +463,17 @@ def validate_link(doctype: str, docname: str, fields=None):
 	if not values.name or not fields:
 		return values
 
-	print(doctype, fields, docname)
-	print(get_value(doctype, fields, docname))
-	values.update(get_value(doctype, fields, docname))
-	# try:
-	# except frappe.PermissionError:
-	# 	frappe.clear_last_message()
-	# 	frappe.msgprint(
-	# 		_("You need {0} permission to fetch values from {1} {2}").format(
-	# 			frappe.bold(_("Read")), frappe.bold(doctype), frappe.bold(docname)
-	# 		),
-	# 		title=_("Cannot Fetch Values"),
-	# 		indicator="orange",
-	# 	)
+	try:
+		values.update(get_value(doctype, fields, docname))
+	except frappe.PermissionError:
+		frappe.clear_last_message()
+		frappe.msgprint(
+			_("You need {0} permission to fetch values from {1} {2}").format(
+				frappe.bold(_("Read")), frappe.bold(doctype), frappe.bold(docname)
+			),
+			title=_("Cannot Fetch Values"),
+			indicator="orange",
+		)
 
 	return values
 
