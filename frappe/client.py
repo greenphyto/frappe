@@ -44,7 +44,10 @@ def get_list(
 	:param limit_start: Start at this index
 	:param limit_page_length: Number of records to be returned (default 20)"""
 	if frappe.is_table(doctype):
-		check_parent_permission(parent, doctype)
+		if isinstance(filters, str) and not parent or "name" in filters:
+			pass
+		else:
+			check_parent_permission(parent, doctype)
 
 	args = frappe._dict(
 		doctype=doctype,
@@ -76,7 +79,10 @@ def get(doctype, name=None, filters=None, parent=None):
 	:param name: return document of this `name`
 	:param filters: If name is not set, filter by these values and return the first match"""
 	if frappe.is_table(doctype):
-		check_parent_permission(parent, doctype)
+		if name and not parent:
+			pass
+		else:
+			check_parent_permission(parent, doctype)
 
 	if name:
 		doc = frappe.get_doc(doctype, name)
@@ -101,7 +107,10 @@ def get_value(doctype, fieldname, filters=None, as_dict=True, debug=False, paren
 	:param fieldname: Field to be returned (default `name`)
 	:param filters: dict or string for identifying the record"""
 	if frappe.is_table(doctype):
-		check_parent_permission(parent, doctype)
+		if isinstance(filters, str) and not parent or "name" in filters:
+			pass
+		else:
+			check_parent_permission(parent, doctype)
 
 	if not frappe.has_permission(doctype, parent_doctype=parent):
 		frappe.throw(_("No permission for {0}").format(_(doctype)), frappe.PermissionError)
@@ -454,17 +463,19 @@ def validate_link(doctype: str, docname: str, fields=None):
 	if not values.name or not fields:
 		return values
 
-	try:
-		values.update(get_value(doctype, fields, docname))
-	except frappe.PermissionError:
-		frappe.clear_last_message()
-		frappe.msgprint(
-			_("You need {0} permission to fetch values from {1} {2}").format(
-				frappe.bold(_("Read")), frappe.bold(doctype), frappe.bold(docname)
-			),
-			title=_("Cannot Fetch Values"),
-			indicator="orange",
-		)
+	print(doctype, fields, docname)
+	print(get_value(doctype, fields, docname))
+	values.update(get_value(doctype, fields, docname))
+	# try:
+	# except frappe.PermissionError:
+	# 	frappe.clear_last_message()
+	# 	frappe.msgprint(
+	# 		_("You need {0} permission to fetch values from {1} {2}").format(
+	# 			frappe.bold(_("Read")), frappe.bold(doctype), frappe.bold(docname)
+	# 		),
+	# 		title=_("Cannot Fetch Values"),
+	# 		indicator="orange",
+	# 	)
 
 	return values
 
