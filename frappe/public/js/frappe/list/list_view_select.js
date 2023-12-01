@@ -47,8 +47,8 @@ frappe.views.ListViewSelect = class ListViewSelect {
 		if (this.default_report) return this.default_report;
 
 		// send default if have default report builder
-		if (this.list_view.settings.default_report){
-			var def_report = this.list_view.settings.default_report;
+		var def_report = this.list_view.meta.default_report || this.list_view.settings.default_report;
+		if (def_report){
 			var temp = $.grep(this.report_list, (d)=>{ 
 				if (d.report_type=="Report Builder" && d.name==def_report) return d});
 			if (temp.length){
