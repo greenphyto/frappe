@@ -37,13 +37,40 @@ frappe.views.ListViewSelect = class ListViewSelect {
 		}
 	}
 
+	load_report_list(){
+		this.report_list = this.get_reports();
+	}
+
+	get_default_report(){
+		if(!this.report_list) this.load_report_list();
+
+		if (this.default_report) return this.default_report;
+
+		// send default if have default report builder
+		if (this.list_view.settings.default_report){
+			var def_report = this.list_view.settings.default_report;
+			var temp = $.grep(this.report_list, (d)=>{ 
+				if (d.report_type=="Report Builder" && d.name==def_report) return d});
+			if (temp.length){
+				this.default_report = temp[0];
+				return this.default_report;
+			}
+		}
+	}
+
 	set_route(view, calendar_name) {
+		if (view=="report" && this.default_report){
+			frappe.set_route(this.default_report.route);
+			return
+		}
 		const route = [this.slug(), "view", view];
 		if (calendar_name) route.push(calendar_name);
 		frappe.set_route(route);
 	}
 
 	setup_views() {
+		this.load_report_list();
+		this.get_default_report();
 		const views = {
 			List: {
 				condition: true,
@@ -53,7 +80,7 @@ frappe.views.ListViewSelect = class ListViewSelect {
 				condition: true,
 				action: () => this.set_route("report"),
 				current_view_handler: () => {
-					const reports = this.get_reports();
+					const reports = this.report_list;
 					let default_action = {};
 					// Only add action if current route is not report builder
 					if (frappe.get_route().length > 3) {
@@ -224,6 +251,7 @@ frappe.views.ListViewSelect = class ListViewSelect {
 						reports_to_add.push({
 							name: __(r.title || r.name),
 							route: route,
+							report_type: r.report_type
 						});
 					}
 				}
