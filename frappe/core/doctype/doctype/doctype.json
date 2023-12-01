@@ -51,6 +51,7 @@
   "translated_doctype",
   "search_fields",
   "default_print_format",
+  "default_report",
   "sort_field",
   "sort_order",
   "column_break_29",
@@ -606,6 +607,11 @@
    "fieldname": "make_attachments_public",
    "fieldtype": "Check",
    "label": "Make Attachments Public by Default"
+  },
+  {
+   "fieldname": "default_report",
+   "fieldtype": "Data",
+   "label": "Default Report"
   }
  ],
  "icon": "fa fa-bolt",
@@ -688,7 +694,7 @@
    "link_fieldname": "reference_doctype"
   }
  ],
- "modified": "2022-09-02 12:05:59.589751",
+ "modified": "2023-12-01 16:41:59.610997",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "DocType",

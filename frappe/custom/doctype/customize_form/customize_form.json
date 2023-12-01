@@ -35,6 +35,7 @@
   "show_title_field_in_link",
   "translated_doctype",
   "default_print_format",
+  "default_report",
   "column_break_29",
   "show_preview_popup",
   "email_settings_section",
@@ -337,6 +338,13 @@
    "fieldname": "make_attachments_public",
    "fieldtype": "Check",
    "label": "Make Attachments Public by Default"
+  },
+  {
+   "description": "Only Report Builder can set as default",
+   "fieldname": "default_report",
+   "fieldtype": "Link",
+   "label": "Default Report",
+   "options": "Report"
   }
  ],
  "hide_toolbar": 1,
@@ -345,7 +353,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2022-08-24 06:57:47.966331",
+ "modified": "2023-12-01 16:46:25.721537",
  "modified_by": "Administrator",
  "module": "Custom",
  "name": "Customize Form",

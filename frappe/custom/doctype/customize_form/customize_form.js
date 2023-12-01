@@ -34,6 +34,15 @@ frappe.ui.form.on("Customize Form", {
 			};
 		});
 
+		frm.set_query("default_report", function () {
+			return {
+				filters: {
+					report_type: "Report Builder",
+					ref_doctype: ["=", frm.doc.doc_type],
+				},
+			};
+		});
+
 		$(frm.wrapper).on("grid-row-render", function (e, grid_row) {
 			if (grid_row.doc && grid_row.doc.fieldtype == "Section Break") {
 				$(grid_row.row).css({ "font-weight": "bold" });
