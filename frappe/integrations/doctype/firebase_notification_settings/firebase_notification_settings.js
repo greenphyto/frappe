@@ -19,7 +19,18 @@ $.extend(cur_frm.cscript, {
 						fieldname: 'user',
 						fieldtype: 'Link',
 						options: 'User',
-						reqd:1
+						reqd: 1,
+						get_query:()=>{
+							return {
+								query:"frappe.integrations.doctype.firebase_notification_settings.firebase_notification_settings.get_query_test_user",
+							}
+						}
+					},
+					{
+						label: 'Title',
+						fieldname: 'title',
+						fieldtype: 'Data',
+						default: "Test Message"
 					},
 					{
 						label: 'Message',
@@ -38,7 +49,8 @@ $.extend(cur_frm.cscript, {
 						method:"frappe.integrations.doctype.firebase_notification_settings.firebase_notification_settings.send_message",
 						args:{
 							message: val.message,
-							user: val.user
+							user: val.user,
+							title: val.title,
 						},
 						callback: r=>{
 							if (r.message){
