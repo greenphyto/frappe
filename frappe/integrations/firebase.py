@@ -45,24 +45,44 @@ class FirebaseNotification():
         # [END use_access_token]
         resp = requests.post(FCM_URL, data=json.dumps(fcm_message), headers=headers)
 
+        # print error
+        print(resp.text)
+        
         if resp.status_code == 200:
             return True
         else:
             return False
 
-    def send_message(self, message, token="", send_all=False, title="Smart FM"):
+    def _send_message(self, message, token="", send_all=False, title="Smart FM"):
         if not token and not send_all:
             return
         
         if token:
-            msg = {
-                "message":{
-                    "token":token,
-                    "notification":{
-                        "body": message,
-                        "title": title
-                    }
+            if len(token) == 1:
+                return self.send_single_message(token[0], message, title)
+
+    
+    def send_single_message(self, token, message, title):
+        msg = {
+            "message":{
+                "token":token,
+                "notification":{
+                    "body": message,
+                    "title": title
                 }
             }
+        }
 
-            return self.send_fcm_message(msg)
+        return self.send_fcm_message(msg)
+
+    def send_message(self, message, user, title="Info", click_action=""):
+        tokens = frappe.db.get_all("Firebase User Token", filters={"user":user}, fields=["token"])
+        print(tokens) 
+        if tokens:
+            tokens = [x.token for x in tokens]
+            print(757575, tokens)
+            res = self._send_message(message, tokens, title=title)
+            print(res)
+            return True
+        
+        return False

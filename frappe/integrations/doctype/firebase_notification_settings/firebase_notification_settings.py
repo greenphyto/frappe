@@ -16,9 +16,4 @@ def get_query_test_user(doctype, txt, searchfield, start, page_len, filters):
 @frappe.whitelist()
 def send_message(message, user, title):
 	notif = FirebaseNotification()
-	token = frappe.get_value("Firebase User Token", {"user":user}, "token") 
-	if token:
-		notif.send_message(message, token, title=title)
-		return True
-	
-	return False
+	return notif.send_message(message, user, title=title)
