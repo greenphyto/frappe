@@ -228,7 +228,6 @@ class LoginManager:
 
 	def authenticate(self, user: str = None, pwd: str = None):
 		from frappe.core.doctype.user.user import User
-
 		if not (user and pwd):
 			user, pwd = frappe.form_dict.get("usr"), frappe.form_dict.get("pwd")
 		if not (user and pwd):
@@ -348,7 +347,11 @@ class CookieManager:
 			return
 
 		# sid expires in 3 days
-		expires = datetime.datetime.now() + datetime.timedelta(days=3)
+		if frappe.local.session.data.device == "mobile":
+			expires = datetime.datetime.now() + datetime.timedelta(days=90)
+		else:
+			expires = datetime.datetime.now() + datetime.timedelta(days=3)
+
 		if frappe.session.sid:
 			self.set_cookie("sid", frappe.session.sid, expires=expires, httponly=True)
 		if frappe.session.session_country:
