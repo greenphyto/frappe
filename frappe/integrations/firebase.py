@@ -69,6 +69,7 @@ class FirebaseNotification():
         return self.send_fcm_message(msg)
 
     def send_message(self, message, user, title="Info", click_action="OPEN_ACTICITY", data={}):
+        title = html_to_text(title)
         message = html_to_text(message)[:300]
 
         tokens = frappe.db.get_all("Firebase User Token", filters={"user":user}, fields=["token"])
