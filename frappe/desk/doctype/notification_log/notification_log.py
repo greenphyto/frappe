@@ -8,6 +8,7 @@ from frappe.desk.doctype.notification_settings.notification_settings import (
 	is_notifications_enabled,
 )
 from frappe.model.document import Document
+from frappe.integrations.firebase import FirebaseNotification
 
 
 class NotificationLog(Document):
@@ -19,6 +20,10 @@ class NotificationLog(Document):
 				send_notification_email(self)
 			except frappe.OutgoingEmailError:
 				self.log_error(_("Failed to send notification email"))
+
+		if frappe.db.get_single_value("Firebase Notification Settings", 'enable'):
+			notif = FirebaseNotification()
+			notif.send_message(self.email_content, self.for_user, self.subject)
 
 	@staticmethod
 	def clear_old_logs(days=180):
