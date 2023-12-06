@@ -94,10 +94,3 @@ def html_to_text(html_content):
     plaintext_content = soup.get_text(separator='\n', strip=True)
 
     return plaintext_content
-
-# def remove_a_tags_with_regex(html_content):
-#     # Menggunakan regular expression untuk menghapus semua elemen <a>
-#     plaintext_content = re.sub(r'<a\b[^>]*>', '', html_content)
-#     plaintext_content = re.sub(r'</a>', '', plaintext_content)
-#     print(102, plaintext_content, '\n')
-#     return plaintext_content
