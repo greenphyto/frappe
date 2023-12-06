@@ -83,6 +83,7 @@ dependencies = [
     "google-auth-oauthlib~=0.4.4",
     "google-auth~=1.29.0",
     "googlemaps~=4.4.5",
+    "firebase-admin"
 ]
 
 [build-system]
