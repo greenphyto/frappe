@@ -342,6 +342,8 @@ def export_query():
 	data.pop("cmd", None)
 	data.pop("csrf_token", None)
 
+	frappe.flags.in_export = True
+
 	filters = {}
 	if isinstance(data.get("filters"), str):
 		filters = json.loads(data["filters"])
