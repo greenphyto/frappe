@@ -9,11 +9,13 @@ from frappe.exceptions import ImplicitCommitError
 from frappe.model.document import Document
 from frappe.model.utils import is_virtual_doctype
 from frappe.website.utils import clear_cache
+from frappe.integrations.firebase import FirebaseNotification
 
 
 class Comment(Document):
 	def after_insert(self):
 		notify_mentions(self.reference_doctype, self.reference_name, self.content)
+		self.send_notification()
 		self.notify_change("add")
 
 	def validate(self):
@@ -58,6 +60,26 @@ class Comment(Document):
 				_comments.remove(c)
 
 		update_comments_in_parent(self.reference_doctype, self.reference_name, _comments)
+
+	def send_notification(self):
+		if not self.comment_type == "Comment":
+			return
+		
+		if not frappe.db.get_single_value("Firebase Notification Settings", 'enable'):
+			return
+		
+		notif = FirebaseNotification()
+		subject = f"{self.comment_by} leave comment on {self.reference_doctype}"
+
+		# send notification to all commenter's document
+		comments = frappe.db.get_all("Comment", {
+			"comment_type":"Comment",
+			"reference_doctype":self.reference_doctype,
+			"reference_name":self.reference_name,
+			"comment_by":['!=', self.comment_by]
+		}, 'distinct comment_email as user')
+		for com in comments:
+			notif.send_message(self.content, com.user, subject)
 
 
 def on_doctype_update():
