@@ -1,6 +1,7 @@
 import frappe
 
 import firebase_admin, re
+from urllib.parse import urlparse
 from firebase_admin import credentials
 from firebase_admin import messaging
 import argparse
@@ -89,8 +90,26 @@ def html_to_text(html_content):
     # Menggunakan BeautifulSoup untuk menghapus semua elemen <a>
     soup = BeautifulSoup(text_content, "html.parser")
     for a_tag in soup.find_all('a'):
-        a_tag.decompose()
+        text = a_tag.get_text()
+        if 'http' in text:
+            path = get_path_from_url(text)
+            final_text = get_last_pth(path)
+        else:
+            final_text = text
 
-    plaintext_content = soup.get_text(separator='\n', strip=True)
+        a_tag.replace_with(final_text)
+
+    raw_html = soup.decode_contents()
+    new_soup = BeautifulSoup(raw_html, "html.parser")
+
+    plaintext_content = new_soup.get_text(separator='\n', strip=True)
 
     return plaintext_content
+
+def get_path_from_url(url):
+    parsed_url = urlparse(url)
+    path = parsed_url.path
+    return path
+
+def get_last_pth(text):
+    return text.split("/")[-1]
