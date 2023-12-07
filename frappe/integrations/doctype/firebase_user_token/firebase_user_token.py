@@ -25,10 +25,18 @@ def create_firebase_token(token, user="", type='Android'):
 	return True
 
 @frappe.whitelist()
-def delete_firebase_token(user="", type='Android'):
+def delete_firebase_token(token="", user="", type='Android'):
 	user = user or frappe.session.user
-	exist_user = frappe.db.get_value("Firebase User Token", {"user": user, 'type':type})
+	exist_user = None
+	if token:
+		exist_user = frappe.db.get_value("Firebase User Token", {"token": token})
+
+	if not exist_user:
+		exist_user = frappe.db.get_value("Firebase User Token", {"user": user, 'type':type})
+	
 	if exist_user:
 		frappe.delete_doc("Firebase User Token", exist_user)
 	
+	frappe.db.commit()
+
 	return True
