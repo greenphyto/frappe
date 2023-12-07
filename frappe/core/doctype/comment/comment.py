@@ -78,6 +78,11 @@ class Comment(Document):
 			"reference_name":self.reference_name,
 			"comment_by":['!=', self.comment_by]
 		}, 'distinct comment_email as user')
+
+		owner = frappe.get_value(self.reference_doctype, self.reference_name, "owner")
+		if owner != "Administrator":
+			comments.append({"user":owner})
+			
 		for com in comments:
 			notif.send_message(self.content, com.user, subject)
 
