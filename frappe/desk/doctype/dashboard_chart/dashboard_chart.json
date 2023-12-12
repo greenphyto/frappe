@@ -17,6 +17,7 @@
   "y_axis",
   "source",
   "document_type",
+  "custom_title",
   "parent_document_type",
   "based_on",
   "value_based_on",
@@ -69,7 +70,6 @@
    "options": "Dashboard Chart Source"
   },
   {
-   "depends_on": "eval: doc.chart_type !== 'Custom' && doc.chart_type !== 'Report'",
    "fieldname": "document_type",
    "fieldtype": "Link",
    "label": "Document Type",
@@ -284,10 +284,15 @@
    "fieldtype": "Table",
    "label": "Roles",
    "options": "Has Role"
+  },
+  {
+   "fieldname": "custom_title",
+   "fieldtype": "Data",
+   "label": "Custom Title"
   }
  ],
  "links": [],
- "modified": "2022-07-27 11:09:09.203236",
+ "modified": "2023-12-11 13:20:13.504279",
  "modified_by": "Administrator",
  "module": "Desk",
  "name": "Dashboard Chart",

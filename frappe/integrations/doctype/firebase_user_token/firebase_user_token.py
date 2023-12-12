@@ -35,7 +35,7 @@ def delete_firebase_token(token="", user="", type='Android'):
 		exist_user = frappe.db.get_value("Firebase User Token", {"user": user, 'type':type})
 	
 	if exist_user:
-		frappe.delete_doc("Firebase User Token", exist_user)
+		frappe.delete_doc("Firebase User Token", exist_user,ignore_permissions=1)
 	
 	frappe.db.commit()
 
