@@ -30,6 +30,11 @@
 	background-color: var(--primary-light);
 }
 
+.sidebar-item a[active-sidebar=active] {
+	color: var(--primary);
+	background-color: var(--primary-light);
+}
+
 .sidebar-item-icon {
 	width: 24px;
 	height: 24px;

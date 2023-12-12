@@ -9,7 +9,9 @@
 
 	{% if item.type != 'input' %}
 	{%- set item_route = item.route[1:] if item.route[0] == '/' else item.route -%}
-	<a href="{{ item.route }}" class="{{ 'active' if pathname == item_route else '' }}"
+	<a href="{{ item.route }}" 
+		active-sidebar="{{ 'active' if pathname|replace('/list', '')|replace('/new', '') == item_route else '' }}"
+		class="{{ 'active' if pathname|replace('/list', '')|replace('/new', '') == item_route else '' }}"
 		{% if item.target %}target="{{ item.target }}" {% endif %}>
 		{{ _(item.title or item.label) }}
 	</a>
