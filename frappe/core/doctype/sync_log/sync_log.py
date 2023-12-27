@@ -13,7 +13,9 @@ def create_log(doctype, docname):
 	# it will create a pending log
 	log = frappe.db.exists("Sync Log", {
 		"doc_type": doctype, 
-		"docname": docname})
+		"docname": docname,
+		"status": "Pending"
+	})
 
 	if not log:
 		doc = frappe.new_doc("Sync Log", log)
@@ -25,7 +27,9 @@ def create_log(doctype, docname):
 def delete_log(doctype, docname):
 	log = frappe.db.exists("Sync Log", {
 		"doc_type": doctype, 
-		"docname": docname})
+		"docname": docname,
+		"status": "Pending"
+	})
 
 	if log:
 		frappe.delete_doc("Sync Log", log)
@@ -34,6 +38,7 @@ def delete_log(doctype, docname):
 def update_success(log_name, status="Success"):
 	frappe.db.set_value("Sync Log", log_name, "status", status)
 	frappe.db.set_value("Sync Log", log_name, "sync_on", now())
+	return True
 
 @frappe.whitelist()
 def get_pending_log():
