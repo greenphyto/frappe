@@ -663,7 +663,7 @@
    "label": "Auto follow documents that are assigned to you"
   },
   {
-   "depends_on": "eval:doc.roles.findIndex(elem => elem.role === \"Vendor\") != -1",
+   "depends_on": "eval:in_list($.map(doc.roles, (r)=>{ return r.role}), \"Vendor\")",
    "fieldname": "organization",
    "fieldtype": "Link",
    "label": "Organization",
@@ -730,7 +730,7 @@
    "link_fieldname": "user"
   }
  ],
- "modified": "2023-07-18 10:51:09.056208",
+ "modified": "2023-12-27 16:12:24.177865",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "User",

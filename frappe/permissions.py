@@ -490,7 +490,7 @@ def can_set_user_permissions(doctype, docname=None):
 
 
 def set_user_permission_if_allowed(doctype, name, user, with_message=False):
-	if get_role_permissions(frappe.get_meta(doctype), user).set_user_permissions != 1:
+	if get_role_permissions(frappe.get_meta(doctype), user).get("set_user_permissions") != 1:
 		add_user_permission(doctype, name, user)
 
 
