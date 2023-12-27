@@ -1,9 +1,11 @@
 # Copyright (c) 2023, Frappe Technologies and contributors
 # For license information, please see license.txt
 
-import frappe
+import frappe, json
 from frappe.model.document import Document
 from frappe.utils import now
+from six import string_types
+
 
 class SyncLog(Document):
 	pass
@@ -35,9 +37,13 @@ def delete_log(doctype, docname):
 		frappe.delete_doc("Sync Log", log)
 
 @frappe.whitelist()
-def update_success(log_name, status="Success"):
-	frappe.db.set_value("Sync Log", log_name, "status", status)
-	frappe.db.set_value("Sync Log", log_name, "sync_on", now())
+def update_success(logs, status="Success"):
+	if isinstance(logs, string_types):
+		logs = json.loads(logs)
+	for log_name in logs:
+		frappe.db.set_value("Sync Log", log_name, "status", status)
+		frappe.db.set_value("Sync Log", log_name, "sync_on", now())
+
 	return True
 
 @frappe.whitelist()
