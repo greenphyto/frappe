@@ -135,7 +135,7 @@ class DocType(Document):
 		if self.default_print_format and not self.custom:
 			frappe.throw(_("Standard DocType cannot have default print format, use Customize Form"))
 
-		if self.default_report and not self.custom:
+		if self.get("default_report") and not self.custom:
 			frappe.throw(_("Standard DocType cannot have default report, use Customize Form"))
 
 	def validate_field_name_conflicts(self):
