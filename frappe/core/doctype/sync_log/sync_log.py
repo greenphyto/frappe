@@ -47,8 +47,14 @@ def update_success(logs, status="Success"):
 	return True
 
 @frappe.whitelist()
-def get_pending_log():
-	logs = frappe.db.get_all("Sync Log", {"status":"Pending"}, [
+def get_pending_log(filters):
+	if isinstance(filters, string_types):
+		filters = json.loads(filters)
+
+	base_filters = {"status":"Pending"}
+	base_filters.update(filters)
+
+	logs = frappe.db.get_all("Sync Log", base_filters, [
 		'doc_type as doctype', 
 		'docname as name',
 		'name as log_name'
