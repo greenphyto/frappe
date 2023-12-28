@@ -9,6 +9,7 @@
   "doc_type",
   "docname",
   "status",
+  "update_type",
   "sync_on"
  ],
  "fields": [
@@ -46,12 +47,22 @@
    "in_list_view": 1,
    "label": "Sync On",
    "read_only": 1
+  },
+  {
+   "default": "Update",
+   "fieldname": "update_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Update Type",
+   "options": "Update\nCancel\nDelete",
+   "read_only": 1
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-27 17:08:13.364478",
+ "modified": "2023-12-28 16:39:52.264341",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "Sync Log",

@@ -10,7 +10,7 @@ from six import string_types
 class SyncLog(Document):
 	pass
 
-def create_log(doctype, docname):
+def create_log(doctype, docname, update_type="Update"):
 	# when other doctype is created or edited
 	# it will create a pending log
 	log = frappe.db.exists("Sync Log", {
@@ -24,7 +24,10 @@ def create_log(doctype, docname):
 		doc.doc_type = doctype
 		doc.docname = docname
 		doc.status = 'Pending'
+		doc.update_type = update_type
 		doc.insert(ignore_permissions=1)
+	elif update_type in ('Delete', 'Cancel'):
+		frappe.db.set_value("Sync Log", log, "update_type", update_type)
 
 def delete_log(doctype, docname):
 	log = frappe.db.exists("Sync Log", {
@@ -57,7 +60,8 @@ def get_pending_log(filters):
 	logs = frappe.db.get_all("Sync Log", base_filters, [
 		'doc_type as doctype', 
 		'docname as name',
-		'name as log_name'
+		'name as log_name',
+		'update_type'
 	])
 	return logs
 		
