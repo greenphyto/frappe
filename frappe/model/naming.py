@@ -149,7 +149,7 @@ def set_new_name(doc):
 		doc.name = frappe.db.get_next_sequence_val(doc.doctype)
 		return
 
-	if getattr(doc, "amended_from", None):
+	if getattr(doc, "amended_from", None) and not doc.flags.skip_amend_name:
 		_set_amended_name(doc)
 		return
 
