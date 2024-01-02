@@ -9,7 +9,7 @@ import frappe
 from frappe import _
 from frappe.model import log_types
 from frappe.query_builder import DocType
-from frappe.utils import cint, cstr, now_datetime
+from frappe.utils import cint, cstr, now_datetime, get_datetime
 
 if TYPE_CHECKING:
 	from frappe.model.document import Document
@@ -307,6 +307,10 @@ def parse_naming_series(
 
 	series_set = False
 	today = now_datetime()
+	if doc:
+		use_date = doc.get("transaction_date") or doc.get("posting_date") or doc.get("creation")
+		today = get_datetime(use_date)
+		
 	for e in parts:
 		if not e:
 			continue
