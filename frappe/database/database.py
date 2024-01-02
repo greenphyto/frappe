@@ -1097,6 +1097,9 @@ class Database:
 		return self.get_value(dt, dn, ignore=True, cache=cache)
 
 	def count(self, dt, filters=None, debug=False, cache=False, distinct: bool = True):
+		if frappe.session.user != "Administrator":
+			return len(self.get_list(dt, filters=filters, debug=debug, limit_page_length=0))
+
 		"""Returns `COUNT(*)` for given DocType and filters."""
 		if cache and not filters:
 			cache_count = frappe.cache().get_value(f"doctype:count:{dt}")
