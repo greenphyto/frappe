@@ -84,7 +84,7 @@ class Comment(Document):
 			comments.append({"user":owner})
 			
 		for com in comments:
-			notif.send_message(self.content, com.user, subject)
+			notif.send_message(self.content, com.get("user"), subject)
 
 
 def on_doctype_update():
