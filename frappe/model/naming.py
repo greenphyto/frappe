@@ -302,6 +302,7 @@ def parse_naming_series(
 	if isinstance(parts, str):
 		parts = parts.split(".")
 
+	series = ".".join(parts)
 	if not number_generator:
 		number_generator = getseries
 
@@ -319,8 +320,10 @@ def parse_naming_series(
 		if e.startswith("#"):
 			if not series_set:
 				digits = len(e)
-				part = number_generator(name, digits)
+				temp = series.replace("DD", "").replace("MM", "").replace("YYYY", "").replace("YY", "")
+				part = number_generator(temp, digits)
 				series_set = True
+				
 		elif e == "YY":
 			part = today.strftime("%y")
 		elif e == "MM":
