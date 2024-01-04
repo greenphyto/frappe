@@ -302,7 +302,6 @@ def parse_naming_series(
 	if isinstance(parts, str):
 		parts = parts.split(".")
 
-	series = ".".join(parts)
 	if not number_generator:
 		number_generator = getseries
 
@@ -311,7 +310,8 @@ def parse_naming_series(
 	if doc:
 		use_date = doc.get("transaction_date") or doc.get("posting_date") or doc.get("creation")
 		today = get_datetime(use_date)
-		
+	
+	path_series = []
 	for e in parts:
 		if not e:
 			continue
@@ -320,7 +320,8 @@ def parse_naming_series(
 		if e.startswith("#"):
 			if not series_set:
 				digits = len(e)
-				temp = series.replace("DD", "").replace("MM", "").replace("YYYY", "").replace("YY", "")
+
+				temp = '.'.join(path_series)
 				part = number_generator(temp, digits)
 				series_set = True
 				
@@ -341,10 +342,13 @@ def parse_naming_series(
 		elif e.startswith("{") and doc:
 			e = e.replace("{", "").replace("}", "")
 			part = doc.get(e)
+			path_series.append(part)
 		elif doc and doc.get(e):
 			part = doc.get(e)
+			path_series.append(part)
 		else:
 			part = e
+			path_series.append(part)
 
 		if isinstance(part, str):
 			name += part
