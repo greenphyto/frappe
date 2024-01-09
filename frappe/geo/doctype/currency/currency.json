@@ -16,6 +16,9 @@
   "smallest_currency_fraction_value",
   "symbol",
   "symbol_on_right",
+  "different_symbol_when_print",
+  "print_symbol_on_right",
+  "print_symbol",
   "number_format"
  ],
  "fields": [
@@ -76,13 +79,32 @@
    "fieldname": "symbol_on_right",
    "fieldtype": "Check",
    "label": "Show Currency Symbol on Right Side"
+  },
+  {
+   "default": "0",
+   "fieldname": "different_symbol_when_print",
+   "fieldtype": "Check",
+   "label": "Different Symbol when Print"
+  },
+  {
+   "depends_on": "eval:doc.different_symbol_when_print",
+   "fieldname": "print_symbol",
+   "fieldtype": "Data",
+   "label": "Print Symbol"
+  },
+  {
+   "default": "1",
+   "depends_on": "eval:doc.different_symbol_when_print",
+   "fieldname": "print_symbol_on_right",
+   "fieldtype": "Check",
+   "label": "Print Symbol on Right"
   }
  ],
  "icon": "fa fa-bitcoin",
  "idx": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-07-04 09:42:52.425440",
+ "modified": "2024-01-09 12:42:05.800390",
  "modified_by": "Administrator",
  "module": "Geo",
  "name": "Currency",

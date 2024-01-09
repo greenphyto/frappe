@@ -1113,7 +1113,7 @@ class BaseDocument:
 
 		if (absolute_value or doc.get("absolute_value")) and isinstance(val, (int, float)):
 			val = abs(self.get(fieldname))
-
+		
 		return format_value(val, df=df, doc=doc, currency=currency, format=format)
 
 	def is_print_hide(self, fieldname, df=None, for_print=True):

@@ -1120,6 +1120,8 @@ def fmt_money(
 	precision: int | None = None,
 	currency: str | None = None,
 	format: str | None = None,
+	symbol: str = None,
+	right_symbol = None
 ) -> str:
 	"""
 	Convert to string with commas for thousands, millions etc
@@ -1191,8 +1193,9 @@ def fmt_money(
 		amount = minus + amount
 
 	if currency and frappe.defaults.get_global_default("hide_currency_symbol") != "Yes":
-		symbol = frappe.db.get_value("Currency", currency, "symbol", cache=True) or currency
-		symbol_on_right = frappe.db.get_value("Currency", currency, "symbol_on_right", cache=True)
+		use_symbol = symbol
+		symbol = use_symbol or frappe.db.get_value("Currency", currency, "symbol", cache=True) or currency
+		symbol_on_right = right_symbol or frappe.db.get_value("Currency", currency, "symbol_on_right", cache=True)
 
 		if symbol_on_right:
 			amount = f"{amount} {frappe._(symbol)}"
