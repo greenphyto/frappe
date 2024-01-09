@@ -23,7 +23,7 @@ from frappe.utils import (
 BLOCK_TAGS_PATTERN = re.compile(r"(<br|<div|<p)")
 
 
-def format_value(value, df=None, doc=None, currency=None, translated=False, format=None, symbol=None):
+def format_value(value, df=None, doc=None, currency=None, translated=False, format=None, symbol=None, hide_symbol=False):
 	"""Format value based on given fieldtype, document reference, currency reference.
 	If docfield info (df) is not given, it will try and guess based on the datatype of the value"""
 	if isinstance(df, str):
@@ -83,7 +83,7 @@ def format_value(value, df=None, doc=None, currency=None, translated=False, form
 		if doc.flags.in_print and frappe.get_value("Currency", currency, "different_symbol_when_print"):
 			symbol = symbol or frappe.get_value("Currency", currency, "print_symbol")
 			right_symbol = frappe.get_value("Currency", currency, "print_symbol_on_right")
-		return fmt_money(value, precision=get_field_precision(df, doc), currency=currency, format=format, symbol=symbol, right_symbol=right_symbol)
+		return fmt_money(value, precision=get_field_precision(df, doc), currency=currency, format=format, symbol=symbol, right_symbol=right_symbol, hide_symbol=hide_symbol)
 
 	elif df.get("fieldtype") == "Float":
 		precision = get_field_precision(df, doc)
