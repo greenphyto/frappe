@@ -73,9 +73,9 @@ def get_transitions(doc, workflow=None, raise_exception=False):
 	return transitions
 
 
-def get_workflow_safe_globals():
+def get_workflow_safe_globals(use_user = None):
 	# access to frappe.db.get_value, frappe.db.get_list, and date time utils.
-	return dict(
+	data = dict(
 		frappe=frappe._dict(
 			db=frappe._dict(get_value=frappe.db.get_value, get_list=frappe.db.get_list),
 			session=frappe.session,
@@ -88,13 +88,17 @@ def get_workflow_safe_globals():
 		)
 	)
 
+	if use_user:
+		data['frappe']['session']['user'] = use_user
 
-def is_transition_condition_satisfied(transition, doc):
+	return data
+
+def is_transition_condition_satisfied(transition, doc, use_user = None):
 	if not transition.condition:
 		return True
 	else:
 		return frappe.safe_eval(
-			transition.condition, get_workflow_safe_globals(), dict(doc=doc.as_dict())
+			transition.condition, get_workflow_safe_globals(use_user), dict(doc=doc.as_dict())
 		)
 
 
@@ -213,9 +217,16 @@ def get_workflow(doctype):
 
 
 def has_approval_access(user, doc, transition):
-	return (
-		user == "Administrator" or transition.get("allow_self_approval") or user != doc.get("owner")
-	)
+	if user == "Administrator":
+		return True
+	
+	res = transition.get("allow_self_approval") or user != doc.get("owner")
+
+	allow = is_transition_condition_satisfied(transition, doc, use_user=user)
+	if allow:
+		return res
+	else:
+		return False
 
 
 def get_workflow_state_field(workflow_name):
