@@ -61,17 +61,19 @@ def get_transitions(doc, workflow=None, raise_exception=False):
 				continue
 
 			# validate from hooks
-			hooks = frappe.get_hooks("validate_workflow") or []
-			if doc.doctype in hooks:
-				hook = hooks[doc.doctype][-1]
-				res = frappe.get_attr(hook)(doc=doc, workflow=workflow)
-
-				if not res:
+			custom_validate = get_custom_validate(doc.doctype)
+			if custom_validate:
+				if not frappe.get_attr(custom_validate)(doc=doc, workflow=workflow):
 					continue
 
 			transitions.append(transition.as_dict())
 	return transitions
 
+def get_custom_validate(doctype):
+	hooks = frappe.get_hooks("validate_workflow") or []
+	if doctype in hooks:
+		hook = hooks[doctype][-1]
+		return hook
 
 def get_workflow_safe_globals(use_user = None):
 	# access to frappe.db.get_value, frappe.db.get_list, and date time utils.

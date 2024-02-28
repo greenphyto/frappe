@@ -14,6 +14,7 @@ from frappe.model.workflow import (
 	has_approval_access,
 	is_transition_condition_satisfied,
 	send_email_alert,
+	get_custom_validate
 )
 from frappe.query_builder import DocType
 from frappe.utils import get_datetime, get_url, cint
@@ -316,11 +317,17 @@ def get_next_possible_transitions(workflow_name, state, doc=None):
 def get_users_next_action_data(transitions, doc):
 	roles = set()
 	user_data_map = {}
+	custom_validate = get_custom_validate(doc.doctype)
 	for transition in transitions:
 		roles.add(transition.allowed)
 		users = get_users_with_role(transition.allowed)
 		filtered_users = filter_allowed_users(users, doc, transition)
 		for user in filtered_users:
+			# custom validate
+			if custom_validate:
+				if not frappe.get_attr(custom_validate)(doc=doc, user=user):
+					continue
+			
 			if not user_data_map.get(user):
 				user_data_map[user] = frappe._dict(
 					{
