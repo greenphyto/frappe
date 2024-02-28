@@ -59,6 +59,16 @@ def get_transitions(doc, workflow=None, raise_exception=False):
 		if transition.state == current_state and transition.allowed in roles:
 			if not is_transition_condition_satisfied(transition, doc):
 				continue
+
+			# validate from hooks
+			hooks = frappe.get_hooks("validate_workflow") or []
+			if doc.doctype in hooks:
+				hook = hooks[doc.doctype][-1]
+				res = frappe.get_attr(hook)(doc=doc, workflow=workflow)
+
+				if not res:
+					continue
+
 			transitions.append(transition.as_dict())
 	return transitions
 
