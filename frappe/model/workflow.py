@@ -63,7 +63,7 @@ def get_transitions(doc, workflow=None, raise_exception=False):
 			# validate from hooks
 			custom_validate = get_custom_validate(doc.doctype)
 			if custom_validate:
-				if not frappe.get_attr(custom_validate)(doc=doc, workflow=workflow):
+				if not frappe.get_attr(custom_validate)(doc=doc, workflow=workflow, transition=transition):
 					continue
 
 			transitions.append(transition.as_dict())
@@ -96,6 +96,9 @@ def get_workflow_safe_globals(use_user = None):
 	return data
 
 def is_transition_condition_satisfied(transition, doc, use_user = None):
+	if not use_user and frappe.session.user == "Administrator":
+		return True
+	
 	if not transition.condition:
 		return True
 	else:

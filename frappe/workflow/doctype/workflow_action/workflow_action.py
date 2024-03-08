@@ -325,7 +325,7 @@ def get_users_next_action_data(transitions, doc):
 		for user in filtered_users:
 			# custom validate
 			if custom_validate:
-				if not frappe.get_attr(custom_validate)(doc=doc, user=user):
+				if not frappe.get_attr(custom_validate)(doc=doc, user=user, transition=transition):
 					continue
 			
 			if not user_data_map.get(user):
