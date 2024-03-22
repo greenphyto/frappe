@@ -54,10 +54,11 @@ def get_transitions(doc, workflow=None, raise_exception=False):
 		else:
 			frappe.throw(_("Workflow State not set"), WorkflowStateError)
 
+	user = frappe.session.user
 	transitions = []
 	for transition in workflow.transitions:
 		if transition.state == current_state and transition.allowed in roles:
-			if not is_transition_condition_satisfied(transition, doc):
+			if not is_transition_condition_satisfied(transition, doc, use_user=user):
 				continue
 
 			# validate from hooks
@@ -75,12 +76,13 @@ def get_custom_validate(doctype):
 		hook = hooks[doctype][-1]
 		return hook
 
+import copy
 def get_workflow_safe_globals(use_user = None):
 	# access to frappe.db.get_value, frappe.db.get_list, and date time utils.
 	data = dict(
 		frappe=frappe._dict(
 			db=frappe._dict(get_value=frappe.db.get_value, get_list=frappe.db.get_list),
-			session=frappe.session,
+			session=copy.deepcopy(frappe.session),
 			utils=frappe._dict(
 				now_datetime=frappe.utils.now_datetime,
 				add_to_date=frappe.utils.add_to_date,
