@@ -3,7 +3,7 @@
 
 import frappe, json
 from frappe.model.document import Document
-from frappe.utils import now
+from frappe.utils import now, cstr
 from six import string_types
 
 
@@ -53,6 +53,11 @@ def update_success(logs, status="Success"):
 def get_pending_log(filters):
 	if isinstance(filters, string_types):
 		filters = json.loads(filters)
+
+	if "doctype" in filters:
+		cdt = cstr(filters.get("doctype"))
+		del filters['doctype']
+		filters["doc_type"] = cdt
 
 	base_filters = {"status":"Pending"}
 	base_filters.update(filters)
