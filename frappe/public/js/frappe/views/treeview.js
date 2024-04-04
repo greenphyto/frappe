@@ -319,6 +319,10 @@ frappe.views.TreeView = class TreeView {
 			fields: me.fields,
 		});
 
+		if (!me.args['parent']){
+			me.args['parent'] = node.data.value;
+		}
+
 		var args = $.extend({}, me.args);
 		args["parent_" + me.doctype.toLowerCase().replace(/ /g, "_")] = me.args["parent"];
 
@@ -358,6 +362,10 @@ frappe.views.TreeView = class TreeView {
 			});
 		});
 		d.show();
+		if (this.opts.node_onload){
+			this.opts.node_onload(d);
+		}
+		console.log(d);
 	}
 	prepare_fields() {
 		var me = this;
@@ -383,6 +391,14 @@ frappe.views.TreeView = class TreeView {
 
 		var opts_field_names = this.fields.map(function (d) {
 			return d.fieldname;
+		});
+
+		// parent field
+		var parent_field = ["parent_" + me.doctype.toLowerCase().replace(/ /g, "_")];
+		this.fields.push({
+			fieldtype: "Data",
+			fieldname: parent_field,
+			hidden:1
 		});
 
 		mandatory_fields.map(function (d) {
