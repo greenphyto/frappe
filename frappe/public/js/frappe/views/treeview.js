@@ -319,9 +319,7 @@ frappe.views.TreeView = class TreeView {
 			fields: me.fields,
 		});
 
-		if (!me.args['parent']){
-			me.args['parent'] = node.data.value;
-		}
+		me.args['parent'] = node.data.value;
 
 		var args = $.extend({}, me.args);
 		args["parent_" + me.doctype.toLowerCase().replace(/ /g, "_")] = me.args["parent"];
@@ -365,7 +363,6 @@ frappe.views.TreeView = class TreeView {
 		if (this.opts.node_onload){
 			this.opts.node_onload(d);
 		}
-		console.log(d);
 	}
 	prepare_fields() {
 		var me = this;
