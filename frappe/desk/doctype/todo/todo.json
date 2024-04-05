@@ -25,7 +25,8 @@
   "assigned_by",
   "assigned_by_full_name",
   "sender",
-  "assignment_rule"
+  "assignment_rule",
+  "navix_ticket"
  ],
  "fields": [
   {
@@ -163,12 +164,18 @@
    "fieldtype": "Select",
    "label": "Naming Series",
    "options": "TODO-.YYYY.-"
+  },
+  {
+   "default": "0",
+   "fieldname": "navix_ticket",
+   "fieldtype": "Check",
+   "label": "Navix Ticket"
   }
  ],
  "icon": "fa fa-check",
  "idx": 2,
  "links": [],
- "modified": "2023-10-25 12:23:44.123542",
+ "modified": "2024-04-05 16:12:51.248393",
  "modified_by": "Administrator",
  "module": "Desk",
  "name": "ToDo",

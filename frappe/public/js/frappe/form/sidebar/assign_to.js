@@ -158,15 +158,28 @@ frappe.ui.form.AssignToDialog = class AssignToDialog {
 				onchange: () => me.assign_to_me(),
 			},
 			{
+				label: __("Assign to Navix Group"),
+				fieldtype: "Check",
+				fieldname: "assign_to_navix",
+				default: 0,
+			},
+			{
 				fieldtype: "MultiSelectPills",
 				fieldname: "assign_to",
 				label: __("Assign To"),
 				reqd: true,
-				get_data: function (txt) {
-					return frappe.db.get_link_options("User", txt, {
+				get_data:  (txt)=>{
+					var filters = {
 						user_type: "System User",
 						enabled: 1,
-					});
+					}
+					if (me.dialog){
+						var data = me.dialog.get_values(1);
+						if (data.assign_to_navix){
+							filters['navix_personnel'] = 1;
+						}
+					}
+					return frappe.db.get_link_options("User", txt, filters);
 				},
 			},
 			{
