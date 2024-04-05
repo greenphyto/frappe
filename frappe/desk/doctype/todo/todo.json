@@ -177,23 +177,26 @@
   {
    "fieldname": "start_working",
    "fieldtype": "Datetime",
-   "label": "Start Working"
+   "label": "Start Working",
+   "read_only": 1
   },
   {
    "fieldname": "end_working",
    "fieldtype": "Datetime",
-   "label": "End Working"
+   "label": "End Working",
+   "read_only": 1
   },
   {
    "fieldname": "working_time",
    "fieldtype": "Duration",
-   "label": "Working Time"
+   "label": "Working Time",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-check",
  "idx": 2,
  "links": [],
- "modified": "2024-04-05 17:19:09.841533",
+ "modified": "2024-04-05 17:31:14.858653",
  "modified_by": "Administrator",
  "module": "Desk",
  "name": "ToDo",
