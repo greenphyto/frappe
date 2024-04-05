@@ -82,6 +82,7 @@ def add(args=None):
 					"priority": args.get("priority", "Medium"),
 					"status": "Planned",
 					"date": args.get("date", nowdate()),
+					"navix_ticket":args.get("assign_to_navix"),
 					"assigned_by": args.get("assigned_by", frappe.session.user),
 					"assignment_rule": args.get("assignment_rule"),
 				}

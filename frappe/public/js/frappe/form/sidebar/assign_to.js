@@ -110,6 +110,7 @@ frappe.ui.form.AssignToDialog = class AssignToDialog {
 							doctype: me.doctype,
 							name: me.docname,
 							assign_to: args.assign_to,
+							assign_to_navix: args.assign_to_navix,
 							bulk_assign: me.bulk_assign || false,
 							re_assign: me.re_assign || false,
 						}),
