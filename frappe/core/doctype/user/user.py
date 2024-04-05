@@ -235,13 +235,14 @@ class User(Document):
 
 	def has_desk_access(self):
 		"""Return true if any of the set roles has desk access"""
-		if not self.roles:
+		if not self.roles or frappe.session.user=="Guest":
 			return False
 
-		role_table = DocType("Role")
+		# role_table = DocType("Role")
+		roles = [d.role for d in self.roles]
 		return frappe.db.count(
-			role_table,
-			((role_table.desk_access == 1) & (role_table.name.isin([d.role for d in self.roles]))),
+			"Role",
+			{"desk_access":1, "name":['in', roles]}
 		)
 
 	def share_with_self(self):

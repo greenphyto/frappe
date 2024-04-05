@@ -2,7 +2,7 @@
 # License: MIT. See LICENSE
 import copy
 
-import frappe
+import frappe, pypika
 import frappe.share
 from frappe import _, msgprint
 from frappe.query_builder import DocType
@@ -686,6 +686,14 @@ def push_perm_check_log(log):
 		return
 
 	frappe.flags.get("has_permission_check_logs").append(_(log))
+
+def export_table_name(table_name):
+	if table_name.startswith('`') and table_name.endswith('`'):
+		table_name = table_name[1:-1]
+	if table_name.startswith("tab"):
+		return table_name[3:]
+	else:
+		return table_name
 
 
 def has_child_permission(
