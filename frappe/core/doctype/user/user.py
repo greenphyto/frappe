@@ -47,6 +47,17 @@ class User(Document):
 		else:
 			self.email = self.email.strip().lower()
 			self.name = self.email
+	
+	def set_navix_personnel(self):
+		navix = False
+		for d in self.get("roles"):
+			if d.role == "Navix Personnel":
+				navix = True
+				break
+		if navix:
+			self.navix_personnel = 1
+		else:
+			self.navix_personnel = 0
 
 	def onload(self):
 		from frappe.config import get_modules_from_all_apps
@@ -87,6 +98,7 @@ class User(Document):
 		self.validate_allowed_modules()
 		self.validate_user_image()
 		self.set_time_zone()
+		self.set_navix_personnel()
 
 		if self.language == "Loading...":
 			self.language = None

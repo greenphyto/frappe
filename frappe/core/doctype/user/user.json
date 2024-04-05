@@ -3,7 +3,7 @@
  "allow_import": 1,
  "allow_rename": 1,
  "creation": "2022-01-10 17:29:51.672911",
- "description": "Represents a User in the system.",
+ "description": "Represents a User in the system. ",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -38,6 +38,7 @@
   "location",
   "bio",
   "mute_sounds",
+  "navix_personnel",
   "column_break_22",
   "mobile_no",
   "change_password",
@@ -668,6 +669,13 @@
    "fieldtype": "Link",
    "label": "Organization",
    "options": "Address"
+  },
+  {
+   "default": "0",
+   "fieldname": "navix_personnel",
+   "fieldtype": "Check",
+   "label": "Navix Personnel",
+   "read_only": 1
   }
  ],
  "icon": "fa fa-user",
@@ -730,7 +738,7 @@
    "link_fieldname": "user"
   }
  ],
- "modified": "2023-12-27 16:12:24.177865",
+ "modified": "2024-04-05 16:26:26.891092",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "User",
