@@ -26,7 +26,10 @@
   "assigned_by_full_name",
   "sender",
   "assignment_rule",
-  "navix_ticket"
+  "navix_ticket",
+  "start_working",
+  "end_working",
+  "working_time"
  ],
  "fields": [
   {
@@ -170,12 +173,27 @@
    "fieldname": "navix_ticket",
    "fieldtype": "Check",
    "label": "Navix Ticket"
+  },
+  {
+   "fieldname": "start_working",
+   "fieldtype": "Datetime",
+   "label": "Start Working"
+  },
+  {
+   "fieldname": "end_working",
+   "fieldtype": "Datetime",
+   "label": "End Working"
+  },
+  {
+   "fieldname": "working_time",
+   "fieldtype": "Duration",
+   "label": "Working Time"
   }
  ],
  "icon": "fa fa-check",
  "idx": 2,
  "links": [],
- "modified": "2024-04-05 16:12:51.248393",
+ "modified": "2024-04-05 17:19:09.841533",
  "modified_by": "Administrator",
  "module": "Desk",
  "name": "ToDo",

@@ -5,7 +5,7 @@ import json
 
 import frappe
 from frappe.model.document import Document
-from frappe.utils import get_fullname, parse_addr
+from frappe.utils import get_fullname, parse_addr, get_datetime
 
 exclude_from_linked_with = True
 
@@ -108,7 +108,13 @@ class ToDo(Document):
 		"""Returns list of owners after applying filters on todo's."""
 		rows = frappe.get_all(cls.DocType, filters=filters or {}, fields=["allocated_to"])
 		return [parse_addr(row.allocated_to)[1] for row in rows if row.allocated_to]
-
+	
+	def set_working_time(self, start=True):
+		if start:
+			self.start_working = get_datetime()
+		elif self.start_working and not start:
+			self.end_working = get_datetime()
+			self.working_time = (self.end_working - get_datetime(self.start_working)).total_seconds()
 
 # NOTE: todo is viewable if a user is an owner, or set as assigned_to value, or has any role that is allowed to access ToDo doctype.
 def on_doctype_update():
