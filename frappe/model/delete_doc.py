@@ -166,7 +166,8 @@ def delete_doc(
 					insert_feed(doc)
 				except ImportError:
 					pass
-
+		
+		doc.run_method("finish_delete")
 
 def add_to_deleted_document(doc):
 	"""Add this document to Deleted Document table. Called after delete"""

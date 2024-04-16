@@ -7,6 +7,7 @@
  "field_order": [
   "deleted_name",
   "deleted_doctype",
+  "document_date",
   "column_break_3",
   "restored",
   "new_name",
@@ -56,11 +57,17 @@
    "fieldtype": "Code",
    "label": "Data",
    "read_only": 1
+  },
+  {
+   "fieldname": "document_date",
+   "fieldtype": "Date",
+   "label": "Document Date",
+   "read_only": 1
   }
  ],
  "in_create": 1,
  "links": [],
- "modified": "2022-06-13 05:50:58.314908",
+ "modified": "2024-04-16 17:30:25.988341",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "Deleted Document",
