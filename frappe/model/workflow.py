@@ -65,7 +65,7 @@ def get_transitions(
 	roles = frappe.get_roles()
 
 	for transition in workflow.transitions:
-		if transition.state == current_state and transition.allowed in roles:
+		if transition.state == current_state and (transition.allowed in roles or transition.allowed == "All"):
 			if not is_transition_condition_satisfied(transition, doc):
 				continue
 			transitions.append(transition.as_dict())
