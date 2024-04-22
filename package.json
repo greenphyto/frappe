@@ -33,7 +33,7 @@
     "editorjs-undo": "0.1.6",
     "fast-deep-equal": "^2.0.1",
     "frappe-charts": "2.0.0-rc22",
-    "frappe-datatable": "^1.16.4",
+    "frappe-datatable": "1.17.16",
     "frappe-gantt": "^0.6.0",
     "highlight.js": "^10.4.1",
     "html5-qrcode": "^2.0.11",
