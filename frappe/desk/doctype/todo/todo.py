@@ -109,10 +109,10 @@ class ToDo(Document):
 		rows = frappe.get_all(cls.DocType, filters=filters or {}, fields=["allocated_to"])
 		return [parse_addr(row.allocated_to)[1] for row in rows if row.allocated_to]
 	
-	def set_working_time(self, start=True):
+	def set_working_time(self, start=0, stop=0):
 		if start:
 			self.start_working = get_datetime()
-		elif self.start_working and not start:
+		elif stop:
 			self.end_working = get_datetime()
 			self.working_time = (self.end_working - get_datetime(self.start_working)).total_seconds()
 
