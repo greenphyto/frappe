@@ -94,6 +94,8 @@ frappe.ui.form.AssignToDialog = class AssignToDialog {
 	make() {
 		let me = this;
 
+		console.log(me)
+
 		me.dialog = new frappe.ui.Dialog({
 			title: __("Add to ToDo"),
 			fields: me.get_fields(),
@@ -103,6 +105,8 @@ frappe.ui.form.AssignToDialog = class AssignToDialog {
 
 				if (args && args.assign_to) {
 					me.dialog.set_message("Assigning...");
+
+					// overide all to value
 
 					frappe.call({
 						method: me.method,
@@ -140,6 +144,16 @@ frappe.ui.form.AssignToDialog = class AssignToDialog {
 
 		me.dialog.set_value("assign_to", assign_to);
 	}
+	assign_to_navix(){
+		let me = this;
+		let assign_to = [];
+
+		if (me.dialog.get_value("assign_to_navix")) {
+			assign_to.push("All Navix Group");
+		}
+
+		me.dialog.set_value("assign_to", assign_to);
+	}
 	set_description_from_doc() {
 		let me = this;
 
@@ -163,6 +177,7 @@ frappe.ui.form.AssignToDialog = class AssignToDialog {
 				fieldtype: "Check",
 				fieldname: "assign_to_navix",
 				default: 0,
+				onchange: () => me.assign_to_navix(),
 			},
 			{
 				fieldtype: "MultiSelectPills",
@@ -180,7 +195,16 @@ frappe.ui.form.AssignToDialog = class AssignToDialog {
 							filters['navix_personnel'] = 1;
 						}
 					}
-					return frappe.db.get_link_options("User", txt, filters);
+					return new Promise(resolve=>{
+						frappe.db.get_link_options("User", txt, filters).then(res=>{
+							console.log("TEST", res);
+							if (me.dialog.get_value("assign_to_navix")){
+								res = [{value:"All Navix Group"}, ...res];
+							}
+							resolve(res);
+						});
+					})
+					
 				},
 			},
 			{

@@ -55,8 +55,16 @@ def add(args=None):
 
 	users_with_duplicate_todo = []
 	shared_with_users = []
+	show_info = 1
+	assign_list = frappe.parse_json(args.get("assign_to")) or []
+	if "All Navix Group" in assign_list:
+		all_name = [d.name for d in frappe.get_all("User", {"navix_personnel":1})]
+		assign_list.remove("All Navix Group")
+		assign_list = list(tuple(assign_list+all_name))
+		show_info = 0
+	
 
-	for assign_to in frappe.parse_json(args.get("assign_to")):
+	for assign_to in assign_list:
 		filters = {
 			"reference_type": args["doctype"],
 			"reference_name": args["name"],
@@ -122,9 +130,10 @@ def add(args=None):
 
 	if shared_with_users:
 		user_list = format_message_for_assign_to(shared_with_users)
-		frappe.msgprint(
-			_("Shared with the following Users with Read access:{0}").format(user_list, alert=True)
-		)
+		if show_info:
+			frappe.msgprint(
+				_("Shared with the following Users with Read access:{0}").format(user_list, alert=True)
+			)
 
 	if users_with_duplicate_todo:
 		user_list = format_message_for_assign_to(users_with_duplicate_todo)
