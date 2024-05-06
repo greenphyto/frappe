@@ -118,9 +118,21 @@ frappe.ui.form.on("Web Form", {
 		let doc = frm.doc;
 
 		let update_options = (options) => {
-			[frm.fields_dict.web_form_fields.grid, frm.fields_dict.list_columns.grid].forEach(
+			[frm.fields_dict.web_form_fields.grid].forEach(
 				(obj) => {
 					obj.update_docfield_property("fieldname", "options", options);
+				}
+			);
+			[frm.fields_dict.list_columns.grid].forEach(
+				(obj) => {
+					var opts = "";
+					if (typeof(options)=="object"){
+						opts = Object.assign([], options);
+						opts = [{label: 'Name', value: 'name'}, ...opts]
+					}else{
+						opts = Object.assign("", options);
+					}
+					obj.update_docfield_property("fieldname", "options", opts);
 				}
 			);
 		};
@@ -176,6 +188,12 @@ frappe.ui.form.on("Web Form List Column", {
 	fieldname: function (frm, doctype, name) {
 		let doc = frappe.get_doc(doctype, name);
 		let df = frappe.meta.get_docfield(frm.doc.doc_type, doc.fieldname);
+		if (doc.fieldname=="name"){
+			df = {
+				fieldtype: "Data",
+				label: "ID"
+			}
+		}
 		if (!df) return;
 		doc.fieldtype = df.fieldtype;
 		doc.label = df.label;
