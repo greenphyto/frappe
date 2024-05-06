@@ -30,6 +30,12 @@
 	</script>
 
 	{{ include_script("web_form.bundle.js") }}
+
+	<script>
+		{% if script is defined %}
+			{{ script }}
+		{% endif %}
+	</script>
 {% endblock script %}
 
 {% block style %}

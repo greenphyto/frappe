@@ -386,6 +386,10 @@ frappe.ui.WebFormListRow = class WebFormListRow {
 				value = $(value).addClass("ellipsis");
 				cell = $("<td></td>").append(value);
 			}
+			// custom formatters
+			if (frappe.custom_formatter_for_list){
+				cell = frappe.custom_formatter_for_list(field.fieldname, cell);
+			}
 			cell.appendTo(this.row);
 		});
 

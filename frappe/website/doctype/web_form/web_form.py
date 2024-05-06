@@ -302,8 +302,11 @@ def get_context(context):
 
 			if new_context:
 				context.update(new_context)
-
-			js_path = os.path.join(os.path.dirname(web_form_module.__file__), scrub(self.name) + ".js")
+			
+			if frappe.form_dict.is_list:
+				js_path = os.path.join(os.path.dirname(web_form_module.__file__), scrub(self.name) + "_list.js")
+			else:
+				js_path = os.path.join(os.path.dirname(web_form_module.__file__), scrub(self.name) + ".js")
 			if os.path.exists(js_path):
 				script = frappe.render_template(open(js_path).read(), context)
 
