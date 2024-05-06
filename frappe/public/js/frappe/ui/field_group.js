@@ -29,8 +29,10 @@ frappe.ui.FieldGroup = class FieldGroup extends frappe.ui.form.Layout {
 					if (def_value == "Today" && field.df["fieldtype"] == "Date") {
 						def_value = frappe.datetime.get_today();
 					}
-
-					field.set_input(def_value);
+					
+					if (!field.get_value()){
+						field.set_input(def_value);
+					}
 					// if default and has depends_on, render its fields.
 					me.refresh_dependency();
 				}
