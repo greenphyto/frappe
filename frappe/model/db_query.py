@@ -114,6 +114,8 @@ class DatabaseQuery:
 		*,
 		parent_doctype=None,
 	) -> list:
+		if not parent_doctype and filters and type(filters) == dict and filters.get("parenttype"):
+			parent_doctype = filters.get("parenttype")
 
 		if (
 			not ignore_permissions
