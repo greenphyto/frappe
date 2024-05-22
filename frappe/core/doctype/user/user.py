@@ -352,7 +352,7 @@ class User(Document):
 		if not subject:
 			site_name = frappe.db.get_default("site_name") or frappe.get_conf().get("site_name")
 			if site_name:
-				subject = _("Welcome to {0}").format(site_name)
+				subject = _("Welcome to Greenphyto Smart FM Portal")
 			else:
 				subject = _("Complete Registration")
 
