@@ -394,7 +394,7 @@ frappe.ui.WebFormListRow = class WebFormListRow {
 			}
 			
 			// click edit is for first and second cell also on ID
-			if (i<2 || field=='name'){
+			if (i<=2 || field=='name'){
 				cell.on("click", () => this.events.on_edit());
 			}
 
