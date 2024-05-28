@@ -371,8 +371,10 @@ frappe.ui.WebFormListRow = class WebFormListRow {
 
 		// Add Serial Number
 		let serialNo = $(`<td class="list-col-serial">${__(this.serial_number)}</td>`);
+		serialNo.on("click", () => this.events.on_edit());
 		serialNo.appendTo(this.row);
 
+		let i = 0;
 		this.columns.forEach((field) => {
 			let formatter = frappe.form.get_formatter(field.fieldtype);
 			let value =
@@ -388,12 +390,18 @@ frappe.ui.WebFormListRow = class WebFormListRow {
 			}
 			// custom formatters
 			if (frappe.custom_formatter_for_list){
-				cell = frappe.custom_formatter_for_list(field.fieldname, cell);
+				cell = frappe.custom_formatter_for_list(field.fieldname, cell, value);
 			}
+			
+			// click edit is for first and second cell also on ID
+			if (i<2 || field=='name'){
+				cell.on("click", () => this.events.on_edit());
+			}
+
 			cell.appendTo(this.row);
+			i++;
 		});
 
-		this.row.on("click", () => this.events.on_edit());
 	}
 
 	toggle_select(checked) {
