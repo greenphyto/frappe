@@ -390,7 +390,7 @@ frappe.ui.WebFormListRow = class WebFormListRow {
 			}
 			// custom formatters
 			if (frappe.custom_formatter_for_list){
-				cell = frappe.custom_formatter_for_list(field.fieldname, cell, value);
+				cell = frappe.custom_formatter_for_list(field.fieldname, cell, value, this.doc);
 			}
 			
 			// click edit is for first and second cell also on ID
