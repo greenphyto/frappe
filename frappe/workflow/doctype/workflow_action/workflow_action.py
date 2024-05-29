@@ -100,12 +100,19 @@ def process_workflow_actions(doc, state):
 		return
 
 	create_workflow_actions_for_roles(roles, doc)
+	user_data = list(user_data_map.values())
 
-	if send_email_alert(workflow) and get_email_template(doc):
+	# if next action is can be done by current user, so skip to send an email
+	is_own_role = False
+	own_roles = frappe.get_roles()
+	for role in list(roles):
+		if role in own_roles and frappe.session.user != 'Administrator':
+			is_own_role = True
+
+	if send_email_alert(workflow) and get_email_template(doc) and not is_own_role:
 		enqueue(
-			send_workflow_action_email, queue="short", users_data=list(user_data_map.values()), doc=doc
+			send_workflow_action_email, queue="short",now=1, users_data=user_data, doc=doc
 		)
-
 
 @frappe.whitelist(allow_guest=True)
 def apply_action(action, doctype, docname, current_state, user=None, last_modified=None):
