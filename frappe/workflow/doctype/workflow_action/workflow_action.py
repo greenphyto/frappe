@@ -111,7 +111,7 @@ def process_workflow_actions(doc, state):
 
 	if send_email_alert(workflow) and get_email_template(doc) and not is_own_role:
 		enqueue(
-			send_workflow_action_email, queue="short",now=1, users_data=user_data, doc=doc
+			send_workflow_action_email, queue="short",now=0, users_data=user_data, doc=doc
 		)
 
 @frappe.whitelist(allow_guest=True)
