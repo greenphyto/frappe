@@ -120,6 +120,11 @@ def apply_workflow(doc, action, from_web=False):
 			if doc_workflow_state in next_state:
 				return respon_already_change(doc, doc_workflow_state)
 			# different user
+			allowed = get_allowed_role_based_on_action(workflow, action)
+			
+			allow = is_allowed_user_based_on_action(user, workflow, action)
+			if not allow:
+				return respon_forbidden_user(doc, allowed, action)
 
 		frappe.throw(_("Not a valid Workflow Action"), WorkflowTransitionError)
 
@@ -168,6 +173,32 @@ def respon_already_change(doc, doc_workflow_state):
 			frappe.bold(doc.get("name")),
 			frappe.bold(doc_workflow_state),
 			frappe.bold(frappe.get_value("User", doc.get("modified_by"), "full_name")),
+		),
+		indicator_color="red",
+	)
+
+def get_allowed_role_based_on_action(workflow, action):
+	allowed = []
+	for d in workflow.get("transitions"):
+		if d.action == action:
+			allowed.append(d.allowed)
+
+	return allowed
+
+def is_allowed_user_based_on_action(user, workflow, action):
+	allowed = get_allowed_role_based_on_action(workflow, action)
+	roles = frappe.get_roles()
+	if [element for element in allowed if element in roles]:
+		return True
+
+def respon_forbidden_user(doc, allowed, action):
+	frappe.respond_as_web_page(
+		_("Forbidden"),
+		_("Document {0} only can {1} by {2}<br><br>Current user: {3}").format(
+			frappe.bold(doc.get("name")),
+			frappe.bold(action),
+			frappe.bold(", ".join(allowed) ),
+			frappe.session.user
 		),
 		indicator_color="red",
 	)
