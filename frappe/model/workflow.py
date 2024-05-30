@@ -99,7 +99,7 @@ def is_transition_condition_satisfied(transition, doc) -> bool:
 
 
 @frappe.whitelist()
-def apply_workflow(doc, action):
+def apply_workflow(doc, action, from_web=False):
 	"""Allow workflow action on the current doc"""
 	doc = frappe.get_doc(frappe.parse_json(doc))
 	workflow = get_workflow(doc.doctype)
@@ -113,6 +113,14 @@ def apply_workflow(doc, action):
 			transition = t
 
 	if not transition:
+		if from_web:
+			# already changed
+			doc_workflow_state = doc.get(workflow.workflow_state_field)
+			next_state = next_state_based_on_action(workflow, action)
+			if doc_workflow_state in next_state:
+				return respon_already_change(doc, doc_workflow_state)
+			# different user
+
 		frappe.throw(_("Not a valid Workflow Action"), WorkflowTransitionError)
 
 	if not has_approval_access(user, doc, transition):
@@ -144,6 +152,25 @@ def apply_workflow(doc, action):
 
 	return doc
 
+def next_state_based_on_action(workflow, action):
+	roles = frappe.get_roles()
+	next_state = []
+	for d in workflow.get("transitions"):
+		if d.action == action and d.allowed in roles:
+			next_state.append(d.next_state)
+
+	return next_state
+
+def respon_already_change(doc, doc_workflow_state):
+	frappe.respond_as_web_page(
+		_("Already Change"),
+		_("Document {0} has been set to state {1} by {2}").format(
+			frappe.bold(doc.get("name")),
+			frappe.bold(doc_workflow_state),
+			frappe.bold(frappe.get_value("User", doc.get("modified_by"), "full_name")),
+		),
+		indicator_color="red",
+	)
 
 @frappe.whitelist()
 def can_cancel_document(doctype):

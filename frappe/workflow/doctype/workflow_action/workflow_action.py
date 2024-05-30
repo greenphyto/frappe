@@ -145,7 +145,10 @@ def confirm_action(doctype, docname, user, action):
 		frappe.set_user(user)
 
 	doc = frappe.get_doc(doctype, docname)
-	newdoc = apply_workflow(doc, action)
+	newdoc = apply_workflow(doc, action, from_web=True)
+	if not newdoc:
+		return
+	
 	frappe.db.commit()
 	return_success_page(newdoc)
 
