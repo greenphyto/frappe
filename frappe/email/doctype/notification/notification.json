@@ -102,6 +102,7 @@
    "default": "0",
    "fieldname": "is_standard",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Is Standard",
    "no_copy": 1
   },
@@ -282,10 +283,11 @@
  "icon": "fa fa-envelope",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2021-05-04 11:17:11.882314",
+ "modified": "2024-05-30 12:51:35.236016",
  "modified_by": "Administrator",
  "module": "Email",
  "name": "Notification",
+ "naming_rule": "Set by user",
  "owner": "Administrator",
  "permissions": [
   {
@@ -301,6 +303,7 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "title_field": "subject",
  "track_changes": 1
 }
