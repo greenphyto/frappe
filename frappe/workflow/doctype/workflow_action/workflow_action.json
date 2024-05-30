@@ -47,8 +47,8 @@
   {
    "fieldname": "workflow_state",
    "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Workflow State"
+   "label": "Workflow State",
+   "read_only": 1
   },
   {
    "depends_on": "eval: doc.completed_by",
@@ -79,7 +79,7 @@
   }
  ],
  "links": [],
- "modified": "2022-02-23 21:06:45.122258",
+ "modified": "2024-05-30 16:44:39.539783",
  "modified_by": "Administrator",
  "module": "Workflow",
  "name": "Workflow Action",
