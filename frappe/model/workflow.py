@@ -194,7 +194,7 @@ def is_allowed_user_based_on_action(user, workflow, action):
 def respon_forbidden_user(doc, allowed, action):
 	frappe.respond_as_web_page(
 		_("Forbidden"),
-		_("Document {0} only can {1} by {2}<br><br>Current user: {3}").format(
+		_("Document {0} only can {1} by {2}<br><br>Current user: {3} (<a href='/?cmd=web_logout'>logout</a>)").format(
 			frappe.bold(doc.get("name")),
 			frappe.bold(action),
 			frappe.bold(", ".join(allowed) ),
