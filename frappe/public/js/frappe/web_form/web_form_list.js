@@ -84,6 +84,9 @@ export default class WebFormList {
 	}
 
 	add_filter(field, value, fieldtype) {
+		if (frappe.filter_controllers && frappe.filter_controllers[field]){
+			value = frappe.filter_controllers[field](this, field, value);
+		}
 		if (!value) {
 			delete this.filters[field];
 		} else {
