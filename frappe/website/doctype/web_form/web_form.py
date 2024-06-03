@@ -193,6 +193,10 @@ def get_context(context):
 		self.load_translations(context)
 		self.add_metatags(context)
 
+		if frappe.get_hooks("update_web_form_context", {}).get(self.name):
+			for fn in frappe.get_hooks("update_web_form_context", {}).get(self.name) or []:
+				frappe.get_attr(fn)(context)
+
 		context.boot = get_boot_data()
 		context.boot["link_title_doctypes"] = frappe.boot.get_link_title_doctypes()
 
