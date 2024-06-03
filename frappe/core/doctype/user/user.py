@@ -228,8 +228,8 @@ class User(Document):
 				self.set_roles_and_modules_based_on_user_type()
 		else:
 			"""Set as System User if any of the given roles has desk_access"""
-			self.user_type = "System User" if self.has_desk_access() else "Website User"
-
+			if self.user_type != "System User" or self.name == "Guest":
+				self.user_type = "System User" if self.has_desk_access() else "Website User"
 	def set_roles_and_modules_based_on_user_type(self):
 		user_type_doc = frappe.get_cached_doc("User Type", self.user_type)
 		if user_type_doc.role:
