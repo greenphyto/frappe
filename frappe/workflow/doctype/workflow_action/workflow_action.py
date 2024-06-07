@@ -103,13 +103,14 @@ def process_workflow_actions(doc, state):
 	user_data = list(user_data_map.values())
 
 	# if next action is can be done by current user, so skip to send an email
+	# HOLD, becuase still needed to accept by another person
 	is_own_role = False
 	own_roles = frappe.get_roles()
 	for role in list(roles):
 		if role in own_roles and frappe.session.user != 'Administrator':
 			is_own_role = True
 
-	if send_email_alert(workflow) and get_email_template(doc) and not is_own_role:
+	if send_email_alert(workflow) and get_email_template(doc):
 		enqueue(
 			send_workflow_action_email, queue="short",now=0, users_data=user_data, doc=doc
 		)
@@ -467,6 +468,8 @@ def get_common_email_args(doc):
 	doctype = doc.get("doctype")
 	docname = doc.get("name")
 
+	convert_image_to_raw(doc)
+
 	email_template = get_email_template(doc)
 	if email_template:
 		docs = vars(doc)
@@ -491,6 +494,16 @@ def get_common_email_args(doc):
 		"message": response,
 	}
 	return common_args
+
+def convert_image_to_raw(doc):
+	from frappe.core.doctype.file.file import  get_base64_image
+	meta = frappe.get_meta(doc.get("doctype"))
+	for d in meta.fields:
+		if d.fieldtype in ('Attach', 'Attach Image') and doc.get(d.fieldname):
+			image_str = get_base64_image(doc.get(d.fieldname))
+			doc.set(d.fieldname, image_str.get("base64"))
+
+	return doc
 
 
 def get_email_template(doc):

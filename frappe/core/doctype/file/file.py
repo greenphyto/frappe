@@ -697,6 +697,23 @@ class File(Document):
 		zf.close()
 		return zip_file.getvalue()
 
+def get_base64_image(src):
+	from frappe.utils.data import image_to_base64
+	from frappe import safe_decode
+	from PIL import Image
+
+	image, unused_filename, extn = get_local_image(src)
+
+	original_size = image.size
+	size = 50, 50
+	image.thumbnail(size, Image.Resampling.LANCZOS)
+
+	base64_string = image_to_base64(image, extn)
+	return {
+		"base64": f"data:image/{extn};base64,{safe_decode(base64_string)}",
+		"width": original_size[0],
+		"height": original_size[1],
+	}
 
 def on_doctype_update():
 	frappe.db.add_index("File", ["attached_to_doctype", "attached_to_name"])
