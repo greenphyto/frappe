@@ -31,6 +31,10 @@ frappe.ui.form.ControlDatetime = class ControlDatetime extends frappe.ui.form.Co
 			timepicker: true,
 			timeFormat: time_format.toLowerCase().replace("mm", "ii"),
 		});
+
+		if (this.custom_options){
+			$.extend(this.datepicker_options, this.custom_options);
+		}
 	}
 	get_now_date() {
 		return frappe.datetime.now_datetime(true);

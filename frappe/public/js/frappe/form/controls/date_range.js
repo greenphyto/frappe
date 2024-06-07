@@ -18,6 +18,10 @@ frappe.ui.form.ControlDateRange = class ControlDateRange extends frappe.ui.form.
 		this.datepicker_options.onSelect = function () {
 			me.$input.trigger("change");
 		};
+
+		if (this.custom_options){
+			$.extend(this.datepicker_options, this.custom_options);
+		}
 	}
 	set_datepicker() {
 		this.$input.datepicker(this.datepicker_options);
