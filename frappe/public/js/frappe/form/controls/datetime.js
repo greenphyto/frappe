@@ -12,7 +12,7 @@ frappe.ui.form.ControlDatetime = class ControlDatetime extends frappe.ui.form.Co
 		}
 		value = this.format_for_input(value);
 		this.$input && this.$input.val(value);
-		this.datepicker.selectDate(frappe.datetime.user_to_obj(value));
+		// this.datepicker.selectDate(frappe.datetime.user_to_obj(value));
 	}
 
 	get_start_date() {
