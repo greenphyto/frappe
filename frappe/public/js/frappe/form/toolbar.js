@@ -397,6 +397,26 @@ frappe.ui.form.Toolbar = class Toolbar {
 			true
 		);
 
+		// send again email workflow
+		if (frappe.model.has_workflow(me.frm.doc.doctype)){
+			this.page.add_menu_item(
+				__("Send Workflow Email"),
+				function () {
+					frappe.call({
+						"method":"frappe.workflow.doctype.workflow_action.workflow_action.send_current_state_email",
+						"args":{
+							doctype:me.frm.doc.doctype,
+							name:me.frm.doc.name
+						},
+						callback: function(){
+							
+						}
+					})
+				},
+				true
+			);
+		}
+
 		// rename
 		if (this.can_rename()) {
 			this.page.add_menu_item(
