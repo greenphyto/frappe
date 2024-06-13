@@ -539,8 +539,10 @@ def convert_image_to_raw(doc):
 	meta = frappe.get_meta(doc.get("doctype"))
 	for d in meta.fields:
 		if d.fieldtype in ('Attach', 'Attach Image') and doc.get(d.fieldname):
-			image_str = get_base64_image(doc.get(d.fieldname))
-			doc.set(d.fieldname, image_str.get("base64"))
+			filename = doc.get(d.fieldname)
+			if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif')):
+				image_str = get_base64_image(filename)
+				doc.set(d.fieldname, image_str.get("base64"))
 
 	return doc
 
