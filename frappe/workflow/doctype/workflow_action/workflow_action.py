@@ -127,13 +127,13 @@ def send_current_state_email(doctype, name):
 		workflow, get_doc_workflow_state(doc), doc
 	)
 	if not next_possible_transitions:
-		frappe.msgprint(_("Cancel, Not have possible next action!"))
+		frappe.throw(_("Not have possible next action!"))
 		return
 
 	user_data_map, roles = get_users_next_action_data(next_possible_transitions, doc)
 
 	if not user_data_map:
-		frappe.msgprint(_("None user to send"))
+		frappe.throw(_("None user to send"))
 		return
 	
 	create_workflow_actions_for_roles(roles, doc)
