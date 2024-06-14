@@ -348,6 +348,8 @@ def check_if_doc_is_dynamically_linked(doc, method="Delete"):
 
 
 def raise_link_exists_exception(doc, reference_doctype, reference_docname, row=""):
+	if not frappe.db.exists(reference_doctype, reference_docname):
+		return
 	doc_link = '<a href="/app/Form/{0}/{1}">{1}</a>'.format(doc.doctype, doc.name)
 	reference_link = '<a href="/app/Form/{0}/{1}">{1}</a>'.format(
 		reference_doctype, reference_docname
