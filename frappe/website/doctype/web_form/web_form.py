@@ -390,6 +390,7 @@ def accept(web_form, data):
 	data = frappe._dict(json.loads(data))
 
 	files = []
+	files_ready = []
 	files_to_delete = []
 
 	web_form = frappe.get_doc("Web Form", web_form)
@@ -424,6 +425,8 @@ def accept(web_form, data):
 				if not doc.name:
 					doc.set(fieldname, "")
 				continue
+			elif value:
+				files_ready.append((fieldname, value))
 
 			elif not value and doc.get(fieldname):
 				files_to_delete.append(doc.get(fieldname))
@@ -473,6 +476,12 @@ def accept(web_form, data):
 			doc.set(fieldname, _file.file_url)
 
 		doc.save(ignore_permissions=True)
+	if files_ready:
+		# file existing and update
+		for file in files_ready:
+			name = frappe.db.get_value("File", {"file_url":file[1], "attached_to_name":['is', 'not set']}, order_by="creation")
+			frappe.db.set_value("File", name, "attached_to_name", doc.name)
+			frappe.db.set_value("File", name, "attached_to_doctype", doctype)
 
 	if files_to_delete:
 		for f in files_to_delete:
