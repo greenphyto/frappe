@@ -372,7 +372,7 @@ def add_layouts(bootinfo):
 	# add routes for readable doctypes
 	bootinfo.doctype_layouts = frappe.get_all("DocType Layout", ["name", "route", "document_type"])
 
-
+@frappe.whitelist()
 def get_desk_settings():
 	role_list = frappe.get_all("Role", fields=["*"], filters=dict(name=["in", frappe.get_roles()]))
 	desk_settings = {}
