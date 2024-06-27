@@ -91,7 +91,7 @@ def get_pending_log(filters):
 		del filters['doctype']
 		filters["doc_type"] = cdt
 
-	base_filters = {"status":"Pending"}
+	base_filters = {"status":['in', ["Pending", "Error"]]}
 	base_filters.update(filters)
 
 	logs = frappe.db.get_all("Sync Log", base_filters, [
