@@ -43,7 +43,12 @@ def delete_log(doctype, docname):
 def update_success(logs, status="Success"):
 	if isinstance(logs, string_types):
 		logs = json.loads(logs)
+	if not isinstance(logs, list):
+		logs = [logs]
+
 	for log_name in logs:
+		if not isinstance(log_name, string_types):
+			log_name = log_name.get("name")
 		frappe.db.set_value("Sync Log", log_name, "status", status)
 		frappe.db.set_value("Sync Log", log_name, "sync_on", now())
 
@@ -64,8 +69,8 @@ def get_pending_log(filters):
 
 	logs = frappe.db.get_all("Sync Log", base_filters, [
 		'doc_type as doctype', 
-		'docname as name',
-		'name as log_name',
+		'docname',
+		'name',
 		'update_type'
 	])
 	return logs
