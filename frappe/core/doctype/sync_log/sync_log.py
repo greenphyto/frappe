@@ -38,6 +38,9 @@ def delete_log(doctype, docname):
 
 	if log:
 		frappe.delete_doc("Sync Log", log)
+		return True
+	else:
+		return False
 
 @frappe.whitelist()
 def update_success(logs, status="Success"):
