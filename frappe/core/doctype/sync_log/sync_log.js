@@ -2,7 +2,9 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Sync Log', {
-	// refresh: function(frm) {
-
-	// }
+	print_to_console: function(frm) {
+		console.log("REQUEST:",JSON.parse(frm.doc.request));
+		console.log("ERROR:",JSON.parse(frm.doc.error));
+		frappe.show_alert("View in Browser's console",3);
+	}
 });

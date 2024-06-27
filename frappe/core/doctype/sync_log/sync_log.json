@@ -8,9 +8,15 @@
  "field_order": [
   "doc_type",
   "docname",
-  "status",
   "update_type",
-  "sync_on"
+  "column_break_4",
+  "status",
+  "sync_on",
+  "result_section",
+  "status_code",
+  "request",
+  "error",
+  "print_to_console"
  ],
  "fields": [
   {
@@ -37,7 +43,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Status",
-   "options": "Pending\nSuccess",
+   "options": "Pending\nSuccess\nError",
    "read_only": 1
   },
   {
@@ -56,12 +62,45 @@
    "label": "Update Type",
    "options": "Update\nCancel\nDelete",
    "read_only": 1
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "result_section",
+   "fieldtype": "Section Break",
+   "label": "Result"
+  },
+  {
+   "fieldname": "status_code",
+   "fieldtype": "Data",
+   "label": "Status Code",
+   "read_only": 1
+  },
+  {
+   "fieldname": "error",
+   "fieldtype": "Text",
+   "label": "Error",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.error",
+   "fieldname": "print_to_console",
+   "fieldtype": "Button",
+   "label": "Print to Console"
+  },
+  {
+   "fieldname": "request",
+   "fieldtype": "Text",
+   "label": "Request",
+   "read_only": 1
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-02-16 15:41:36.017539",
+ "modified": "2024-06-27 15:37:48.042787",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "Sync Log",

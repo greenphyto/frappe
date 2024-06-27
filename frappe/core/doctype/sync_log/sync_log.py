@@ -52,10 +52,34 @@ def update_success(logs, status="Success"):
 	for log_name in logs:
 		if not isinstance(log_name, string_types):
 			log_name = log_name.get("name")
-		frappe.db.set_value("Sync Log", log_name, "status", status)
-		frappe.db.set_value("Sync Log", log_name, "sync_on", now())
+		log = frappe.get_doc("Sync Log", log_name)
+		log.status = status
+		log.sync_on = now()
+		log.error = ""
+		log.request = ""
+		log.status_code = 200
+		log.flags.ignore_permissions = 1
+		log.save()
 
 	return True
+
+def update_error(logs):
+	# logs = [{"log":"log name", "error": "error", "status_code":status_code, "request":"detail request like host, url, method"}]
+	if isinstance(logs, string_types):
+		logs = json.loads(logs)
+	if not isinstance(logs, list):
+		logs = [logs]
+
+	for d in logs:
+		d = frappe._dict(d)
+		log = frappe.get_doc("Sync Log", d.log)
+		log.status = "Error"
+		log.request = json.dumps(d.request)
+		log.error = d.error
+		log.sync_on = now()
+		log.status_code = d.status_code
+		log.flags.ignore_permissions = 1
+		log.save()
 
 @frappe.whitelist()
 def get_pending_log(filters):
