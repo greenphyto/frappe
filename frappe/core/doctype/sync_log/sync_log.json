@@ -12,6 +12,7 @@
   "column_break_4",
   "status",
   "sync_on",
+  "method",
   "result_section",
   "status_code",
   "request",
@@ -95,12 +96,18 @@
    "fieldtype": "Text",
    "label": "Request",
    "read_only": 1
+  },
+  {
+   "fieldname": "method",
+   "fieldtype": "Data",
+   "label": "Method",
+   "read_only": 1
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-27 15:37:48.042787",
+ "modified": "2024-06-28 15:05:47.261502",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "Sync Log",

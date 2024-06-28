@@ -6,5 +6,20 @@ frappe.ui.form.on('Sync Log', {
 		console.log("REQUEST:",JSON.parse(frm.doc.request));
 		console.log("ERROR:",JSON.parse(frm.doc.error));
 		frappe.show_alert("View in Browser's console",3);
+	},
+	refresh: function(frm){
+		$(".btn-sync-again").remove();
+		if (frm.doc.method){
+			frm.page.add_button("Sync Now", ()=>{
+				frappe.call({
+					method:"sync_again",
+					doc:frm.doc,
+					callback: function(){
+						frappe.show_alert("Done",2);
+						frm.reload_doc();
+					}
+				})
+			}, {btn_class:"btn-sync-again"})
+		}
 	}
 });

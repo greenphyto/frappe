@@ -3,20 +3,30 @@
 
 import frappe, json
 from frappe.model.document import Document
-from frappe.utils import now, cstr
+from frappe.utils import now, cstr, cint
 from six import string_types
 
 
 class SyncLog(Document):
-	pass
+	@frappe.whitelist()
+	def sync_again(self):
+		if not self.method:
+			frappe.msgprint("Not have settings")
 
-def create_log(doctype, docname, update_type="Update"):
+		settings = frappe.get_hooks("sync_log_method") or {}
+		self.method = cint(self.method)
+		if self.method in settings:
+			func_path = settings[self.method][0]
+			frappe.get_attr(func_path)(self)
+
+def create_log(doctype, docname, update_type="Update", method=""):
 	# when other doctype is created or edited
 	# it will create a pending log
 	log = frappe.db.exists("Sync Log", {
 		"doc_type": doctype, 
 		"docname": docname,
-		"status": "Pending"
+		"status": "Pending",
+		"method_id":method
 	})
 
 	if not log:
@@ -25,6 +35,7 @@ def create_log(doctype, docname, update_type="Update"):
 		doc.docname = docname
 		doc.status = 'Pending'
 		doc.update_type = update_type
+		doc.method = method
 		doc.insert(ignore_permissions=1)
 	elif update_type in ('Delete', 'Cancel'):
 		frappe.db.set_value("Sync Log", log, "update_type", update_type)
