@@ -10,14 +10,16 @@
   "docname",
   "update_type",
   "column_break_4",
-  "status",
   "sync_on",
   "method",
   "result_section",
   "status_code",
   "request",
   "error",
-  "print_to_console"
+  "print_to_console",
+  "more_information_section",
+  "status",
+  "trial"
  ],
  "fields": [
   {
@@ -44,7 +46,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Status",
-   "options": "Pending\nSuccess\nError",
+   "options": "Pending\nSuccess\nError\nExpired",
    "read_only": 1
   },
   {
@@ -102,12 +104,23 @@
    "fieldtype": "Data",
    "label": "Method",
    "read_only": 1
+  },
+  {
+   "fieldname": "more_information_section",
+   "fieldtype": "Section Break",
+   "label": "More Information"
+  },
+  {
+   "fieldname": "trial",
+   "fieldtype": "Int",
+   "label": "Trial",
+   "read_only": 1
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-28 15:05:47.261502",
+ "modified": "2024-06-28 17:35:19.325991",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "Sync Log",

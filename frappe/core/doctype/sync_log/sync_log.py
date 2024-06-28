@@ -3,7 +3,7 @@
 
 import frappe, json
 from frappe.model.document import Document
-from frappe.utils import now, cstr, cint
+from frappe.utils import now, cstr, cint, flt
 from six import string_types
 
 
@@ -14,6 +14,7 @@ class SyncLog(Document):
 			frappe.msgprint("Not have settings")
 
 		settings = frappe.get_hooks("sync_log_method") or {}
+		self.db_set("trial", 0)
 		self.method = cint(self.method)
 		if self.method in settings:
 			func_path = settings[self.method][0]
@@ -89,6 +90,11 @@ def update_error(logs):
 		log.error = d.error
 		log.sync_on = now()
 		log.status_code = d.status_code
+		trial = cint(log.get("trial")) + 1
+		if trial > 3:
+			log.status = "Expired"
+		else:
+			log.trial = trial
 		log.flags.ignore_permissions = 1
 		log.save()
 
