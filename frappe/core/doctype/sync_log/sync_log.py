@@ -9,7 +9,7 @@ from six import string_types
 
 class SyncLog(Document):
 	@frappe.whitelist()
-	def sync_again(self):
+	def sync(self):
 		if not self.method:
 			frappe.msgprint("Not have settings")
 
@@ -38,8 +38,12 @@ def create_log(doctype, docname, update_type="Update", method=""):
 		doc.update_type = update_type
 		doc.method = method
 		doc.insert(ignore_permissions=1)
+		return doc.name
+	
 	elif update_type in ('Delete', 'Cancel'):
 		frappe.db.set_value("Sync Log", log, "update_type", update_type)
+
+	return log
 
 def delete_log(doctype, docname):
 	log = frappe.db.exists("Sync Log", {

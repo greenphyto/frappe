@@ -12,7 +12,7 @@ frappe.ui.form.on('Sync Log', {
 		if (frm.doc.method){
 			frm.page.add_button("Sync Now", ()=>{
 				frappe.call({
-					method:"sync_again",
+					method:"sync",
 					doc:frm.doc,
 					callback: function(){
 						frappe.show_alert("Done",2);
