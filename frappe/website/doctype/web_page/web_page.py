@@ -47,6 +47,11 @@ class WebPage(WebsiteGenerator):
 		if self.context_script:
 			_locals = dict(context=frappe._dict())
 			safe_exec(self.context_script, None, _locals)
+			# add list 
+			for key, value in _locals["context"].items():
+				if isinstance(value, list) and isinstance(context.get(key), list):
+					_locals["context"][key] = context[key] + _locals["context"][key]
+
 			context.update(_locals["context"])
 
 		self.render_dynamic(context)
