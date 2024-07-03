@@ -7,6 +7,7 @@ import frappe
 from frappe import _
 from frappe.model.docstatus import DocStatus
 from frappe.utils import cint
+from six import string_types
 
 if TYPE_CHECKING:
 	from frappe.model.document import Document
@@ -101,7 +102,11 @@ def is_transition_condition_satisfied(transition, doc) -> bool:
 @frappe.whitelist()
 def apply_workflow(doc, action, from_web=False):
 	"""Allow workflow action on the current doc"""
-	doc = frappe.get_doc(frappe.parse_json(doc))
+	if isinstance(doc, string_types):
+		doc = frappe.parse_json(doc)
+	if isinstance(doc, dict):
+		doc = frappe.get_doc(doc)
+
 	workflow = get_workflow(doc.doctype)
 	transitions = get_transitions(doc, workflow)
 	user = frappe.session.user
