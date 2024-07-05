@@ -757,9 +757,6 @@ def has_permission(doc, ptype=None, user=None):
 			# if parent doc is not created before file is created
 			# we cannot check its permission so we will use file's permission
 			pass
-	# print(755, frappe.request.headers)
-	print(756, frappe.get_request_header("User-Agent", ""))
-	print("Type", doc.file_name, is_image_file(doc))
 
 	if is_internal and is_image_file(doc):
 		has_access = True
