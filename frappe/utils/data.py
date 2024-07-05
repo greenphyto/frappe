@@ -1650,11 +1650,11 @@ def get_url(uri: str | None = None, full_address: bool = False) -> str:
 		and host_name
 		and not url_contains_port(host_name)
 		and port
+		and frappe.conf.use_port
 	):
 		host_name = host_name + ":" + str(port)
 
 	url = urljoin(host_name, uri) if uri else host_name
-
 	return url
 
 

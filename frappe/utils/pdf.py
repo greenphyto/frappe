@@ -42,7 +42,7 @@ def get_pdf(html, options=None, output: PdfWriter | None = None):
 	except OSError as e:
 		if any([error in str(e) for error in PDF_CONTENT_ERRORS]):
 			if not filedata:
-				print(html, options)
+				# print(html, options)
 				frappe.throw(_("PDF generation failed because of broken image links"))
 
 			# allow pdfs with missing images if file got created
