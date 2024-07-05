@@ -67,3 +67,6 @@ def optimize_image(
 
 	optimized_content = output.getvalue()
 	return optimized_content if len(optimized_content) < len(content) else content
+
+def is_image_file(doc):
+	return doc.file_name.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif'))

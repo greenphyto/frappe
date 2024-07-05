@@ -18,7 +18,7 @@ from frappe.database.schema import SPECIAL_CHAR_PATTERN
 from frappe.model.document import Document
 from frappe.utils import call_hook_method, cint, get_files_path, get_hook_method, get_url
 from frappe.utils.file_manager import is_safe_path
-from frappe.utils.image import optimize_image, strip_exif_data
+from frappe.utils.image import optimize_image, strip_exif_data, is_image_file
 
 from .exceptions import AttachmentLimitReached, FolderNotEmpty, MaxFileSizeReachedError
 from .utils import *
@@ -723,6 +723,11 @@ def has_permission(doc, ptype=None, user=None):
 	has_access = False
 	user = user or frappe.session.user
 
+	# allow if from wkhtmltopdf
+	is_internal = False
+	if "wkhtmltopdf" in frappe.get_request_header("User-Agent", ""):
+		is_internal = 1
+	
 	if ptype == "create":
 		has_access = frappe.has_permission("File", "create", user=user)
 
@@ -752,6 +757,12 @@ def has_permission(doc, ptype=None, user=None):
 			# if parent doc is not created before file is created
 			# we cannot check its permission so we will use file's permission
 			pass
+	# print(755, frappe.request.headers)
+	print(756, frappe.get_request_header("User-Agent", ""))
+	print("Type", doc.file_name, is_image_file(doc))
+
+	if is_internal and is_image_file(doc):
+		has_access = True
 
 	return has_access
 
