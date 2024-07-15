@@ -30,6 +30,10 @@ export default class WebForm extends frappe.ui.FieldGroup {
 			this.setup_discard_action();
 		}
 
+		if (!this.is_new && this.in_view_mode && this.allow_delete){
+			this.setup_delete_action();
+		}
+
 		this.setup_previous_next_button();
 		this.toggle_section();
 
@@ -166,6 +170,26 @@ export default class WebForm extends frappe.ui.FieldGroup {
 
 	setup_primary_action() {
 		$(".web-form").on("submit", () => this.save());
+	}
+
+	setup_delete_action(){
+		$(".web-form-actions .delete-button").on("click", () => this.delete_form());
+	}
+
+	delete_form(){
+		frappe
+			.call({
+				type: "POST",
+				method: "frappe.website.doctype.web_form.web_form.delete",
+				args: {
+					web_form_name: this.name,
+					docname: this.doc.name,
+				},
+			})
+			.then(() => {
+				frappe.msgprint(`Document deleted!`);
+				window.location.href = "/"+this.route;
+			})
 	}
 
 	setup_discard_action() {
