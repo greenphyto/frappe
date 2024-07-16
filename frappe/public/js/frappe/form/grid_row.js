@@ -851,6 +851,8 @@ export default class GridRow {
 		function on_input_focus(el) {
 			input_in_focus = true;
 
+			if (!grid_container) return;
+
 			let container_width = grid_container.getBoundingClientRect().width;
 			let container_left = grid_container.getBoundingClientRect().left;
 			let grid_left = parseFloat(grid.style.left);
