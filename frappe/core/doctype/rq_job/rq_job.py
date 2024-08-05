@@ -2,7 +2,7 @@
 # For license information, please see license.txt
 
 import functools
-import re
+import re, json
 
 from rq.command import send_stop_job_command
 from rq.job import Job
@@ -191,3 +191,14 @@ def get_all_queued_jobs():
 @frappe.whitelist()
 def stop_job(job_id):
 	frappe.get_doc("RQ Job", job_id).stop_job()
+
+@frappe.whitelist()
+def run_job_manually(job_id):
+	from frappe.utils.background_jobs import execute_job 
+	rq_doc = frappe.get_doc("RQ Job", job_id)
+	kwargs = json.loads(rq_doc.arguments)
+	kwargs['is_async'] = False
+	execute_job(**kwargs)
+	rq_doc.db_set("status", "finished")
+
+	return None

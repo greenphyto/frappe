@@ -25,6 +25,22 @@ frappe.ui.form.on("RQ Job", {
 					}
 				);
 			});
+
+			frm.add_custom_button(__("Run Job"), () => {
+				frappe.confirm(
+					"Continue to run this job? ",
+					() => {
+						frappe
+							.call("frappe.core.doctype.rq_job.rq_job.run_job_manually", {
+								job_id: frm.doc.name
+							})
+							.then((r) => {
+								frappe.show_alert("Start job..");
+								frm.reload_doc();
+							});
+					}
+				);
+			});
 		}
 	},
 });
