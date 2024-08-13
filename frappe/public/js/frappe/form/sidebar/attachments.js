@@ -78,6 +78,7 @@ frappe.ui.form.Attachments = class Attachments {
 		}
 	}
 	show_image_detail(img_path, title_dialog="Image Preview"){
+		var ids = makeid(6);
 		var d = new frappe.ui.Dialog({
 			title: __(title_dialog),
 			fields: [
@@ -86,10 +87,17 @@ frappe.ui.form.Attachments = class Attachments {
 					"fieldname": "img",
 					"fieldtype": "HTML",
 					"default": ''
+				},
+				{
+					"label": "ids",
+					"fieldname":"ids",
+					"fieldtype":"Data",
+					"hidden":1,
+					"default":ids
 				}
 			],
-			primary_action: function() {
-				$(".download-image-preview")[0].click();
+			primary_action: function(val) {
+				$(`#${val.ids}.download-image-preview`)[0].click();
 			},
 			primary_action_label: __('Download'),
 			secondary_action: function(){
@@ -101,7 +109,7 @@ frappe.ui.form.Attachments = class Attachments {
 		var wrapper = d.fields_dict.img.$wrapper;
 		wrapper.append(`
 			<div class="qr-preview-wrapper text-center" style="min-height: 6cm;">
-				<a href="${img_path}" class="download-image-preview" download>
+				<a href="${img_path}" class="download-image-preview" id="${ids}" download>
 					<img src="${img_path}"></img>
 				</a>
 			</div>
@@ -269,3 +277,15 @@ frappe.ui.form.Attachments = class Attachments {
 		this.refresh();
 	}
 };
+
+function makeid(length) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      counter += 1;
+    }
+    return result;
+}
