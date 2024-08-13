@@ -202,12 +202,21 @@ export default class WebForm extends frappe.ui.FieldGroup {
 		path = path.substring(0, path.lastIndexOf("/"));
 
 		if (frappe.form_dirty) {
-			frappe.warn(
-				__("Discard?"),
-				__("Are you sure you want to discard the changes?"),
-				() => (window.location.href = path),
-				__("Discard")
-			);
+			if (this.is_new) {
+				frappe.warn(
+					__("Discard?"),
+					__("Are you sure you want to discard this draft?"),
+					() => (window.location.href = path),
+					__("Discard")
+				);
+			} else {
+				frappe.warn(
+					__("Discard?"),
+					__("Are you sure you want to discard the changes?"),
+					() => (window.location.href = path),
+					__("Discard")
+				);
+			}
 		} else {
 			window.location.href = path;
 		}
