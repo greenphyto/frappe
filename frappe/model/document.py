@@ -439,8 +439,9 @@ class Document(BaseDocument):
 		# If autoname has set as Prompt (name)
 		if self.get("__newname"):
 			self.name = validate_name(self.doctype, self.get("__newname"))
-			self.flags.name_set = True
-			return
+			if not frappe.db.exists(self.doctype, self.name):
+				self.flags.name_set = True
+				return
 
 		if set_name:
 			self.name = validate_name(self.doctype, set_name)
