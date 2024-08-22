@@ -44,7 +44,8 @@ frappe.ui.form.ControlSignature = class ControlSignature extends frappe.ui.form.
 					return false;
 				});
 		}
-
+		
+		this.$wrapper.find(".signature-display").remove();
 		this.img_wrapper = $(`<div class="signature-display">
 			<div class="missing-image attach-missing-image">
 				${frappe.utils.icon("restriction", "md")}</i>
