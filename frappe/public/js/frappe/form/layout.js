@@ -453,11 +453,22 @@ frappe.ui.form.Layout = class Layout {
 	}
 
 	setup_events() {
+		var me = this;
 		this.tabs_list.off("click").on("click", ".nav-link", (e) => {
 			e.preventDefault();
 			e.stopImmediatePropagation();
 			$(e.currentTarget).tab("show");
+			me.refresh_signature_field();
 		});
+	}
+
+	refresh_signature_field(){
+		if (this.frm){
+			$.each(cur_frm.fields, (i, field)=>{ 
+				if (field.df.fieldtype=="Signature") {
+					field.refresh(); 
+				}})
+		}
 	}
 
 	setup_tab_events() {
