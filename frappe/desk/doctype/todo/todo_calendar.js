@@ -10,6 +10,11 @@ frappe.views.calendar["ToDo"] = {
 		allDay: "allDay",
 		progress: "progress",
 	},
+	style_map: {
+		Planned: "orange",
+		Completed: "green",
+		Cancelled: "red",
+	},
 	gantt: true,
 	filters: [
 		{
@@ -25,5 +30,12 @@ frappe.views.calendar["ToDo"] = {
 			label: __("Task"),
 		},
 	],
-	get_events_method: "frappe.desk.calendar.get_events",
+	get_events_method: "frappe.desk.doctype.todo.todo.get_events",
+	event_click: function (doc) {
+		if (!doc.reference_name){
+			frappe.set_route("Form", "ToDo", doc.name);
+		}else{
+			frappe.set_route("Form", doc.reference_type, doc.reference_name);
+		}
+	}
 };

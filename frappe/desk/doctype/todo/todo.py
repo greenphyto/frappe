@@ -152,3 +152,26 @@ def has_permission(doc, ptype="read", user=None):
 @frappe.whitelist()
 def new_todo(description):
 	frappe.get_doc({"doctype": "ToDo", "description": description}).insert()
+
+
+@frappe.whitelist()
+def get_events(start, end, filters=None):
+	events = frappe.get_list("ToDo", fields=["name","description","date","status","reference_type","reference_name"], filters=filters)
+
+	style_map = {
+		"Planned": "#FFF5F0",
+		"Completed": "#EAF5EE",
+		"Cancelled": "#FFF5F5",
+	}
+
+	text_style_map = {
+		"Planned": "#9C4621",
+		"Completed": "#286840",
+		"Cancelled": "#C53030",
+	}
+
+	for d in events:
+		d.color = style_map[d.status]
+		d.textColor = text_style_map[d.status]
+
+	return events

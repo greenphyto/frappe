@@ -285,10 +285,14 @@ frappe.views.Calendar = class Calendar {
 				element.attr("title", event.tooltip);
 			},
 			eventClick: function (event) {
-				// edit event description or delete
-				var doctype = event.doctype || me.doctype;
-				if (frappe.model.can_read(doctype)) {
-					frappe.set_route("Form", doctype, event.name);
+				if (me.event_click != null) {
+					me.event_click(event)
+				} else {
+					// edit event description or delete
+					var doctype = event.doctype || me.doctype;
+					if (frappe.model.can_read(doctype)) {
+						frappe.set_route("Form", doctype, event.name);
+					}
 				}
 			},
 			eventDrop: function (event, delta, revertFunc) {
