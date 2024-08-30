@@ -9,6 +9,7 @@
   "doc_type",
   "docname",
   "update_type",
+  "doc_method",
   "column_break_4",
   "sync_on",
   "method",
@@ -115,12 +116,18 @@
    "fieldtype": "Int",
    "label": "Trial",
    "read_only": 1
+  },
+  {
+   "fieldname": "doc_method",
+   "fieldtype": "Data",
+   "label": "Doc Method",
+   "read_only": 1
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-06-28 17:35:19.325991",
+ "modified": "2024-08-30 12:09:33.881566",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "Sync Log",

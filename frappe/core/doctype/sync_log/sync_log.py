@@ -20,15 +20,23 @@ class SyncLog(Document):
 			func_path = settings[self.method][0]
 			frappe.get_attr(func_path)(self)
 
-def create_log(doctype, docname, update_type="Update", method=""):
+def create_log(doctype, docname, update_type="", method="", doc_method=""):
 	# when other doctype is created or edited
 	# it will create a pending log
+
+	if not update_type and doc_method in ['on_trash', 'after_delete']:
+		update_type = "Delete"
+
+	if not update_type:
+		update_type = "Update"
+
 	log = frappe.db.exists("Sync Log", {
 		"doc_type": doctype, 
 		"docname": docname,
 		"status": "Pending",
 		"method_id":method
 	})
+
 
 	if not log:
 		doc = frappe.new_doc("Sync Log", log)
@@ -37,6 +45,7 @@ def create_log(doctype, docname, update_type="Update", method=""):
 		doc.status = 'Pending'
 		doc.update_type = update_type
 		doc.method = method
+		doc.doc_method = doc_method
 		doc.insert(ignore_permissions=1)
 		return doc.name
 	
