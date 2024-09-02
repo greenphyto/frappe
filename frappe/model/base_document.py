@@ -454,7 +454,8 @@ class BaseDocument:
 
 	def get_table_field_doctype(self, fieldname):
 		try:
-			return self.meta.get_field(fieldname).options
+			field = self.meta.get_field(fieldname) or {}
+			return field.get("options")
 		except AttributeError:
 			if self.doctype == "DocType" and (table_doctype := TABLE_DOCTYPES_FOR_DOCTYPE.get(fieldname)):
 				return table_doctype
