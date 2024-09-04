@@ -250,7 +250,7 @@ def check_permission_and_not_submitted(doc):
 		)
 
 
-def check_if_doc_is_linked(doc, method="Delete"):
+def check_if_doc_is_linked(doc, method="Delete", validate=False):
 	"""
 	Raises excption if the given doc(dt, dn) is linked in another record.
 	"""
@@ -288,11 +288,17 @@ def check_if_doc_is_linked(doc, method="Delete"):
 					continue
 				else:
 					reference_docname = item_parent or item.name
+					if validate:
+						return False
 					raise_link_exists_exception(doc, linked_doctype, reference_docname)
 
 		else:
 			if frappe.db.get_value(link_dt, None, link_field) == doc.name:
+				if validate:
+					return False
 				raise_link_exists_exception(doc, link_dt, link_dt)
+				
+	return True
 
 
 def check_if_doc_is_dynamically_linked(doc, method="Delete"):
