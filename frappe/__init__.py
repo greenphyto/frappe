@@ -487,6 +487,7 @@ def msgprint(
 
 	if raise_exception and hasattr(raise_exception, "__name__"):
 		local.response["exc_type"] = raise_exception.__name__
+		local.response["error_message"] = msg
 
 	_raise_exception()
 
