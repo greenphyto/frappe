@@ -454,11 +454,19 @@ frappe.ui.form.Layout = class Layout {
 
 	setup_events() {
 		var me = this;
+		var click = false;
 		this.tabs_list.off("click").on("click", ".nav-link", (e) => {
 			e.preventDefault();
 			e.stopImmediatePropagation();
-			$(e.currentTarget).tab("show");
-			me.refresh_signature_field();
+			$(e.currentTarget).on('shown.bs.tab', function(event){
+				if (!click){
+					me.refresh_signature_field();
+					click = true;
+					setTimeout(()=>{
+						click = false;
+					}, 10);
+				}
+			}).tab("show");
 		});
 	}
 
