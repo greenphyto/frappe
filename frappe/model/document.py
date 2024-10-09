@@ -390,7 +390,7 @@ class Document(BaseDocument):
 		if not df:
 			df = self.meta.get_field(fieldname)
 
-		for d in self.get(df.fieldname):
+		for d in self.get(df.fieldname) or []:
 			d.db_update()
 			rows.append(d.name)
 

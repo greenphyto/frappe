@@ -192,7 +192,7 @@ class BaseDocument:
 		if limit and isinstance(value, (list, tuple)) and len(value) > limit:
 			value = value[:limit]
 
-		return value
+		return value or default or []
 
 	def getone(self, key, filters=None):
 		return self.get(key, filters=filters, limit=1)[0]
