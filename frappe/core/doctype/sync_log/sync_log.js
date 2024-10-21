@@ -14,6 +14,9 @@ frappe.ui.form.on('Sync Log', {
 				frappe.call({
 					method:"sync",
 					doc:frm.doc,
+					args: {
+						save_log:true
+					},
 					callback: function(){
 						frappe.show_alert("Done",2);
 						frm.reload_doc();

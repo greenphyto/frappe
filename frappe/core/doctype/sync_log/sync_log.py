@@ -9,13 +9,16 @@ from six import string_types
 
 class SyncLog(Document):
 	@frappe.whitelist()
-	def sync(self):
+	def sync(self, save_log=False):
 		if not self.method:
 			frappe.msgprint("Not have settings")
 
 		settings = frappe.get_hooks("sync_log_method") or {}
 		self.db_set("trial", 0)
 		self.method = cint(self.method)
+		if save_log:
+			self.save_log = 1
+
 		if self.method in settings:
 			func_path = settings[self.method][0]
 			frappe.get_attr(func_path)(self)
@@ -74,15 +77,19 @@ def update_success(logs, status="Success"):
 	if not isinstance(logs, list):
 		logs = [logs]
 
-	for log_name in logs:
+	for d in logs:
+		d = frappe._dict(d)
+		log_name = d.log
 		if not isinstance(log_name, string_types):
 			log_name = log_name.get("name")
 		log = frappe.get_doc("Sync Log", log_name)
 		log.status = status
 		log.sync_on = now()
 		log.error = ""
-		log.request = ""
-		log.status_code = 200
+		if d.save_log:
+			log.request = json.dumps(d.request)
+			log.save_log = d.save_log
+		log.status_code = d.status_code
 		log.flags.ignore_permissions = 1
 		log.save()
 

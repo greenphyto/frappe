@@ -20,7 +20,8 @@
   "print_to_console",
   "more_information_section",
   "status",
-  "trial"
+  "trial",
+  "save_log"
  ],
  "fields": [
   {
@@ -122,12 +123,18 @@
    "fieldtype": "Data",
    "label": "Doc Method",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "save_log",
+   "fieldtype": "Check",
+   "label": "Save Log"
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-08-30 12:09:33.881566",
+ "modified": "2024-10-21 15:52:55.972299",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "Sync Log",
