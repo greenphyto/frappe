@@ -21,7 +21,17 @@ class SyncLog(Document):
 
 		if self.method in settings:
 			func_path = settings[self.method][0]
-			frappe.get_attr(func_path)(self)
+			try:
+				frappe.get_attr(func_path)(self)
+			except Exception as e:
+				tcb = frappe.get_traceback()
+				data = {
+					"error": cstr(e),
+					"traceback":tcb
+				} 
+				self.db_set("request", json.dumps(func_path))
+				self.db_set("status", "Error")
+				self.db_set("error", json.dumps(data))
 
 def create_log(doctype, docname, update_type="", method="", doc_method=""):
 	# when other doctype is created or edited
