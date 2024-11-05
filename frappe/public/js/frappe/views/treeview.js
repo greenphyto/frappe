@@ -382,8 +382,8 @@ frappe.views.TreeView = class TreeView {
 
 		this.ignore_fields = this.opts.ignore_fields || [];
 
-		var mandatory_fields = $.map(me.opts.meta.fields, function (d) {
-			return d.reqd || (d.bold && !d.read_only && !!d.is_virtual) ? d : null;
+		var mandatory_fields = $.map(me.opts.meta.fields, function (df) {
+			return (df.reqd || df.bold || df.allow_in_quick_entry) && !df.read_only && !df.is_virtual ? df : null;
 		});
 
 		var opts_field_names = this.fields.map(function (d) {
