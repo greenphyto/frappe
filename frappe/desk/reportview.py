@@ -19,8 +19,9 @@ from frappe.desk.query_report import get_filters_data, add_title_report
 
 @frappe.whitelist()
 @frappe.read_only()
-def get():
-	args = get_form_params()
+def get(args=None):
+	if not args:
+		args = get_form_params()
 	# If virtual doctype get data from controller het_list method
 	if is_virtual_doctype(args.doctype):
 		controller = get_controller(args.doctype)
