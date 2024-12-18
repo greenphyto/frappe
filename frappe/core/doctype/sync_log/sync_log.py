@@ -50,7 +50,6 @@ def create_log(doctype, docname, update_type="", method="", doc_method=""):
 		"method_id":method
 	})
 
-
 	if not log:
 		doc = frappe.new_doc("Sync Log", log)
 		doc.doc_type = doctype
@@ -68,17 +67,17 @@ def create_log(doctype, docname, update_type="", method="", doc_method=""):
 	return log
 
 def delete_log(doctype, docname):
-	log = frappe.db.exists("Sync Log", {
-		"doc_type": doctype, 
-		"docname": docname,
-		"status": "Pending"
-	})
+	logs = frappe.db.get_list("Sync Log", {"docname":docname}, ['name', 'doc_method', 'status'])
+	
+	valid = True
+	if logs:
+		for d in logs:
+			if d.status == "Pending":
+				frappe.delete_doc("Sync Log", d.name)
+			else:
+				valid = False
 
-	if log:
-		frappe.delete_doc("Sync Log", log)
-		return True
-	else:
-		return False
+	return valid
 
 @frappe.whitelist()
 def update_success(logs, status="Success"):
@@ -96,7 +95,7 @@ def update_success(logs, status="Success"):
 		log.status = status
 		log.sync_on = now()
 		log.error = ""
-		if d.save_log:
+		if d.save_log or frappe.local.conf.testing_site:
 			log.request = json.dumps(d.request)
 			log.save_log = d.save_log
 		log.status_code = d.status_code
