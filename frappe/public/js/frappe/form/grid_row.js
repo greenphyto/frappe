@@ -693,20 +693,13 @@ export default class GridRow {
 	}
 
 	set_dependant_property(df) {
-		if (
-			!df.reqd &&
-			df.mandatory_depends_on &&
-			this.evaluate_depends_on_value(df.mandatory_depends_on)
-		) {
-			df.reqd = 1;
+	
+		if (df.mandatory_depends_on){
+			df.reqd = cint(this.evaluate_depends_on_value(df.mandatory_depends_on));
 		}
 
-		if (
-			!df.read_only &&
-			df.read_only_depends_on &&
-			this.evaluate_depends_on_value(df.read_only_depends_on)
-		) {
-			df.read_only = 1;
+		if (df.read_only_depends_on){
+			df.read_only = cint(this.evaluate_depends_on_value(df.read_only_depends_on));
 		}
 	}
 
