@@ -305,7 +305,22 @@ def get_context(context):
 		if self.send_to_all_assignees:
 			recipients = recipients + get_assignees(doc)
 
-		return list(set(recipients)), list(set(cc)), list(set(bcc))
+		# exclude
+		ex_list = [d.strip() for d in (self.get("exclude_recipients") or "").split(",")]
+		for d in list(set(recipients)):
+			if d in ex_list:
+				recipients.remove(d)
+
+		for d in list(set(cc)):
+			if d in ex_list:
+				cc.remove(d)
+
+		for d in list(set(bcc)):
+			if d in ex_list:
+				bcc.remove(d)
+
+		res = list(set(recipients)), list(set(cc)), list(set(bcc))
+		return res
 
 	def get_receiver_list(self, doc, context):
 		"""return receiver list based on the doc field and role specified"""

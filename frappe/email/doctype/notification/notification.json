@@ -35,6 +35,7 @@
   "column_break_5",
   "send_to_all_assignees",
   "recipients",
+  "exclude_recipients",
   "message_sb",
   "message",
   "message_examples",
@@ -277,15 +278,22 @@
    "fieldname": "send_to_all_assignees",
    "fieldtype": "Check",
    "label": "Send To All Assignees"
+  },
+  {
+   "description": "Split by comma",
+   "fieldname": "exclude_recipients",
+   "fieldtype": "Small Text",
+   "label": "Exclude Recipients"
   }
  ],
  "icon": "fa fa-envelope",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2021-05-04 11:17:11.882314",
+ "modified": "2025-01-07 15:45:40.094547",
  "modified_by": "Administrator",
  "module": "Email",
  "name": "Notification",
+ "naming_rule": "Set by user",
  "owner": "Administrator",
  "permissions": [
   {
@@ -301,6 +309,7 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "title_field": "subject",
  "track_changes": 1
 }
