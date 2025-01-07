@@ -615,7 +615,7 @@
  "icon": "fa fa-inbox",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-08-23 00:31:05.305462",
+ "modified": "2025-01-07 15:25:59.319306",
  "modified_by": "Administrator",
  "module": "Email",
  "name": "Email Account",
@@ -633,6 +633,16 @@
   {
    "read": 1,
    "role": "Inbox User"
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "All",
+   "select": 1,
+   "share": 1
   }
  ],
  "sort_field": "modified",
