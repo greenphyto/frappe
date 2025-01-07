@@ -282,14 +282,15 @@
   {
    "description": "Split by comma",
    "fieldname": "exclude_recipients",
-   "fieldtype": "Small Text",
-   "label": "Exclude Recipients"
+   "fieldtype": "Data",
+   "label": "Exclude Recipients",
+   "length": 500
   }
  ],
  "icon": "fa fa-envelope",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-07 15:45:40.094547",
+ "modified": "2025-01-07 18:19:38.473815",
  "modified_by": "Administrator",
  "module": "Email",
  "name": "Notification",
