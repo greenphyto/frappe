@@ -43,6 +43,7 @@
   "print_hide_if_no_value",
   "print_width",
   "no_copy",
+  "no_amend_copy",
   "allow_on_submit",
   "in_list_view",
   "in_standard_filter",
@@ -435,13 +436,19 @@
    "fieldtype": "Check",
    "label": "Is System Generated",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "no_amend_copy",
+   "fieldtype": "Check",
+   "label": "No Amend Copy"
   }
  ],
  "icon": "fa fa-glass",
  "idx": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-06-13 06:39:03.319667",
+ "modified": "2025-01-08 16:41:08.118338",
  "modified_by": "Administrator",
  "module": "Custom",
  "name": "Custom Field",

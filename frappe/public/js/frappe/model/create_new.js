@@ -281,7 +281,7 @@ $.extend(frappe.model, {
 				df &&
 				key.substr(0, 2) != "__" &&
 				!in_list(no_copy_list, key) &&
-				!(df && !from_amend && cint(df.no_copy) == 1)
+				!(df && !from_amend && cint(df.no_copy) == 1) && cint(df.no_amend_copy)==0
 			) {
 				var value = doc[key] || [];
 				if (frappe.model.table_fields.includes(df.fieldtype)) {
