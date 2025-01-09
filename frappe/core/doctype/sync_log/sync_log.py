@@ -128,7 +128,7 @@ def update_error(logs):
 		log.save()
 
 @frappe.whitelist()
-def get_pending_log(filters):
+def get_pending_log(filters, unique=False):
 	if isinstance(filters, string_types):
 		filters = json.loads(filters)
 
@@ -145,6 +145,32 @@ def get_pending_log(filters):
 		'docname',
 		'name',
 		'update_type'
-	])
-	return logs
+	], order_by="creation desc")
+
+	if unique:
+		unique_data = []
+		new_log = []
+		for d in logs:
+			if d.name not in unique_data:
+				unique_data.append(d.name)
+				new_log.append(d)
 		
+		return new_log
+
+	return logs
+	
+def nonactive_older_logs(doctype, docname):
+	# set expired for same log for doctype and docname, just left over for newest log
+	logs = frappe.db.sql(""" select distinct docname, doc_type, creation from `tabSync Log` where status = "Pending" and doc_type = %s  order by creation desc """, (doctype), as_dict=1)
+	unique_data = []
+	for d in logs:
+		if d.name not in unique_data:
+			unique_data.append(d.name)
+	
+	frappe.db.sql("update `tabSync Log` set status = 'Expired' where name not in %(name_list)s and doctype %(doctype)s and docname %(docname)s ", {
+		'name_list':unique_data,
+		'doctype':doctype,
+		'docname':docname
+	})
+
+
