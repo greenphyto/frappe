@@ -889,16 +889,16 @@ def cast(fieldtype, value=None):
 
 
 @typing.overload
-def flt(s: NumericType | str, precision: Literal[0]) -> int:
+def flt(s: NumericType | str, precision: Literal[0], floor=None) -> int:
 	...
 
 
 @typing.overload
-def flt(s: NumericType | str, precision: int | None = None) -> float:
+def flt(s: NumericType | str, precision: int | None = None, floor=None) -> float:
 	...
 
 
-def flt(s: NumericType | str, precision: int | None = None) -> float:
+def flt(s: NumericType | str, precision: int | None = None, floor=None) -> float:
 	"""Convert to float (ignoring commas in string)
 
 	:param s: Number in string or other numeric format.
@@ -924,7 +924,7 @@ def flt(s: NumericType | str, precision: int | None = None) -> float:
 	try:
 		num = float(s)
 		if precision is not None:
-			num = rounded(num, precision)
+			num = rounded(num, precision, floor=floor)
 	except Exception:
 		num = 0.0
 
@@ -1024,7 +1024,7 @@ def sbool(x: str) -> bool | Any:
 		return x
 
 
-def rounded(num, precision=0):
+def rounded(num, precision=0, floor=None):
 	"""round method for round halfs to nearest even algorithm aka banker's rounding - compatible with python3"""
 	precision = cint(precision)
 	multiplier = 10**precision
@@ -1034,11 +1034,12 @@ def rounded(num, precision=0):
 
 	floor_num = math.floor(num)
 	decimal_part = num - floor_num
-
 	if not precision and decimal_part == 0.5:
 		num = floor_num if (floor_num % 2 == 0) else floor_num + 1
 	else:
-		if decimal_part == 0.5:
+		if floor:
+			num = floor_num
+		elif decimal_part == 0.5:
 			num = floor_num + 1
 		else:
 			num = round(num)
