@@ -766,3 +766,12 @@ def has_permission(doc, ptype=None, user=None):
 
 # Note: kept at the end to not cause circular, partial imports & maintain backwards compatibility
 from frappe.core.api.file import *
+
+@frappe.whitelist()
+def get_file_list():
+	from frappe.desk.reportview import get
+	data = frappe._dict(frappe.local.form_dict)
+	if not data.get("filters") or data.get("filters") == '[]':
+		return [frappe.get_value("File", "Home", "*")]
+	else:
+		return get()

@@ -26,6 +26,7 @@ frappe.views.FileView = class FileView extends frappe.views.ListView {
 	}
 
 	setup_view() {
+		this.method = "frappe.core.doctype.file.file.get_file_list";
 		this.render_header();
 		this.setup_events();
 		this.$page.find(".layout-main-section-wrapper").addClass("file-view");
