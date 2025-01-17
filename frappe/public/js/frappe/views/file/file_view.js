@@ -188,12 +188,36 @@ frappe.views.FileView = class FileView extends frappe.views.ListView {
 				return 0;
 			});
 		}
+
+		function prepend(value, array) {
+			var newArray = array.slice();
+			newArray.unshift(value);
+			return newArray;
+		}
+
+		var any_home_folder = $.grep(this.data, r=>{ if (r.name == "Home") return r });
+
+		// if (this.data && is_null(any_home_folder)){
+		// 	this.data = prepend({
+		// 		"file_name": "Back",
+		// 		"file_size": 0,
+		// 		"is_back_btn":1,
+		// 		"thumbnail_url": null,
+		// 		"is_folder": 1,
+		// 		"name": "Back",
+		// 		"creation": "2023-05-19 08:57:18.089327",
+		// 		"_idx": 1
+		// 	} ,this.data)
+		// }
 	}
 
 	prepare_datum(d) {
 		let icon_class = "";
 		let type = "";
-		if (d.is_folder) {
+		if (d.is_back_btn) {
+			icon_class = "arrow-left";
+			type = "button";
+		} else if (d.is_folder) {
 			icon_class = "folder-normal";
 			type = "folder";
 		} else if (frappe.utils.is_image_file(d.file_name)) {
@@ -352,10 +376,12 @@ frappe.views.FileView = class FileView extends frappe.views.ListView {
 
 	get_click_opts(file){
 		var opts = ""
-		if (file.is_folder){
-			opts = `return onclick='frappe.set_route("List", "File", {folder:"${file.name}"})'` 
+		if (file.is_back_btn){
+			opts = `return onclick='frappe.set_route(frappe.get_prev_route())'` ;
+		} else if (file.is_folder){
+			opts = `return onclick='frappe.set_route("List", "File", {folder:"${file.name}"})'` ;
 		}else{
-			opts = `return onclick='frappe.set_route("Form", "File", "${file.name}")'` 
+			opts = `return onclick='frappe.set_route("Form", "File", "${file.name}")'` ;
 			
 		}
 		return opts
@@ -366,10 +392,11 @@ frappe.views.FileView = class FileView extends frappe.views.ListView {
 		const file_size = file.file_size ? frappe.form.formatters.FileSize(file.file_size) : "";
 		const route_url = this.get_route_url(file);
 		const click_opts = this.get_click_opts(file)
+		const hide_creation = file.is_back_btn ? "disabled style='opacity: 0;'" : "";
 
 		return `
 			<div class="list-row-col ellipsis list-subject level">
-				<span class="level-item file-select">
+				<span class="level-item file-select" ${hide_creation}>
 					<input class="list-row-checkbox"
 						type="checkbox" data-name="${file.name}">
 				</span>
@@ -382,7 +409,7 @@ frappe.views.FileView = class FileView extends frappe.views.ListView {
 			<div class="list-row-col ellipsis hidden-xs text-muted">
 				<span>${file_size}</span>
 			</div>
-			<div class="list-row-col ellipsis hidden-xs text-muted">
+			<div class="list-row-col ellipsis hidden-xs text-muted" ${hide_creation}>
 				<span>${this.get_creation_date(file)}</span>
 			</div>
 		`;
