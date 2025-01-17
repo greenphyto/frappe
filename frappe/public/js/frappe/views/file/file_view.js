@@ -85,6 +85,7 @@ frappe.views.FileView = class FileView extends frappe.views.ListView {
 	}
 
 	file_menu_items() {
+		var me = this;
 		const items = [
 			{
 				label: __("Home"),
@@ -95,24 +96,52 @@ frappe.views.FileView = class FileView extends frappe.views.ListView {
 			{
 				label: __("New Folder"),
 				action: () => {
-					frappe.prompt(
-						__("Name"),
-						(values) => {
-							if (values.value.indexOf("/") > -1) {
-								frappe.throw(__("Folder name should not include '/' (slash)"));
+					var d = new frappe.ui.Dialog({
+						title: __("Enter folder name"),
+						fields: [
+							{
+								fieldtype: "Link",
+								options: "File",
+								reqd:1,
+								label: __("Parent Folder"),
+								fieldname: "parent_folder",
+								get_query: function () {
+									return {
+										filters:{
+											is_folder:1
+										}
+									}
+								},
+							},
+							{
+								fieldtype: "Data",
+								options: "",
+								reqd:1,
+								label: __("Folder Name"),
+								fieldname: "folder_name",
+							},
+						],
+					});
+					d.set_value("parent_folder", "Home");
+					d.set_primary_action(__("Create"), function () {
+						var values = d.get_values();
+						if (values.folder_name.indexOf("/") > -1) {
+							frappe.throw(__("Folder name should not include '/' (slash)"));
+						}
+						const data = {
+							file_name: values.folder_name,
+							folder: values.parent_folder,
+						};
+						frappe.call({
+							method: "frappe.core.api.file.create_new_folder",
+							args: data,
+							callback: ()=>{
+								me.refresh()
 							}
-							const data = {
-								file_name: values.value,
-								folder: this.current_folder,
-							};
-							frappe.call({
-								method: "frappe.core.api.file.create_new_folder",
-								args: data,
-							});
-						},
-						__("Enter folder name"),
-						__("Create")
-					);
+						});
+						d.hide();
+					});
+					d.show();
 				},
 			},
 			{
