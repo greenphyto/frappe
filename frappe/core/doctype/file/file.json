@@ -2,7 +2,6 @@
  "actions": [],
  "allow_import": 1,
  "creation": "2012-12-12 11:19:22",
- "default_view": "File",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -170,11 +169,10 @@
    "read_only": 1
   }
  ],
- "force_re_route_to_default_view": 1,
  "icon": "fa fa-file",
  "idx": 1,
  "links": [],
- "modified": "2022-09-13 15:50:15.508251",
+ "modified": "2025-01-17 18:31:25.969864",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "File",
@@ -208,7 +206,7 @@
   }
  ],
  "sort_field": "modified",
- "sort_order": "ASC",
+ "sort_order": "DESC",
  "states": [],
  "title_field": "file_name",
  "track_changes": 1
