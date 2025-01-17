@@ -3,6 +3,8 @@ frappe.provide("frappe.views");
 frappe.views.FileView = class FileView extends frappe.views.ListView {
 	static load_last_view() {
 		const route = frappe.get_route();
+		frappe.set_route("List", "File");
+		return;
 		if (route.length === 2) {
 			const view_user_settings = frappe.get_user_settings("File", "File");
 			frappe.set_route(
@@ -12,7 +14,6 @@ frappe.views.FileView = class FileView extends frappe.views.ListView {
 			);
 			return true;
 		}
-		return redirect_to_home_if_invalid_route();
 	}
 
 	get view_name() {
@@ -198,18 +199,18 @@ frappe.views.FileView = class FileView extends frappe.views.ListView {
 
 		var any_home_folder = $.grep(this.data, r=>{ if (r.name == "Home") return r });
 
-		// if (this.data && is_null(any_home_folder)){
-		// 	this.data = prepend({
-		// 		"file_name": "Back",
-		// 		"file_size": 0,
-		// 		"is_back_btn":1,
-		// 		"thumbnail_url": null,
-		// 		"is_folder": 1,
-		// 		"name": "Back",
-		// 		"creation": "2023-05-19 08:57:18.089327",
-		// 		"_idx": 1
-		// 	} ,this.data)
-		// }
+		if (this.data && is_null(any_home_folder)){
+			this.data = prepend({
+				"file_name": "Back",
+				"file_size": 0,
+				"is_back_btn":1,
+				"thumbnail_url": null,
+				"is_folder": 1,
+				"name": "Back",
+				"creation": "2023-05-19 08:57:18.089327",
+				"_idx": 1
+			} ,this.data)
+		}
 	}
 
 	prepare_datum(d) {
