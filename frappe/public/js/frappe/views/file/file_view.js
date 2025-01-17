@@ -336,7 +336,7 @@ frappe.views.FileView = class FileView extends frappe.views.ListView {
 	}
 
 	get_route_url(file) {
-		return file.is_folder ? "/app/List/File/" + file.name : this.get_form_link(file);
+		return file.is_folder ? "#" : this.get_form_link(file);
 	}
 
 	get_creation_date(file) {
@@ -350,10 +350,22 @@ frappe.views.FileView = class FileView extends frappe.views.ListView {
 		return created_on;
 	}
 
+	get_click_opts(file){
+		var opts = ""
+		if (file.is_folder){
+			opts = `return onclick='frappe.set_route("List", "File", {folder:"${file.name}"})'` 
+		}else{
+			opts = `return onclick='frappe.set_route("Form", "File", "${file.name}")'` 
+			
+		}
+		return opts
+	}
+
 	get_left_html(file) {
 		file = this.prepare_datum(file);
 		const file_size = file.file_size ? frappe.form.formatters.FileSize(file.file_size) : "";
 		const route_url = this.get_route_url(file);
+		const click_opts = this.get_click_opts(file)
 
 		return `
 			<div class="list-row-col ellipsis list-subject level">
@@ -362,9 +374,9 @@ frappe.views.FileView = class FileView extends frappe.views.ListView {
 						type="checkbox" data-name="${file.name}">
 				</span>
 				<span class="level-item  ellipsis" title="${file.file_name}">
-					<a class="ellipsis" href="${route_url}" title="${file.file_name}">
+					<div class="ellipsis" href="${route_url}" title="${file.file_name}" ${click_opts}>
 						${file.subject_html}
-					</a>
+					</div>
 				</span>
 			</div>
 			<div class="list-row-col ellipsis hidden-xs text-muted">
@@ -471,3 +483,4 @@ function redirect_to_home_if_invalid_route() {
 	}
 	return false;
 }
+frappe.redirect_to_home_if_invalid_route = redirect_to_home_if_invalid_route

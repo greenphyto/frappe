@@ -450,7 +450,7 @@ frappe.router = {
 
 	push_state(url) {
 		// change the URL and call the router
-		if (window.location.pathname !== url) {
+		if (window.location.pathname !== url || url.includes("/file")) {
 			// push/replace state so the browser looks fine
 			const method = frappe.route_flags.replace_route ? "replaceState" : "pushState";
 			history[method](null, null, url);
