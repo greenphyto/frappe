@@ -250,9 +250,9 @@ def address_query(doctype, txt, searchfield, start, page_len, filters):
 		else:
 			search_condition += f" or `tabAddress`.`{field}` like %(txt)s"
 
-	return frappe.db.sql(
+	res = frappe.db.sql(
 		"""select
-			`tabAddress`.name, `tabAddress`.address_line1, `tabAddress`.city, `tabAddress`.country
+			`tabAddress`.name, `tabAddress`.address_title,`tabAddress`.address_line1, `tabAddress`.city, `tabAddress`.country
 		from
 			`tabAddress`, `tabDynamic Link`
 		where
@@ -278,8 +278,15 @@ def address_query(doctype, txt, searchfield, start, page_len, filters):
 			"page_len": page_len,
 			"link_name": link_name,
 			"link_doctype": link_doctype,
-		},
+		}, as_dict=1
 	)
+
+	data = []
+	for d in res:
+		r = {"value":d.name, "label":d.address_title, "description":", ".join([d.address_line1, d.country])}
+		data.append(r)
+
+	return data
 
 
 def get_condensed_address(doc):

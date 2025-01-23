@@ -281,6 +281,10 @@ def build_for_autosuggest(res: list[tuple], doctype: str) -> list[dict]:
 	meta = frappe.get_meta(doctype)
 	if meta.show_title_field_in_link:
 		for item in res:
+			if "value" in item:
+				results.append(item)
+				continue
+
 			item = list(item)
 			if len(item) > 1:
 				label = item[1]
@@ -293,7 +297,12 @@ def build_for_autosuggest(res: list[tuple], doctype: str) -> list[dict]:
 			
 			results.append({"value": item[0], "label": label, "description": description})
 	else:
-		results.extend({"value": item[0], "description": to_string(item[1:])} for item in res)
+		if res and "value" in res[0]:
+			for item in res:
+				if "value" in item:
+					results.append(item)
+		else:
+			results.extend({"value": item[0], "description": to_string(item[1:])} for item in res)
 
 	return results
 
