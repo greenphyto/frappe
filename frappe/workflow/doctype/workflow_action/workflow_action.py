@@ -182,13 +182,14 @@ def confirm_action(doctype, docname, user, action):
 		frappe.set_user(user)
 
 	doc = frappe.get_doc(doctype, docname)
-	newdoc = apply_workflow(doc, action)
-	frappe.db.commit()
-	return_success_page(newdoc)
+	newdoc = apply_workflow(doc, action, from_web=1)
+	if newdoc:
+		frappe.db.commit()
+		return_success_page(newdoc)
 
-	# reset session user
-	if logged_in_user == "Guest":
-		frappe.set_user(logged_in_user)
+		# reset session user
+		if logged_in_user == "Guest":
+			frappe.set_user(logged_in_user)
 
 
 def return_success_page(doc):

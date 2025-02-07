@@ -104,13 +104,14 @@ def is_transition_condition_satisfied(transition, doc, use_user = None):
 	if not transition.condition:
 		return True
 	else:
-		return frappe.safe_eval(
+		res = frappe.safe_eval(
 			transition.condition, get_workflow_safe_globals(use_user), dict(doc=doc.as_dict())
 		)
+		return res
 
 
 @frappe.whitelist()
-def apply_workflow(doc, action):
+def apply_workflow(doc, action, from_web=False):
 	"""Allow workflow action on the current doc"""
 	doc = frappe.get_doc(frappe.parse_json(doc))
 	workflow = get_workflow(doc.doctype)
@@ -124,10 +125,26 @@ def apply_workflow(doc, action):
 			transition = t
 
 	if not transition:
-		frappe.throw(_("Not a valid Workflow Action"), WorkflowTransitionError)
+		if from_web:
+			frappe.respond_as_web_page(
+				_("Not valid workflow"),
+				_("This document already processed."),
+				indicator_color="blue",
+			)
+			return
+		else:
+			frappe.throw(_("Not a valid Workflow Action"), WorkflowTransitionError)
 
 	if not has_approval_access(user, doc, transition):
-		frappe.throw(_("Self approval is not allowed"))
+		if from_web:
+			frappe.respond_as_web_page(
+				_("Forbiden"),
+				_("Self-approval is not allowed for this document."),
+				indicator_color="blue",
+			)
+			return
+		else:
+			frappe.throw(_("Self approval is not allowed"))
 
 	# update workflow state field
 	doc.set(workflow.workflow_state_field, transition.next_state)
