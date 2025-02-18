@@ -297,7 +297,7 @@ def build_for_autosuggest(res: list[tuple], doctype: str) -> list[dict]:
 			
 			results.append({"value": item[0], "label": label, "description": description})
 	else:
-		if res and "value" in res[0]:
+		if res and type(res) == dict and "value" in res[0]:
 			for item in res:
 				if "value" in item:
 					results.append(item)
