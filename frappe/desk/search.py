@@ -297,12 +297,13 @@ def build_for_autosuggest(res: list[tuple], doctype: str) -> list[dict]:
 			
 			results.append({"value": item[0], "label": label, "description": description})
 	else:
-		if res and type(res) == dict and "value" in res[0]:
-			for item in res:
-				if "value" in item:
-					results.append(item)
-		else:
-			results.extend({"value": item[0], "description": to_string(item[1:])} for item in res)
+		if res:
+			if type(res) == list and "value" in res[0]:
+				for item in res:
+					if "value" in item:
+						results.append(item)
+			else:
+				results.extend({"value": item[0], "description": to_string(item[1:])} for item in res)
 
 	return results
 
