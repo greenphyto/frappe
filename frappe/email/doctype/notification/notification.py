@@ -212,6 +212,9 @@ def get_context(context):
 		if not (recipients or cc or bcc):
 			return
 
+		if self.get("single_recipient"):
+			recipients = [self.single_recipient]
+
 		sender = None
 		message = frappe.render_template(self.message, context)
 		if self.sender and self.sender_email:
