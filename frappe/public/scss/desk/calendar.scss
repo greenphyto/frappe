@@ -96,7 +96,8 @@ th.fc-day-header {
 .fc-event-container .fc-content {
 	padding: 3px;
 	display: flex;
-	flex-direction: column-reverse;
+	flex-direction: column;
+	padding-bottom: 6px;
 
 	.fc-time {
 		font-weight: normal;
@@ -105,6 +106,19 @@ th.fc-day-header {
 
 	.fc-title {
 		font-weight: 600;
+		margin-top: 5px;
+		margin-bottom: 5px;
+		font-size: 1.05em;
+	}
+}
+
+.fc-event-container{
+	.vip-title{
+	    background-color: #ffc107;
+		border-radius: 6px;
+		padding: 1px 9px;
+		color: black;
+		margin-left: 2px;
 	}
 }
 
