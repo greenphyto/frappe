@@ -399,6 +399,9 @@ def export_query():
 		bold_list = []
 		for i,d in enumerate(data_list):
 			base_idx = 2 + len(title_report) + len(filter_report)
+			if type(d) in (list, tuple):
+				continue
+			
 			if d.get("bold") or d.get("is_group") or d.get("is_bold"):
 				bold_list.append(base_idx + i)
 
