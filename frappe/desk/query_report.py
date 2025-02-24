@@ -390,7 +390,7 @@ def export_query():
 		if include_filters:
 			xlsx_data = add_title_report(report_name) + get_filters_data(filters, filters_settings=filters_settings) + xlsx_data
 
-		xlsx_file = make_xlsx(xlsx_data, "Query Report", column_widths=column_widths)
+		xlsx_file = make_xlsx(xlsx_data, "Query Report", column_widths=column_widths, columns=data.columns)
 
 		frappe.response["filename"] = report_name + ".xlsx"
 		frappe.response["filecontent"] = xlsx_file.getvalue()

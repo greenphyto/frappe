@@ -6,46 +6,72 @@ from io import BytesIO
 import openpyxl
 import xlrd
 from openpyxl import load_workbook
-from openpyxl.styles import Font
 from openpyxl.utils import get_column_letter
+from openpyxl.styles import Alignment, Font
 
 import frappe
 from frappe.utils.html_utils import unescape_html
+from frappe.utils import cstr
 
 ILLEGAL_CHARACTERS_RE = re.compile(r"[\000-\010]|[\013-\014]|[\016-\037]")
 
 
 # return xlsx file object
-def make_xlsx(data, sheet_name, wb=None, column_widths=None):
+def make_xlsx(data, sheet_name, wb=None, column_widths=None, columns=[]):
 	column_widths = column_widths or []
 	if wb is None:
-		wb = openpyxl.Workbook(write_only=True)
+		wb = openpyxl.Workbook(write_only=False)  # Set to False to enable cell-by-cell editing
 
+		# Remove default empty sheet to prevent extra blank rows
+		if wb.active.title == "Sheet":
+			wb.remove(wb.active)
+			
 	ws = wb.create_sheet(sheet_name, 0)
 
+	# Set column width if provided
 	for i, column_width in enumerate(column_widths):
 		if column_width:
 			ws.column_dimensions[get_column_letter(i + 1)].width = column_width
 
-	row1 = ws.row_dimensions[1]
-	row1.font = Font(name="Calibri", bold=True)
+	# Set bold font for the header (first row)
+	for cell in ws[1]:  
+		cell.font = Font(name="Calibri", bold=True)
 
+	# Insert data into the sheet
 	for row in data:
 		clean_row = []
 		for item in row:
 			if isinstance(item, str) and (sheet_name not in ["Data Import Template", "Data Export"]):
-				value = handle_html(item)
+				value = handle_html(item)  # handle_html function if needed
 			else:
 				value = item
 
-			if isinstance(item, str) and next(ILLEGAL_CHARACTERS_RE.finditer(value), None):
-				# Remove illegal characters from the string
+			# Remove illegal characters from text
+			if isinstance(value, str) and next(ILLEGAL_CHARACTERS_RE.finditer(value), None):
 				value = ILLEGAL_CHARACTERS_RE.sub("", value)
 
 			clean_row.append(value)
 
 		ws.append(clean_row)
 
+	col_right = []
+	if columns:
+		for i, col in enumerate(columns):
+			if col.get("fieldtype") in frappe.model.numeric_fieldtypes:
+				col_right.append(i)
+
+	max_col = max(col_right)
+
+	# Loop through all cells to set right alignment
+	for row_index, row in enumerate(ws.iter_rows(values_only=False), start=1):
+
+		for col in col_right:
+			if len(row) >= col :
+				cell = row[col-1] 
+				cell.alignment = Alignment(horizontal='right')
+
+
+	# Save the file to BytesIO
 	xlsx_file = BytesIO()
 	wb.save(xlsx_file)
 	return xlsx_file
