@@ -17,7 +17,7 @@ ILLEGAL_CHARACTERS_RE = re.compile(r"[\000-\010]|[\013-\014]|[\016-\037]")
 
 
 # return xlsx file object
-def make_xlsx(data, sheet_name, wb=None, column_widths=None, columns=[]):
+def make_xlsx(data, sheet_name, wb=None, column_widths=None, columns=[], bold_list=[]):
 	column_widths = column_widths or []
 	if wb is None:
 		wb = openpyxl.Workbook(write_only=False)  # Set to False to enable cell-by-cell editing
@@ -32,10 +32,6 @@ def make_xlsx(data, sheet_name, wb=None, column_widths=None, columns=[]):
 	for i, column_width in enumerate(column_widths):
 		if column_width:
 			ws.column_dimensions[get_column_letter(i + 1)].width = column_width
-
-	# Set bold font for the header (first row)
-	for cell in ws[1]:  
-		cell.font = Font(name="Calibri", bold=True)
 
 	# Insert data into the sheet
 	for row in data:
@@ -54,13 +50,15 @@ def make_xlsx(data, sheet_name, wb=None, column_widths=None, columns=[]):
 
 		ws.append(clean_row)
 
+	# Set bold font for the header (first row)
+	for cell in ws[1]:  
+		cell.font = Font(name="Calibri", bold=True)
+
 	col_right = []
 	if columns:
 		for i, col in enumerate(columns):
 			if col.get("fieldtype") in frappe.model.numeric_fieldtypes:
 				col_right.append(i)
-
-	max_col = max(col_right)
 
 	# Loop through all cells to set right alignment
 	for row_index, row in enumerate(ws.iter_rows(values_only=False), start=1):
@@ -69,7 +67,9 @@ def make_xlsx(data, sheet_name, wb=None, column_widths=None, columns=[]):
 			if len(row) >= col :
 				cell = row[col-1] 
 				cell.alignment = Alignment(horizontal='right')
-
+		if row_index in bold_list:
+			for cell in row:
+				cell.font = Font(bold=True)
 
 	# Save the file to BytesIO
 	xlsx_file = BytesIO()

@@ -383,14 +383,26 @@ def export_query():
 
 		from frappe.utils.xlsxutils import make_xlsx
 
+		data_list = list(data.get("result") or [])
+
 		format_duration_fields(data)
 		xlsx_data, column_widths = build_xlsx_data(data, visible_idx, include_indentation)
-		
-		# Add filter view
-		if include_filters:
-			xlsx_data = add_title_report(report_name) + get_filters_data(filters, filters_settings=filters_settings) + xlsx_data
 
-		xlsx_file = make_xlsx(xlsx_data, "Query Report", column_widths=column_widths, columns=data.columns)
+		# Add filter view
+		title_report = []
+		filter_report = []
+		if include_filters:
+			title_report = add_title_report(report_name) 
+			filter_report = get_filters_data(filters, filters_settings=filters_settings)
+			xlsx_data = title_report + filter_report + xlsx_data
+
+		bold_list = []
+		for i,d in enumerate(data_list):
+			base_idx = 2 + len(title_report) + len(filter_report)
+			if d.get("bold") or d.get("is_group") or d.get("is_bold"):
+				bold_list.append(base_idx + i)
+
+		xlsx_file = make_xlsx(xlsx_data, "Query Report", column_widths=column_widths, columns=data.columns, bold_list=bold_list)
 
 		frappe.response["filename"] = report_name + ".xlsx"
 		frappe.response["filecontent"] = xlsx_file.getvalue()
