@@ -825,11 +825,11 @@ def write_only():
 
 	return innfn
 
-def is_admin_user():
+def is_admin_user(user=None):
 	if not local.conf.admin_roles:
 		return False
 	
-	user = session.user
+	user = user or session.user
 	table = DocType("Has Role")
 	roles = (
 		qb.from_(table)

@@ -91,7 +91,7 @@ def has_permission(
 	if not user:
 		user = frappe.session.user
 
-	if user == "Administrator" or frappe.is_admin_user():
+	if user == "Administrator" or frappe.is_admin_user(user=user):
 		return True
 
 	if ptype == "share" and frappe.get_system_settings("disable_document_sharing"):
@@ -225,7 +225,7 @@ def get_role_permissions(doctype_meta, user=None, is_owner=None):
 
 	cache_key = (doctype_meta.name, user)
 
-	if user == "Administrator" or frappe.is_admin_user():
+	if user == "Administrator" or frappe.is_admin_user(user=user):
 		return allow_everything()
 
 	if not frappe.local.role_permissions.get(cache_key):
