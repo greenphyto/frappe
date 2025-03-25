@@ -10,9 +10,8 @@ def sendmail_to_system_managers(subject, content):
 
 
 @frappe.whitelist()
-def get_contact_list(txt, page_length=20) -> list[dict]:
+def get_contact_list(txt, page_length=100) -> list[dict]:
 	"""Returns contacts (from autosuggest)"""
-
 	if cached_contacts := get_cached_contacts(txt):
 		return cached_contacts[:page_length]
 
@@ -23,11 +22,11 @@ def get_contact_list(txt, page_length=20) -> list[dict]:
 		f"""select email_id as value,
 		concat(first_name, ifnull(concat(' ',last_name), '' )) as description
 		from tabContact
-		where name like %(txt)s or email_id like %(txt)s
+		where (name like %(txt)s or email_id like %(txt)s) and disabled = 0 and email_id != ""
 		{match_conditions}
 		limit %(page_length)s""",
 		{"txt": f"%{txt}%", "page_length": page_length},
-		as_dict=True,
+		as_dict=True
 	)
 	out = list(filter(None, out))
 

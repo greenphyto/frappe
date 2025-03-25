@@ -17,6 +17,7 @@
   "address",
   "sync_with_google_contacts",
   "cb00",
+  "disabled",
   "status",
   "salutation",
   "designation",
@@ -243,6 +244,14 @@
    "fieldname": "company_name",
    "fieldtype": "Data",
    "label": "Company Name"
+  },
+  {
+   "default": "0",
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Disabled"
   }
  ],
  "icon": "fa fa-user",
@@ -250,7 +259,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-10 16:56:59.622328",
+ "modified": "2025-03-25 11:40:35.611047",
  "modified_by": "Administrator",
  "module": "Contacts",
  "name": "Contact",
