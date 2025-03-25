@@ -180,7 +180,7 @@ frappe.views.CommunicationComposer = class {
 		this.dialog.get_field("option_toggle_button").set_label(label);
 	}
 
-	prepare() {
+	async prepare() {
 		this.setup_multiselect_queries();
 		this.setup_subject_and_recipients();
 		this.setup_print_language();
@@ -188,9 +188,20 @@ frappe.views.CommunicationComposer = class {
 		this.setup_attach();
 		this.setup_email();
 		this.setup_email_template();
+		await this.get_email_default();
 		this.setup_last_edited_communication();
 		this.setup_add_signature_button();
 		this.set_values();
+	}
+
+	async get_email_default(){
+		var data = await frappe.call({
+			"method":'frappe.email.get_email_default', 
+			"args":{
+				"doctype":this.frm.doctype,
+				"docname":this.frm.docname
+			}})
+		$.extend(this, data.message);
 	}
 
 	setup_add_signature_button() {

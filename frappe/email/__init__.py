@@ -43,6 +43,12 @@ def get_system_managers():
 		AND parent IN (SELECT email FROM tabUser WHERE enabled=1)"""
 	)
 
+@frappe.whitelist()
+def get_email_default(doctype, docname=""):
+	# return recipient, cc, bcc
+	for func_name in frappe.get_hooks("get_email_default", []):
+		return frappe.get_attr(func_name)(doctype, docname)
+	return {}
 
 @frappe.whitelist()
 def relink(name, reference_doctype=None, reference_name=None):
