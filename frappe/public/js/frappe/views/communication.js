@@ -295,7 +295,7 @@ frappe.views.CommunicationComposer = class {
 
 				let content = content_field.get_value() || "";
 
-				content_field.set_value(`${reply.message}<br>${content}`);
+				content_field.set_value(`${reply.message}`);
 				subject_field.set_value(reply.subject);
 
 				me.reply_added = email_template;
