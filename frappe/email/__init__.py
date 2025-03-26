@@ -19,12 +19,24 @@ def get_contact_list(txt, page_length=100) -> list[dict]:
 	match_conditions = f"and {reportview_conditions}" if reportview_conditions else ""
 
 	out = frappe.db.sql(
-		f"""select email_id as value,
-		concat(first_name, ifnull(concat(' ',last_name), '' )) as description
-		from tabContact
-		where (name like %(txt)s or email_id like %(txt)s) and disabled = 0 and email_id != ""
-		{match_conditions}
-		limit %(page_length)s""",
+		f"""SELECT 
+				ce.email_id AS value,
+				CONCAT(c.first_name,
+						COALESCE(CONCAT(' ', c.last_name), '')) AS description
+			FROM
+				`tabContact Email` ce
+					LEFT JOIN
+				`tabContact` c ON c.name = ce.parent
+			WHERE
+				(c.name LIKE '%%'
+					OR ce.email_id LIKE '%%')
+					AND c.disabled = 0
+					AND ce.email_id != ''
+					{match_conditions}
+			GROUP BY ce.email_id
+			ORDER BY c.first_name
+			LIMIT %(page_length)s
+		""",
 		{"txt": f"%{txt}%", "page_length": page_length},
 		as_dict=True
 	)
