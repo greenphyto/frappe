@@ -28,7 +28,6 @@ class Contact(Document):
 		self.set_primary_email()
 		self.set_primary("phone")
 		self.set_primary("mobile_no")
-
 		self.set_user()
 
 		set_link_title(self)
@@ -40,6 +39,11 @@ class Contact(Document):
 			frappe.throw(_("Select Google Contacts to which contact should be synced."))
 
 		deduplicate_dynamic_links(self)
+		self.clear_cache()
+
+	def clear_cache(self):
+		cache = frappe.cache()
+		cache.delete_keys("contacts")
 
 	def set_user(self):
 		if not self.user and self.email_id:
