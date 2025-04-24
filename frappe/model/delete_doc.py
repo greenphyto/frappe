@@ -256,7 +256,7 @@ def check_if_doc_is_linked(doc, method="Delete", validate=False):
 	"""
 	from frappe.model.rename_doc import get_link_fields
 
-	link_fields = get_link_fields(doc.doctype)
+	link_fields = get_link_fields(doc.doctype, skip_ignore_link=1)
 	ignore_linked_doctypes = doc.get("ignore_linked_doctypes") or []
 
 	for lf in link_fields:

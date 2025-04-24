@@ -441,7 +441,7 @@ def update_link_field_values(link_fields: list[dict], old: str, new: str, doctyp
 			field["parent"] = new
 
 
-def get_link_fields(doctype: str) -> list[dict]:
+def get_link_fields(doctype: str, skip_ignore_link=False) -> list[dict]:
 	# get link fields from tabDocField
 	if not frappe.flags.link_fields:
 		frappe.flags.link_fields = {}
@@ -452,19 +452,27 @@ def get_link_fields(doctype: str) -> list[dict]:
 		cf = frappe.qb.DocType("Custom Field")
 		ps = frappe.qb.DocType("Property Setter")
 
+		conditions = (df.options == doctype) & (df.fieldtype == "Link")
+		if skip_ignore_link:
+			conditions = conditions & (df.ignore_link == 0)
+
 		st_issingle = frappe.qb.from_(dt).select(dt.issingle).where(dt.name == df.parent).as_("issingle")
 		standard_fields = (
 			frappe.qb.from_(df)
 			.select(df.parent, df.fieldname, st_issingle)
-			.where((df.options == doctype) & (df.fieldtype == "Link"))
+			.where(conditions)
 			.run(as_dict=True)
 		)
+
+		conditions = (cf.options == doctype) & (cf.fieldtype == "Link")
+		if skip_ignore_link:
+			conditions = conditions & (cf.ignore_link == 0)
 
 		cf_issingle = frappe.qb.from_(dt).select(dt.issingle).where(dt.name == cf.dt).as_("issingle")
 		custom_fields = (
 			frappe.qb.from_(cf)
 			.select(cf.dt.as_("parent"), cf.fieldname, cf_issingle)
-			.where((cf.options == doctype) & (cf.fieldtype == "Link"))
+			.where(conditions)
 			.run(as_dict=True)
 		)
 

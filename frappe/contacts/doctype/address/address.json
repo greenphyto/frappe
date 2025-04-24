@@ -9,6 +9,7 @@
  "field_order": [
   "address_details",
   "address_title",
+  "outlet_name",
   "address_type",
   "address_line1",
   "address_line2",
@@ -143,12 +144,19 @@
    "fieldtype": "Table",
    "label": "Links",
    "options": "Dynamic Link"
+  },
+  {
+   "fieldname": "outlet_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Outlet Name"
   }
  ],
  "icon": "fa fa-map-marker",
  "idx": 5,
  "links": [],
- "modified": "2025-03-18 12:04:50.618010",
+ "modified": "2025-04-16 11:17:52.257061",
  "modified_by": "Administrator",
  "module": "Contacts",
  "name": "Address",

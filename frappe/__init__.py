@@ -1472,13 +1472,18 @@ def get_hooks(
 	:param default: Default if no hook found.
 	:param app_name: Filter by app."""
 
+	hooks = None
+	
 	if app_name:
 		hooks = _dict(_load_app_hooks(app_name))
 	else:
-		if conf.developer_mode:
-			hooks = _dict(_load_app_hooks())
-		else:
+		try:
 			hooks = _dict(cache().get_value("app_hooks", _load_app_hooks))
+		except:
+			pass
+
+		if conf.developer_mode or not hooks:
+			hooks = _dict(_load_app_hooks())
 
 	if hook:
 		return hooks.get(hook, ([] if default == "_KEEP_DEFAULT_LIST" else default))

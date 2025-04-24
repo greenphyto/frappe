@@ -44,6 +44,7 @@
   "in_list_view",
   "in_standard_filter",
   "in_preview",
+  "ignore_link",
   "column_break_35",
   "in_filter",
   "in_global_search",
@@ -548,13 +549,20 @@
    "fieldname": "no_amend_copy",
    "fieldtype": "Check",
    "label": "No Amend Copy"
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.fieldtype==\"Link\"||doc.fieldtype==\"Dynamic Link\"",
+   "fieldname": "ignore_link",
+   "fieldtype": "Check",
+   "label": "Ignore Link"
   }
  ],
  "idx": 1,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-01-08 16:39:20.338855",
+ "modified": "2025-04-14 11:38:35.961525",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "DocField",
