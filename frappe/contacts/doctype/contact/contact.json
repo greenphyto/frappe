@@ -26,6 +26,14 @@
   "mobile_no",
   "company_name",
   "image",
+  "address_section",
+  "address_line_1",
+  "address_type",
+  "column_break_11",
+  "city",
+  "province",
+  "postal_code",
+  "country",
   "sb_00",
   "google_contacts",
   "google_contacts_id",
@@ -252,6 +260,46 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Disabled"
+  },
+  {
+   "fieldname": "address_type",
+   "fieldtype": "Data",
+   "label": "Address Type"
+  },
+  {
+   "fieldname": "address_line_1",
+   "fieldtype": "Small Text",
+   "label": "Address Line 1"
+  },
+  {
+   "fieldname": "column_break_11",
+   "fieldtype": "Column Break"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "address_section",
+   "fieldtype": "Section Break",
+   "label": "Address"
+  },
+  {
+   "fieldname": "city",
+   "fieldtype": "Data",
+   "label": "City"
+  },
+  {
+   "fieldname": "province",
+   "fieldtype": "Data",
+   "label": "Province"
+  },
+  {
+   "fieldname": "postal_code",
+   "fieldtype": "Data",
+   "label": "Postal Code"
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Data",
+   "label": "Country"
   }
  ],
  "icon": "fa fa-user",
@@ -259,7 +307,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-25 11:40:35.611047",
+ "modified": "2025-04-24 12:48:58.050770",
  "modified_by": "Administrator",
  "module": "Contacts",
  "name": "Contact",
