@@ -22,9 +22,9 @@
   "salutation",
   "designation",
   "gender",
+  "company_name",
   "phone",
   "mobile_no",
-  "company_name",
   "image",
   "address_section",
   "address_line_1",
@@ -251,6 +251,7 @@
   {
    "fieldname": "company_name",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Company Name"
   },
   {
@@ -307,7 +308,7 @@
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-04-24 12:48:58.050770",
+ "modified": "2025-04-28 17:16:42.855143",
  "modified_by": "Administrator",
  "module": "Contacts",
  "name": "Contact",
