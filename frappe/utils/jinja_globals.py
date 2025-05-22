@@ -133,6 +133,9 @@ def bundled_asset(path, rtl=None):
 
 	if ".bundle." in path and not path.startswith("/assets"):
 		bundled_assets = get_assets_json()
+		if not bundled_assets:
+			return ""
+		
 		if path.endswith(".css") and is_rtl(rtl):
 			path = f"rtl_{path}"
 		path = bundled_assets.get(path) or path
