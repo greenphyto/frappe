@@ -402,7 +402,7 @@ def export_query():
 		if include_filters:
 			title_report = add_title_report(report_name) 
 			filter_report = get_filters_data(filters, filters_settings=filters_settings)
-			xlsx_data = title_report + filter_report + [[], ["Export date", export_date]] + xlsx_data
+			xlsx_data = title_report + filter_report + [["Export date", date_str]] + xlsx_data
 		else:
 			xlsx_data = [[report_name], [], ["Export date", date_str]] + xlsx_data
 
