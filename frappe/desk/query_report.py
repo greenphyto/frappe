@@ -23,6 +23,8 @@ from frappe.utils import (
 	get_html_format,
 	get_url_to_form,
 	gzip_decompress,
+	now,
+	get_datetime,
 )
 
 
@@ -388,13 +390,22 @@ def export_query():
 		format_duration_fields(data)
 		xlsx_data, column_widths = build_xlsx_data(data, visible_idx, include_indentation)
 
+
+		# add export date
+		export_date = now()
+		date_str_title = " "+get_datetime(export_date).strftime("%y%m%d%H%M%S")
+		date_str = " "+get_datetime(export_date).strftime("%-d %B %y %H:%M:%S")
+
 		# Add filter view
 		title_report = []
 		filter_report = []
 		if include_filters:
 			title_report = add_title_report(report_name) 
 			filter_report = get_filters_data(filters, filters_settings=filters_settings)
-			xlsx_data = title_report + filter_report + xlsx_data
+			xlsx_data = title_report + filter_report + [[], ["Export date", export_date]] + xlsx_data
+		else:
+			xlsx_data = [[report_name], [], ["Export date", date_str]] + xlsx_data
+
 
 		bold_list = []
 		for i,d in enumerate(data_list):
@@ -407,7 +418,7 @@ def export_query():
 
 		xlsx_file = make_xlsx(xlsx_data, "Query Report", column_widths=column_widths, columns=data.columns, bold_list=bold_list)
 
-		frappe.response["filename"] = report_name + ".xlsx"
+		frappe.response["filename"] = report_name + date_str_title + ".xlsx"
 		frappe.response["filecontent"] = xlsx_file.getvalue()
 		frappe.response["type"] = "binary"
 
