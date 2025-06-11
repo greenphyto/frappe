@@ -288,16 +288,18 @@ class EmailServer:
 				).where(EmailAccount.name == self.settings.email_account_name).run()
 
 			# uid validity not found pulling emails for first time
-			if not uid_validity:
+			if not uid_validity and not self.settings.get("custom_email_sync_rule"):
 				self.settings.email_sync_rule = "UNSEEN"
 				return
+			if self.settings.get("custom_email_sync_rule"):
+				self.settings.email_sync_rule = self.settings.custom_email_sync_rule
 
 			sync_count = 100 if uid_validity else int(self.settings.initial_sync_count)
 			from_uid = (
 				1 if uidnext < (sync_count + 1) or (uidnext - sync_count) < 1 else uidnext - sync_count
 			)
 			# sync last 100 email
-			self.settings.email_sync_rule = f"UID {from_uid}:{uidnext}"
+			self.settings.email_sync_rule = f"UID {from_uid}:*"
 			self.uid_reindexed = True
 
 		elif uid_validity == current_uid_validity:
@@ -318,7 +320,7 @@ class EmailServer:
 			self.validate_message_limits(message_meta)
 
 			if cint(self.settings.use_imap):
-				status, message = self.imap.uid("fetch", message_meta, "(BODY.PEEK[] BODY.PEEK[HEADER] FLAGS)")
+				status, message = self.imap.uid("fetch", message_meta, "(UID BODY.PEEK[] BODY.PEEK[HEADER] FLAGS)")
 				raw = message[0]
 
 				self.get_email_seen_status(message_meta, raw[0])
@@ -662,7 +664,7 @@ class Email:
 class InboundMail(Email):
 	"""Class representation of incoming mail along with mail handlers."""
 
-	def __init__(self, content, email_account, uid=None, seen_status=None, append_to=None):
+	def __init__(self, content, email_account, uid=None, seen_status=None, append_to=None, custom_args={}):
 		super().__init__(content)
 		self.email_account = email_account
 		self.uid = uid or -1
@@ -673,7 +675,7 @@ class InboundMail(Email):
 		self._parent_email_queue = None
 		self._parent_communication = None
 		self._reference_document = None
-
+		self.custom_args = frappe._dict(custom_args)
 		self.flags = frappe._dict()
 
 	def get_content(self):

@@ -188,6 +188,7 @@ class EmailAccount(Document):
 		if frappe.cache().get_value("workers:no-internet") == True:
 			return None
 
+		self.custom_args = self.get("custom_args") or {} 
 		args = frappe._dict(
 			{
 				"email_account_name": self.email_account_name,
@@ -199,6 +200,7 @@ class EmailAccount(Document):
 				"service": getattr(self, "service", ""),
 				"use_imap": self.use_imap,
 				"email_sync_rule": email_sync_rule,
+				"custom_email_sync_rule": self.custom_args.get("custom_email_sync_rule"),
 				"incoming_port": get_port(self),
 				"initial_sync_count": self.initial_sync_count or 100,
 				"use_oauth": self.auth_method == "OAuth",
@@ -459,9 +461,10 @@ class EmailAccount(Document):
 	def get_failed_attempts_count(self):
 		return cint(frappe.cache().get(f"{self.name}:email-account-failed-attempts"))
 
-	def receive(self):
+	def receive(self, custom_args={}):
 		"""Called by scheduler to receive emails from this EMail account using POP3/IMAP."""
 		exceptions = []
+		self.custom_args= frappe._dict(custom_args)
 		inbound_mails = self.get_inbound_mails()
 		for mail in inbound_mails:
 			try:
@@ -780,7 +783,7 @@ def notify_unreplied():
 				comm.db_set("unread_notification_sent", 1)
 
 
-def pull(now=False):
+def pull(now=False, custom_args={}):
 	"""Will be called via scheduler, pull emails from all enabled Email accounts."""
 
 	if frappe.cache().get_value("workers:no-internet") == True:
@@ -816,13 +819,14 @@ def pull(now=False):
 					event="all",
 					job_name=job_name,
 					email_account=email_account.name,
+					custom_args=custom_args
 				)
 
 
-def pull_from_email_account(email_account):
+def pull_from_email_account(email_account, custom_args={}):
 	"""Runs within a worker process"""
 	email_account = frappe.get_doc("Email Account", email_account)
-	email_account.receive()
+	email_account.receive(custom_args=custom_args)
 
 
 def get_max_email_uid(email_account):
@@ -933,3 +937,24 @@ def set_email_password(email_account, password):
 			return False
 
 	return True
+
+def get_current_uid():
+	return frappe.db.sql("""
+		SELECT 
+			max(uid) AS max_uid
+		FROM
+			`tabCommunication`
+		WHERE
+			uid IS NOT NULL
+				AND sent_or_received = 'Received'
+				AND email_account = 'ERP Invoice';   
+	""")[0][0]
+
+def resync_email_inbox():
+	# will resync the email inbox from the latest email UID
+	# this function in hopefully can cover missed email inbox that have been SEEN
+	# for default email account only
+	email_acc = EmailAccount.find_default_incoming()
+	pull_from_email_account(email_acc.name, {
+		"custom_email_sync_rule":"ALL"
+	})
