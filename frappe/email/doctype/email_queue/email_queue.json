@@ -58,7 +58,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Status",
-   "options": "\nNot Sent\nSending\nSent\nError\nExpired"
+   "options": "\nNot Sent\nSending\nSent\nError\nExpired\nPartially Sent"
   },
   {
    "fieldname": "error",
@@ -153,7 +153,7 @@
  "idx": 1,
  "in_create": 1,
  "links": [],
- "modified": "2022-07-12 15:17:37.934316",
+ "modified": "2025-06-11 12:40:15.760894",
  "modified_by": "Administrator",
  "module": "Email",
  "name": "Email Queue",
