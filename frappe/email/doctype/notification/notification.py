@@ -52,6 +52,14 @@ class Notification(Document):
 				with open(path + ".md", "w") as f:
 					f.write(self.message)
 
+			elif os.path.exists(path + ".md"):
+				with open(path + ".md", "w") as f:
+					f.write(self.message)
+
+			elif os.path.exists(path + ".html"):
+				with open(path + ".html", "w") as f:
+					f.write(self.message)
+				
 			# py
 			if not os.path.exists(path + ".py"):
 				with open(path + ".py", "w") as f:
