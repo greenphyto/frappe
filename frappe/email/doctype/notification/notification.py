@@ -220,6 +220,11 @@ def get_context(context):
 		message = frappe.render_template(self.message, context)
 		if self.sender and self.sender_email:
 			sender = formataddr((self.sender, self.sender_email))
+		if frappe.flags.in_test:
+			print("Recipient:", recipients)
+			print("Message:", message)
+			return
+		
 		frappe.sendmail(
 			recipients=recipients,
 			subject=subject,
