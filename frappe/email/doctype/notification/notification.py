@@ -297,6 +297,11 @@ def get_context(context):
 			if recipient.cc and "{" in recipient.cc:
 				recipient.cc = frappe.render_template(recipient.cc, context)
 
+			if recipient.email:
+				# Split by comma, strip spasi berlebih, dan append satu per satu
+				emails = [e.strip() for e in recipient.email.split(",") if e.strip()]
+				recipients.extend(emails)
+
 			if recipient.cc:
 				recipient.cc = recipient.cc.replace(",", "\n")
 				cc = cc + recipient.cc.split("\n")
