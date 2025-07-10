@@ -8,6 +8,7 @@
  "engine": "InnoDB",
  "field_order": [
   "is_system_generated",
+  "module",
   "label_and_type",
   "label",
   "fieldtype",
@@ -468,13 +469,19 @@
    "fieldname": "no_amend_copy",
    "fieldtype": "Check",
    "label": "No Amend Copy"
+  },
+  {
+   "fieldname": "module",
+   "fieldtype": "Link",
+   "label": "Module Def",
+   "options": "Module Def"
   }
  ],
  "idx": 1,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-01-08 16:41:48.823704",
+ "modified": "2025-07-10 12:46:06.858907",
  "modified_by": "Administrator",
  "module": "Custom",
  "name": "Customize Form Field",

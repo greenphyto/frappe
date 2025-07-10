@@ -8,6 +8,7 @@
  "engine": "InnoDB",
  "field_order": [
   "label_and_type",
+  "module",
   "label",
   "fieldtype",
   "fieldname",
@@ -556,13 +557,20 @@
    "fieldname": "ignore_link",
    "fieldtype": "Check",
    "label": "Ignore Link"
+  },
+  {
+   "fieldname": "module",
+   "fieldtype": "Link",
+   "label": "Module Def",
+   "options": "Module Def",
+   "in_list_view": 1
   }
  ],
  "idx": 1,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-04-14 11:38:35.961525",
+ "modified": "2025-07-10 12:38:54.751729",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "DocField",
