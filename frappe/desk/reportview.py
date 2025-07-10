@@ -15,7 +15,7 @@ from frappe.model.base_document import get_controller
 from frappe.model.db_query import DatabaseQuery
 from frappe.model.utils import is_virtual_doctype
 from frappe.utils import add_user_info, cstr, format_duration, cint
-from frappe.desk.query_report import get_filters_data, add_title_report
+
 
 @frappe.whitelist()
 @frappe.read_only()
@@ -339,6 +339,7 @@ def delete_report(name):
 @frappe.whitelist()
 @frappe.read_only()
 def export_query():
+	from frappe.desk.query_report import get_filters_data, add_title_report
 	"""export from report builder"""
 	title = frappe.form_dict.title
 	frappe.form_dict.pop("title", None)
