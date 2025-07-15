@@ -205,14 +205,16 @@ class EmailServer:
 
 			# WARNING: Hard coded max no. of messages to be popped
 			if num > 50:
-				num = 50
+				num = -50
+			else:
+				num = 0
 
 			# size limits
 			self.total_size = 0
 			self.max_email_size = cint(frappe.local.conf.get("max_email_size"))
 			self.max_total_size = 5 * self.max_email_size
 
-			for i, message_meta in enumerate(email_list[:num]):
+			for i, message_meta in enumerate(email_list[num:]):
 				try:
 					self.retrieve_message(message_meta, i + 1)
 				except (TotalSizeExceededError, EmailTimeoutError, LoginLimitExceeded):
@@ -275,12 +277,13 @@ class EmailServer:
 
 			if self.settings.use_imap:
 				# new update for the IMAP Folder DocType
+				cleaned_folder_name = folder.strip(' "\'\t\r\n\\')
 				IMAPFolder = frappe.qb.DocType("IMAP Folder")
 				frappe.qb.update(IMAPFolder).set(IMAPFolder.uidvalidity, current_uid_validity).set(
 					IMAPFolder.uidnext, uidnext
 				).where(IMAPFolder.parent == self.settings.email_account_name).where(
-					IMAPFolder.folder_name == folder
-				).run()
+					IMAPFolder.folder_name == cleaned_folder_name
+				).run(debug=0)
 			else:
 				EmailAccount = frappe.qb.DocType("Email Account")
 				frappe.qb.update(EmailAccount).set(EmailAccount.uidvalidity, current_uid_validity).set(
@@ -298,6 +301,8 @@ class EmailServer:
 			from_uid = (
 				1 if uidnext < (sync_count + 1) or (uidnext - sync_count) < 1 else uidnext - sync_count
 			)
+			
+			# from_uid = max(1, uidnext - sync_count)
 			# sync last 100 email
 			self.settings.email_sync_rule = f"UID {from_uid}:*"
 			self.uid_reindexed = True

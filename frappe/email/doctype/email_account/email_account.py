@@ -847,7 +847,7 @@ def get_max_email_uid(email_account):
 		return 1
 	else:
 		max_uid = cint(result[0].get("uid", 0)) + 1
-		return max_uid
+		return max_uid or 1
 
 
 def setup_user_email_inbox(
