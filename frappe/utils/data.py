@@ -930,6 +930,8 @@ def flt(s: NumericType | str, precision: int | None = None, floor=None) -> float
 
 	return num
 
+def safe_abs(value):
+	return abs(flt(value))
 
 def cint(s: NumericType | str, default: int = 0) -> int:
 	"""Convert to integer
