@@ -10,6 +10,7 @@
  "field_order": [
   "subject",
   "use_html",
+  "custom_action",
   "response_html",
   "response",
   "section_break_4",
@@ -53,14 +54,21 @@
    "fieldtype": "Code",
    "label": "Response ",
    "options": "HTML"
+  },
+  {
+   "default": "0",
+   "fieldname": "custom_action",
+   "fieldtype": "Check",
+   "label": "Custom Action Template"
   }
  ],
  "icon": "fa fa-comment",
  "links": [],
- "modified": "2022-01-04 14:12:50.321633",
+ "modified": "2025-08-13 17:14:30.093320",
  "modified_by": "Administrator",
  "module": "Email",
  "name": "Email Template",
+ "naming_rule": "Set by user",
  "owner": "Administrator",
  "permissions": [
   {
@@ -85,5 +93,6 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "track_changes": 1
 }

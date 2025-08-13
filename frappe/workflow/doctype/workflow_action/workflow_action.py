@@ -404,8 +404,6 @@ def create_workflow_actions_for_roles(roles, doc):
 
 
 def send_workflow_action_email(users_data, doc):
-	common_args = get_common_email_args(doc)
-	message = common_args.pop("message", None)
 	# not yet add settings to enable this
 	state_field = get_doc_workflow_state_field(doc)
 	send_pendings = get_send_pending_setting(doc)
@@ -415,12 +413,22 @@ def send_workflow_action_email(users_data, doc):
 	else:
 		pending_data = {}
 	
+	email_template = get_email_template(doc)
+	attachments = frappe.attach_print(doc.doctype, doc.name, file_name=doc.name, doc=doc)
+	
 	for d in users_data:
+		actions = list(deduplicate_actions(d.get("possible_actions")))
+		common_args = get_common_email_args(doc, email_template, attachments, actions)
+		message = common_args.pop("message", None)
 		pendings = pending_data.get(d.get("email")) or []
+		
+		if email_template.custom_action:
+			actions = []
+
 		email_args = {
 			"recipients": [d.get("email")],
 			"args": {
-				"actions": list(deduplicate_actions(d.get("possible_actions"))), 
+				"actions": actions, 
 				"message": message,
 				"pendings":pendings,
 				"doctype": doc.get("doctype"),
@@ -530,14 +538,19 @@ def filter_allowed_users(users, doc, transition):
 	return filtered_users
 
 
-def get_common_email_args(doc):
+def get_common_email_args(doc, email_template, attachment, actions ):
 	doctype = doc.get("doctype")
 	docname = doc.get("name")
 
-	email_template = get_email_template(doc)
 	if email_template:
-		subject = frappe.render_template(email_template.subject, vars(doc))
-		response = frappe.render_template(email_template.response, vars(doc))
+		if email_template.use_html:
+			response = email_template.response_html
+		else:
+			response = email_template.response
+		args = vars(doc)
+		args['actions'] = actions
+		subject = frappe.render_template(email_template.subject,args)
+		response = frappe.render_template(response, args)
 	else:
 		subject = _("Workflow Action") + f" on {doctype}: {docname}"
 		response = get_link_to_form(doctype, docname, f"{doctype}: {docname}")
@@ -545,7 +558,7 @@ def get_common_email_args(doc):
 	common_args = {
 		"template": "workflow_action",
 		"header": "Workflow Action",
-		"attachments": [frappe.attach_print(doctype, docname, file_name=docname, doc=doc)],
+		"attachments": [attachment],
 		"subject": subject,
 		"message": response,
 	}
