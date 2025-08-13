@@ -368,10 +368,12 @@ def get_users_next_action_data(transitions, doc):
 					continue
 			
 			if not user_data_map.get(user):
+				temp = frappe.db.get_value("User", user, ["email", "full_name"], as_dict=1)
 				user_data_map[user] = frappe._dict(
 					{
 						"possible_actions": [],
-						"email": frappe.db.get_value("User", user, "email"),
+						"email": temp.email,
+						"full_name": temp.full_name
 					}
 				)
 
@@ -418,7 +420,12 @@ def send_workflow_action_email(users_data, doc):
 	
 	for d in users_data:
 		actions = list(deduplicate_actions(d.get("possible_actions")))
-		common_args = get_common_email_args(doc, email_template, attachments, actions)
+		args = {
+			"actions":actions,
+			"email":d.email,
+			"full_name":d.full_name
+		}
+		common_args = get_common_email_args(doc, email_template, attachments, args)
 		message = common_args.pop("message", None)
 		pendings = pending_data.get(d.get("email")) or []
 		
@@ -538,7 +545,7 @@ def filter_allowed_users(users, doc, transition):
 	return filtered_users
 
 
-def get_common_email_args(doc, email_template, attachment, actions ):
+def get_common_email_args(doc, email_template, attachment, add_args = {} ):
 	doctype = doc.get("doctype")
 	docname = doc.get("name")
 
@@ -548,7 +555,7 @@ def get_common_email_args(doc, email_template, attachment, actions ):
 		else:
 			response = email_template.response
 		args = vars(doc)
-		args['actions'] = actions
+		args.update(add_args)
 		subject = frappe.render_template(email_template.subject,args)
 		response = frappe.render_template(response, args)
 	else:
