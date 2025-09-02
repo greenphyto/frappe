@@ -222,6 +222,7 @@ def get_context(context):
 			sender = formataddr((self.sender, self.sender_email))
 		if frappe.flags.in_test:
 			print("Recipient:", recipients)
+			print("Subject:", subject)
 			print("Message:", message)
 			return
 		
