@@ -26,6 +26,7 @@ from frappe.core.doctype.role.role import get_info_based_on_role
 
 
 
+NOW = 0
 class WorkflowAction(Document):
 	pass
 
@@ -109,7 +110,7 @@ def process_workflow_actions(doc, state):
 
 	if send_email_alert(workflow):
 		enqueue(
-			send_workflow_action_email, now=0, queue="short", users_data=list(user_data_map.values()), doc=doc
+			send_workflow_action_email, now=NOW, queue="short", users_data=list(user_data_map.values()), doc=doc
 		)
 
 @frappe.whitelist()
@@ -146,7 +147,7 @@ def send_current_state_email(doctype, name):
 
 	if send_email_alert(workflow) and get_email_template(doc):
 		enqueue(
-			send_workflow_action_email, queue="short",now=0, users_data=user_data, doc=doc
+			send_workflow_action_email, queue="short",now=NOW, users_data=user_data, doc=doc
 		)
 	
 	frappe.msgprint("Scheduled to send email")
@@ -212,7 +213,7 @@ def return_action_confirmation_page(doc, action, action_link, alert_doc_change=F
 		"alert_doc_change": alert_doc_change,
 	}
 
-	template_params["pdf_link"] = get_pdf_link(doc.get("doctype"), doc.get("name"))
+	# template_params["pdf_link"] = get_pdf_link(doc.get("doctype"), doc.get("name"))
 
 	frappe.respond_as_web_page(
 		title=None,
@@ -416,7 +417,7 @@ def send_workflow_action_email(users_data, doc):
 		pending_data = {}
 	
 	email_template = get_email_template(doc)
-	attachments = frappe.attach_print(doc.doctype, doc.name, file_name=doc.name, doc=doc)
+	attachments = {} # frappe.attach_print(doc.doctype, doc.name, file_name=doc.name, doc=doc)
 	
 	for d in users_data:
 		actions = list(deduplicate_actions(d.get("possible_actions")))
@@ -429,7 +430,7 @@ def send_workflow_action_email(users_data, doc):
 		message = common_args.pop("message", None)
 		pendings = pending_data.get(d.get("email")) or []
 		
-		if email_template.custom_action:
+		if email_template and email_template.get("custom_action"):
 			actions = []
 
 		email_args = {
@@ -445,7 +446,7 @@ def send_workflow_action_email(users_data, doc):
 			"reference_doctype": doc.doctype,
 		}
 		email_args.update(common_args)
-		enqueue(method=frappe.sendmail, now=0,  queue="short", **email_args)
+		enqueue(method=frappe.sendmail, now=NOW,  queue="short", **email_args)
 
 
 def deduplicate_actions(action_list):
