@@ -14,6 +14,7 @@
   "advanced_control_section",
   "apply_to_all_doctypes",
   "applicable_for",
+  "auto",
   "column_break_9",
   "hide_descendants"
  ],
@@ -87,10 +88,17 @@
   {
    "fieldname": "column_break_3",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "auto",
+   "fieldtype": "Check",
+   "label": "Auto",
+   "read_only": 1
   }
  ],
  "links": [],
- "modified": "2022-01-03 11:25:03.726150",
+ "modified": "2025-10-02 15:24:44.407742",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "User Permission",
