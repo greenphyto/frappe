@@ -269,7 +269,7 @@ frappe.ui.form.on("User", {
 				let f = frm.fields_dict.company;
 				if (f) {
 					f.df.fieldtype = "Select";
-					f.df.options = companies;
+					f.df.options = ["",...companies];
 					frm.refresh_field("company");
 				}
 			});
