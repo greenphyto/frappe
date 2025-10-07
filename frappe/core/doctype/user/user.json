@@ -16,6 +16,7 @@
   "column_break0",
   "full_name",
   "username",
+  "company",
   "column_break_11",
   "language",
   "time_zone",
@@ -667,6 +668,11 @@
    "fieldtype": "Data",
    "label": "Company Selected",
    "read_only": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Select",
+   "label": "Company"
   }
  ],
  "icon": "fa fa-user",
@@ -729,7 +735,7 @@
    "link_fieldname": "user"
   }
  ],
- "modified": "2025-09-30 15:41:00.406987",
+ "modified": "2025-10-07 15:34:16.929996",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "User",
