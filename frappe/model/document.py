@@ -250,6 +250,7 @@ class Document(BaseDocument):
 		self.check_permission("create")
 		self.run_method("before_insert")
 		self.set_new_name(set_name=set_name, set_child_names=set_child_names)
+		self.run_method("after_naming")
 		self.set_parent_in_children()
 		self.validate_higher_perm_levels()
 
