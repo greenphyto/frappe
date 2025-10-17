@@ -418,9 +418,16 @@ def export_query():
 
 		xlsx_file = make_xlsx(xlsx_data, "Query Report", column_widths=column_widths, columns=data.columns, bold_list=bold_list)
 
-		frappe.response["filename"] = report_name + date_str_title + ".xlsx"
-		frappe.response["filecontent"] = xlsx_file.getvalue()
-		frappe.response["type"] = "binary"
+		if frappe.get_hooks("custom_export_report") and frappe.get_hooks("custom_export_report").get(report_name, ""):
+			custom_pre_process = frappe.get_hooks("custom_export_report").get(report_name, "")
+			if custom_pre_process:
+				for fn in custom_pre_process:
+					frappe.get_attr(fn)(report_name, xlsx_file)
+		else:
+			frappe.response["filename"] = report_name + date_str_title + ".xlsx"
+			frappe.response["filecontent"] = xlsx_file.getvalue()
+			frappe.response["type"] = "binary"
+
 
 def add_title_report(title):
 	res = [["Report:"], [title]]
