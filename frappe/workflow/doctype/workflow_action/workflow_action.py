@@ -213,7 +213,12 @@ def return_action_confirmation_page(doc, action, action_link, alert_doc_change=F
 		"alert_doc_change": alert_doc_change,
 	}
 
-	template_params["pdf_link"] = get_pdf_link(doc.get("doctype"), doc.get("name"))
+	if frappe.get_meta(doc.get("doctype")):
+		std_format = frappe.get_meta(doc.get("doctype")).default_print_format or "Standard"
+	else:
+		std_format = "Standard"
+		
+	template_params["pdf_link"] = get_pdf_link(doc.get("doctype"), doc.get("name"), print_format=std_format)
 
 	frappe.respond_as_web_page(
 		title=None,
