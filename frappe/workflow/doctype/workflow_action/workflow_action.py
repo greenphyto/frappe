@@ -213,7 +213,7 @@ def return_action_confirmation_page(doc, action, action_link, alert_doc_change=F
 		"alert_doc_change": alert_doc_change,
 	}
 
-	# template_params["pdf_link"] = get_pdf_link(doc.get("doctype"), doc.get("name"))
+	template_params["pdf_link"] = get_pdf_link(doc.get("doctype"), doc.get("name"))
 
 	frappe.respond_as_web_page(
 		title=None,
