@@ -122,10 +122,16 @@ export default class BulkOperations {
 
 	get_letterhead_options() {
 		const letterhead_options = [__("No Letterhead")];
+		let filters = {disabled: 0}
+		let company = frappe.defaults.get_default("company")
+		if (company){
+			filters.company = company
+		}
 		frappe.call({
 			method: "frappe.client.get_list",
 			args: {
 				doctype: "Letter Head",
+				filters: filters,
 				fields: ["name", "is_default"],
 				limit_page_length: 0,
 			},
