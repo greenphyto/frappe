@@ -169,9 +169,13 @@ def get_doc_permissions(doc, user=None, ptype=None):
 	def is_user_owner():
 		return (doc.get("owner") or "").lower() == user.lower()
 
-	if has_controller_permissions(doc, ptype, user=user) is False:
+	custom_allow = has_controller_permissions(doc, ptype, user=user)
+	if custom_allow is False:
 		push_perm_check_log("Not allowed via controller permission check")
 		return {ptype: 0}
+	
+	if custom_allow is True:
+		return {ptype: 1}
 
 	permissions = copy.deepcopy(get_role_permissions(meta, user=user, is_owner=is_user_owner()))
 
