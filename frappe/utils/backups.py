@@ -591,6 +591,9 @@ def delete_temp_backups(older_than=24):
 	"""
 	older_than = cint(frappe.conf.keep_backups_for_hours) or older_than
 	backup_path = get_backup_path()
+	if frappe.conf.keep_backup_forever:
+		return
+	
 	if os.path.exists(backup_path):
 		file_list = os.listdir(get_backup_path())
 		for this_file in file_list:
