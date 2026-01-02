@@ -919,18 +919,26 @@ def flt(s: NumericType | str, precision: int | None = None, floor=None) -> float
 	>>> flt("a")
 	0.0
 	"""
-	if isinstance(s, str):
-		raw = s.replace(",", "")
-	else:
-		raw = str(s)
+	if s is None or s == "":
+		return 0.0
 
 	try:
+		# LAKUKAN INI:
+		# Jika input adalah angka (float), ubah ke string dengan presisi tinggi 
+		# tapi tetap (misal 10 desimal) agar noise floating point hilang.
+		if isinstance(s, (float, int)):
+			raw = "{:.10f}".format(s).rstrip('0').rstrip('.')
+		else:
+			raw = str(s).replace(",", "")
+
 		d = Decimal(raw)
 
 		if precision is None:
-			return float(d)  
+			return float(d)
 
+		# Proses pembulatan
 		q = Decimal(10) ** -precision
+		# Gunakan ROUND_HALF_UP
 		d = d.quantize(q, rounding=ROUND_HALF_UP)
 
 		return float(d)
