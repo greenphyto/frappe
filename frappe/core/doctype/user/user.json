@@ -17,6 +17,7 @@
   "full_name",
   "username",
   "company",
+  "cannot_change_company",
   "column_break_11",
   "language",
   "time_zone",
@@ -673,6 +674,12 @@
    "fieldname": "company",
    "fieldtype": "Select",
    "label": "Company"
+  },
+  {
+   "default": "0",
+   "fieldname": "cannot_change_company",
+   "fieldtype": "Check",
+   "label": "Cannot change company"
   }
  ],
  "icon": "fa fa-user",
@@ -735,7 +742,7 @@
    "link_fieldname": "user"
   }
  ],
- "modified": "2025-10-07 15:34:16.929996",
+ "modified": "2026-01-13 12:40:47.197551",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "User",
