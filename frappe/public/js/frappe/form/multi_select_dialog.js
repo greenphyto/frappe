@@ -337,6 +337,9 @@ frappe.ui.form.MultiSelectDialog = class MultiSelectDialog {
 			if (!$(e.target).is(":checkbox") && !$(e.target).is("a")) {
 				$(this).find(":checkbox").trigger("click");
 			}
+			if (me.select_action){
+				me.select_action(e, this)
+			}
 		});
 
 		this.$results.on("click", ".list-item--head :checkbox", (e) => {
