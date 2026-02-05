@@ -691,9 +691,10 @@ def get_match_cond(doctype, as_condition=True):
 	return ((" and " + cond) if cond else "").replace("%", "%%")
 
 
-def build_match_conditions(doctype, user=None, as_condition=True):
+def build_match_conditions(doctype, user=None, as_condition=True, table_alias=""):
 	match_conditions = DatabaseQuery(doctype, user=user).build_match_conditions(
-		as_condition=as_condition
+		as_condition=as_condition,
+		table_alias=table_alias
 	)
 	if as_condition:
 		return match_conditions.replace("%", "%%")

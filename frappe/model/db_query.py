@@ -64,6 +64,7 @@ class DatabaseQuery:
 		self.ignore_ifnull = False
 		self.flags = frappe._dict()
 		self.reference_doctype = None
+		self.table_alias = ""
 
 	def execute(
 		self,
@@ -126,7 +127,7 @@ class DatabaseQuery:
 		if fields:
 			self.fields = fields
 		else:
-			self.fields = [f"`tab{self.doctype}`.`{pluck or 'name'}`"]
+			self.fields = [f"{self.table_alias or f'`tab{self.doctype}`'}.`{pluck or 'name'}`"]
 
 		if start:
 			limit_start = start
@@ -412,7 +413,7 @@ class DatabaseQuery:
 
 	def extract_tables(self):
 		"""extract tables from fields"""
-		self.tables = [f"`tab{self.doctype}`"]
+		self.tables = [f"{self.table_alias or f'`tab{self.doctype}`'}"]
 		sql_functions = [
 			"dayofyear(",
 			"extract(",
@@ -727,10 +728,11 @@ class DatabaseQuery:
 
 		return condition
 
-	def build_match_conditions(self, as_condition=True) -> str | list:
+	def build_match_conditions(self, as_condition=True, table_alias=None) -> str | list:
 		"""add match conditions if applicable"""
 		self.match_filters = []
 		self.match_conditions = []
+		self.table_alias = table_alias
 		only_if_shared = False
 		if not self.user:
 			self.user = frappe.session.user
@@ -758,7 +760,7 @@ class DatabaseQuery:
 			# skip user perm check if owner constraint is required
 			if requires_owner_constraint(role_permissions):
 				self.match_conditions.append(
-					f"`tab{self.doctype}`.`owner` = {frappe.db.escape(self.user, percent=False)}"
+					f"{self.table_alias or f'`tab{self.doctype}`'}.`owner` = {frappe.db.escape(self.user, percent=False)}"
 				)
 
 			# add user permission only if role has read perm
@@ -788,7 +790,7 @@ class DatabaseQuery:
 
 	def get_share_condition(self):
 		return (
-			cast_name(f"`tab{self.doctype}`.name")
+			cast_name(f"{self.table_alias or f'`tab{self.doctype}`'}.name")
 			+ f" in ({', '.join(frappe.db.escape(s, percent=False) for s in self.shared)})"
 		)
 
@@ -819,7 +821,7 @@ class DatabaseQuery:
 					condition = ""
 				else:
 					empty_value_condition = cast_name(
-						f"ifnull(`tab{self.doctype}`.`{df.get('fieldname')}`, '')=''"
+						f"ifnull({self.table_alias or f'`tab{self.doctype}`'}.`{df.get('fieldname')}`, '')=''"
 					)
 					condition = empty_value_condition + " or "
 
@@ -841,7 +843,7 @@ class DatabaseQuery:
 
 				if docs:
 					values = ", ".join(frappe.db.escape(doc, percent=False) for doc in docs)
-					condition += cast_name(f"`tab{self.doctype}`.`{df.get('fieldname')}`") + f" in ({values})"
+					condition += cast_name(f"{self.table_alias or f'`tab{self.doctype}`'}.`{df.get('fieldname')}`") + f" in ({values})"
 					match_conditions.append(f"({condition})")
 					match_filters[df.get("options")] = docs
 
@@ -897,19 +899,19 @@ class DatabaseQuery:
 					# will covert to
 					# `tabItem`.`idx` desc, `tabItem`.`modified` desc
 					args.order_by = ", ".join(
-						f"`tab{self.doctype}`.`{f.split()[0].strip()}` {f.split()[1].strip()}"
+						f"{self.table_alias or f'`tab{self.doctype}`'}.`{f.split()[0].strip()}` {f.split()[1].strip()}"
 						for f in meta.sort_field.split(",")
 					)
 				else:
 					sort_field = meta.sort_field or "modified"
 					sort_order = (meta.sort_field and meta.sort_order) or "desc"
 					if self.order_by:
-						args.order_by = f"`tab{self.doctype}`.`{sort_field or 'modified'}` {sort_order or 'desc'}"
+						args.order_by = f"{self.table_alias or f'`tab{self.doctype}`'}.`{sort_field or 'modified'}` {sort_order or 'desc'}"
 
 				# draft docs always on top
 				if hasattr(meta, "is_submittable") and meta.is_submittable:
 					if self.order_by:
-						args.order_by = f"`tab{self.doctype}`.docstatus asc, {args.order_by}"
+						args.order_by = f"{self.table_alias or f'`tab{self.doctype}`'}.docstatus asc, {args.order_by}"
 
 	def validate_order_by_and_group_by(self, parameters):
 		"""Check order by, group by so that atleast one column is selected and does not have subquery"""
