@@ -278,8 +278,10 @@ def has_user_permission(doc, user=None, fromWorkflow=0):
 	"""Returns True if User is allowed to view considering User Permissions"""
 	from frappe.core.doctype.user_permission.user_permission import get_user_permissions
 
+	if has_controller_permissions(doc, user=user, ptype="write"):
+		return True
+
 	user_permissions = get_user_permissions(user)
-	#print(user_permissions)
 
 	if not user_permissions:
 		# no user permission rules specified for this doctype
