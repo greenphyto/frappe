@@ -191,6 +191,8 @@ def get_contact_details(contact):
 		"contact_email": contact.get("email_id"),
 		"contact_mobile": contact.get("mobile_no"),
 		"contact_phone": contact.get("phone"),
+		"contact_phone_all": ", ".join([d.phone for d in contact.get("phone_nos")]),
+		"contact_email_all": ", ".join([d.email_id for d in contact.get("email_ids")]),
 		"contact_designation": contact.get("designation"),
 		"contact_department": contact.get("department"),
 	}

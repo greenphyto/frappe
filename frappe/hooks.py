@@ -125,7 +125,10 @@ has_website_permission = {
 }
 
 jinja = {
-	"methods": "frappe.utils.jinja_globals",
+	"methods": [
+		"frappe.utils.jinja_globals",
+        "frappe.contacts.doctype.contact.contact.get_contact_details"
+	],
 	"filters": [
 		"frappe.utils.data.global_date_format",
 		"frappe.utils.markdown",
