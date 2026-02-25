@@ -26,7 +26,7 @@ from frappe.core.doctype.role.role import get_info_based_on_role
 
 
 
-NOW = 0
+NOW = frappe.local.conf.testing_site
 class WorkflowAction(Document):
 	pass
 
