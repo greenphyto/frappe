@@ -581,18 +581,21 @@ class Database:
 						limit=limit,
 					)
 				except Exception as e:
-					if len(e.args) > 1 and "parent" in str(e.args[1]).lower():
-						ignore = True
-						
-					if ignore and (frappe.db.is_missing_column(e) or frappe.db.is_table_missing(e) or frappe.db.is_ambiguous_column(e)):
+					is_ambiguous_parent = (
+						frappe.db.is_ambiguous_column(e)
+						and len(e.args) > 1
+						and "parent" in str(e.args[1]).lower()
+					)
+
+					if is_ambiguous_parent:
+						out = None
+					elif ignore and (frappe.db.is_missing_column(e) or frappe.db.is_table_missing(e)):
 						# table or column not found, return None
 						out = None
 					elif (not ignore) and frappe.db.is_table_missing(e):
-						# table not found, look in singles
 						out = self.get_values_from_single(
 							fields, filters, doctype, as_dict, debug, update, run=run, distinct=distinct
 						)
-
 					else:
 						raise
 			else:
