@@ -49,6 +49,10 @@ class MariaDBExceptionUtil:
 		return e.args[0] == ER.BAD_FIELD_ERROR
 
 	@staticmethod
+	def is_ambiguous_column(e: pymysql.Error) -> bool:
+		return e.args[0] == 1052  # ER_NON_UNIQ_ERROR
+
+	@staticmethod
 	def is_duplicate_fieldname(e: pymysql.Error) -> bool:
 		return e.args[0] == ER.DUP_FIELDNAME
 

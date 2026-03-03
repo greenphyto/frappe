@@ -76,6 +76,10 @@ class PostgresExceptionUtil:
 		return getattr(e, "pgcode", None) == UNDEFINED_COLUMN
 
 	@staticmethod
+	def is_ambiguous_column(e):
+		return getattr(e, "pgcode", None) == "42702"
+
+	@staticmethod
 	def is_access_denied(e):
 		return getattr(e, "pgcode", None) == INSUFFICIENT_PRIVILEGE
 

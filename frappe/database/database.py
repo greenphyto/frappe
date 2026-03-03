@@ -581,7 +581,10 @@ class Database:
 						limit=limit,
 					)
 				except Exception as e:
-					if ignore and (frappe.db.is_missing_column(e) or frappe.db.is_table_missing(e)):
+					if len(e.args) > 1 and "parent" in str(e.args[1]).lower():
+						ignore = True
+						
+					if ignore and (frappe.db.is_missing_column(e) or frappe.db.is_table_missing(e) or frappe.db.is_ambiguous_column(e)):
 						# table or column not found, return None
 						out = None
 					elif (not ignore) and frappe.db.is_table_missing(e):
