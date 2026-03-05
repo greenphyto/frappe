@@ -319,12 +319,19 @@ frappe.ui.form.QuickEntryForm = class QuickEntryForm {
 	set_defaults() {
 		var me = this;
 		// set defaults
+		var row = frappe._from_link; // important
+        var query = frappe._from_link.get_query(row.doc, row.doctype, row.docname) || {};
+		var filters = query.filters;
 		$.each(this.dialog.fields_dict, function (fieldname, field) {
 			field.doctype = me.doc.doctype;
 			field.docname = me.doc.name;
 
 			if (!is_null(me.doc[fieldname])) {
 				field.set_input(me.doc[fieldname]);
+			}
+			// copy from filters
+			if (filters && filters[fieldname]){
+				field.set_input(filters[fieldname])
 			}
 		});
 	}
