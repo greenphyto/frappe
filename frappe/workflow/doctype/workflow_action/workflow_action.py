@@ -84,7 +84,7 @@ def process_workflow_actions(doc, state):
 		clear_workflow_actions(doc.get("doctype"), doc.get("name"))
 		return
 
-	if is_workflow_action_already_created(doc):
+	if is_workflow_action_already_created(doc) and not frappe.local.conf.testing_site:
 		return
 	
 	workflow_state = get_doc_workflow_state(doc)
@@ -426,7 +426,11 @@ def send_workflow_action_email(users_data, doc):
 		std_format = frappe.get_meta(doc.get("doctype")).default_print_format or "Standard"
 	else:
 		std_format = "Standard"
-	attachments = frappe.attach_print(doc.doctype, doc.name, file_name=doc.name, doc=doc, print_format=std_format)
+	
+	if frappe.local.conf.testing_site:
+		attachments = {}
+	else:
+		attachments = frappe.attach_print(doc.doctype, doc.name, file_name=doc.name, doc=doc, print_format=std_format)
 	
 	for d in users_data:
 		actions = list(deduplicate_actions(d.get("possible_actions")))
