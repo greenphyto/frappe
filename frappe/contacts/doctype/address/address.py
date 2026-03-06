@@ -252,7 +252,7 @@ def address_query(doctype, txt, searchfield, start, page_len, filters):
 
 	res = frappe.db.sql(
 		"""select
-			`tabAddress`.name, `tabAddress`.address_title,`tabAddress`.address_line1, `tabAddress`.city, `tabAddress`.country
+			`tabAddress`.name, `tabAddress`.address_title,`tabAddress`.address_line1, `tabAddress`.city, `tabAddress`.address_type, `tabAddress`.country
 		from
 			`tabAddress`, `tabDynamic Link`
 		where
@@ -264,6 +264,7 @@ def address_query(doctype, txt, searchfield, start, page_len, filters):
 			({search_condition})
 			{mcond} {condition}
 		order by
+			if(`tabAddress`.address_type = 'Shipping', 0, 1),
 			if(locate(%(_txt)s, `tabAddress`.name), locate(%(_txt)s, `tabAddress`.name), 99999),
 			`tabAddress`.idx desc, `tabAddress`.name
 		limit %(start)s, %(page_len)s """.format(
@@ -283,7 +284,10 @@ def address_query(doctype, txt, searchfield, start, page_len, filters):
 
 	data = []
 	for d in res:
-		r = {"value":d.name, "label":d.address_title, "description":", ".join([d.address_line1, d.country])}
+		if d.city != d.country:
+			r = {"value":d.name, "label":d.address_title, "description":", ".join([d.address_type, d.address_line1, d.city, d.country])}
+		else:
+			r = {"value":d.name, "label":d.address_title, "description":", ".join([d.address_type, d.address_line1, d.country])}
 		data.append(r)
 
 	return data
