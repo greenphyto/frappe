@@ -84,7 +84,7 @@ def process_workflow_actions(doc, state):
 		clear_workflow_actions(doc.get("doctype"), doc.get("name"))
 		return
 
-	if is_workflow_action_already_created(doc) and not frappe.local.conf.testing_site:
+	if is_workflow_action_already_created(doc):
 		return
 	
 	workflow_state = get_doc_workflow_state(doc)
