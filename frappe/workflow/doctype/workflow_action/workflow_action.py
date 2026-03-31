@@ -550,12 +550,16 @@ def filter_allowed_users(users, doc, transition):
 	from frappe.permissions import has_permission, has_user_permission
 
 	filtered_users = []
+	methods = frappe.get_hooks("bypass_workflow_permission").get(doc.doctype)
 	for user in users:
-		if has_approval_access(user, doc, transition) and has_permission(doctype=doc, user=user):
-			
-			if  has_user_permission(doc, user,1):
-					#print(user + "here")
+		if has_approval_access(user, doc, transition) and has_permission(doctype=doc, user=user) and has_user_permission(doc, user,1):
+			filtered_users.append(user)
+		else:
+			for method in methods:
+				if frappe.call(frappe.get_attr(method), user=user, doc=doc, transition=transition):
 					filtered_users.append(user)
+					break
+
 	return filtered_users
 
 
