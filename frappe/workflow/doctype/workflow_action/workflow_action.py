@@ -220,6 +220,11 @@ def return_action_confirmation_page(doc, action, action_link, alert_doc_change=F
 
 	template_params["pdf_link"] = get_pdf_link(doc.get("doctype"), doc.get("name"), print_format=std_format)
 
+	hooks = frappe.get_hooks("confirm_workflow_action_page") or {}
+	methods = hooks.get(doc.get("doctype")) or []
+	for method in methods:
+		frappe.call(frappe.get_attr(method), doc=doc, context=template_params)
+
 	frappe.respond_as_web_page(
 		title=None,
 		html=None,
