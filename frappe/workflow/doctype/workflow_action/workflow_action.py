@@ -26,7 +26,6 @@ from frappe.core.doctype.role.role import get_info_based_on_role
 
 
 
-NOW = frappe.local.conf.testing_site
 class WorkflowAction(Document):
 	pass
 
@@ -108,6 +107,8 @@ def process_workflow_actions(doc, state):
 
 	create_workflow_actions_for_roles(roles, doc)
 
+	NOW = cint(frappe.local.conf.workflow_send_now)
+
 	if send_email_alert(workflow):
 		enqueue(
 			send_workflow_action_email, now=NOW, queue="short", users_data=list(user_data_map.values()), doc=doc
@@ -144,6 +145,8 @@ def send_current_state_email(doctype, name):
 	for role in list(roles):
 		if role in own_roles and frappe.session.user != 'Administrator':
 			is_own_role = True
+
+	NOW = cint(frappe.local.conf.workflow_send_now)
 
 	if send_email_alert(workflow) and get_email_template(doc):
 		enqueue(
@@ -432,11 +435,12 @@ def send_workflow_action_email(users_data, doc):
 	else:
 		std_format = "Standard"
 	
-	if frappe.local.conf.testing_site:
+	if frappe.local.conf.local_site:
 		attachments = {}
 	else:
 		attachments = frappe.attach_print(doc.doctype, doc.name, file_name=doc.name, doc=doc, print_format=std_format)
 	
+	NOW = cint(frappe.local.conf.workflow_send_now)
 	for d in users_data:
 		actions = list(deduplicate_actions(d.get("possible_actions")))
 		args = {
@@ -557,7 +561,10 @@ def filter_allowed_users(users, doc, transition):
 	filtered_users = []
 	methods = (frappe.get_hooks("bypass_workflow_permission") or {}).get(doc.doctype) or []
 	for user in users:
-		if has_approval_access(user, doc, transition) and has_permission(doctype=doc, user=user) and has_user_permission(doc, user,1):
+		perm1 = has_approval_access(user, doc, transition)
+		perm2 = has_permission(doctype=doc, user=user)
+		perm3 = has_user_permission(doc, user,1)
+		if perm1 and perm2 and perm3:
 			filtered_users.append(user)
 		else:
 			for method in methods:
