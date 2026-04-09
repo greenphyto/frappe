@@ -15,7 +15,7 @@ export default class GridRow {
 		var me = this;
 
 		this.wrapper = $('<div class="grid-row"></div>');
-		this.row = $('<div class="data-row row"></div>')
+		this.row = $('<div class="data-row row m-0"></div>')
 			.appendTo(this.wrapper)
 			.on("click", function (e) {
 				if (
@@ -356,7 +356,7 @@ export default class GridRow {
 
 		if (this.configure_columns && this.frm) {
 			this.configure_columns_button = $(`
-				<div class="col grid-static-col d-flex justify-content-center" style="cursor: pointer;">
+				<div class="col grid-static-col pointer">
 					<a>${frappe.utils.icon("setting-gear", "sm", "", "filter: opacity(0.5)")}</a>
 				</div>
 			`)
@@ -395,7 +395,6 @@ export default class GridRow {
 			});
 
 		this.grid_settings_dialog.set_primary_action(__("Update"), () => {
-			this.validate_columns_width();
 			this.columns = {};
 			this.update_user_settings_for_grid();
 			this.grid_settings_dialog.hide();
@@ -414,6 +413,7 @@ export default class GridRow {
 			this.selected_columns_for_grid.push({
 				fieldname: row[0].fieldname,
 				columns: row[0].columns || row[0].colsize,
+				sticky: row[0].sticky,
 			});
 		});
 	}
@@ -592,20 +592,6 @@ export default class GridRow {
 			});
 	}
 
-	validate_columns_width() {
-		let total_column_width = 0.0;
-
-		this.selected_columns_for_grid.forEach((row) => {
-			if (row.columns && row.columns > 0) {
-				total_column_width += cint(row.columns);
-			}
-		});
-
-		if (total_column_width && total_column_width > 10) {
-			frappe.throw(__("The total column width cannot be more than 10."));
-		}
-	}
-
 	remove_selected_column() {
 		$(this.fields_html_wrapper)
 			.find(".remove-field")
@@ -649,6 +635,7 @@ export default class GridRow {
 		this.search_columns = {};
 
 		this.grid.setup_visible_columns();
+		let total_colsize = 0;
 		this.grid.visible_columns.forEach((col, ci) => {
 			// to get update df for the row
 			let df = this.docfields.find((field) => field.fieldname === col[0].fieldname);
@@ -656,6 +643,7 @@ export default class GridRow {
 			this.set_dependant_property(df);
 
 			let colsize = col[1];
+			total_colsize += colsize;
 			let txt = this.doc
 				? frappe.format(this.doc[df.fieldname], df, null, this.doc)
 				: __(df.label);
@@ -685,6 +673,23 @@ export default class GridRow {
 				}
 			}
 		});
+
+		let current_grid = $(
+			`div[data-fieldname="${this.grid.df.fieldname}"] .form-grid-container`
+		);
+		if (total_colsize > 8) {
+			current_grid.addClass("column-limit-reached");
+		} else if (current_grid.hasClass("column-limit-reached")) {
+			if (Number($(current_grid).children(".form-grid").css("left")) != 0) {
+				$(current_grid).children(".form-grid").css("left", 0);
+				$(current_grid).children().find(".grid-scroll-bar").css({
+					width: "auto",
+					"margin-left": "0px",
+				});
+				$(current_grid).children().find(".grid-scroll-bar-rows").css("width", "auto");
+			}
+			current_grid.removeClass("column-limit-reached");
+		}
 
 		if (this.show_search) {
 			// last empty column
@@ -831,14 +836,7 @@ export default class GridRow {
 		let grid;
 		let grid_container;
 
-		let inital_position_x = 0;
-		let start_x = 0;
-		let start_y = 0;
-
 		let input_in_focus = false;
-
-		let vertical = false;
-		let horizontal = false;
 
 		// prevent random layout shifts caused by widgets and on click position elements inside view (UX).
 		function on_input_focus(el) {
@@ -891,54 +889,6 @@ export default class GridRow {
 			.attr("data-fieldtype", df.fieldtype)
 			.data("df", df)
 			.appendTo(this.row)
-			// initialize grid for horizontal scroll on mobile devices.
-			.on("touchstart", function (event) {
-				grid_container = $(event.currentTarget).closest(".form-grid-container")[0];
-				grid = $(event.currentTarget).closest(".form-grid")[0];
-
-				grid.style.position != "relative" && $(grid).css("position", "relative");
-				!grid.style.left && $(grid).css("left", 0);
-
-				start_x = event.touches[0].clientX;
-				start_y = event.touches[0].clientY;
-
-				inital_position_x = -parseFloat(grid.style.left || 0) + start_x;
-			})
-			// calculate X and Y movement based on touch events.
-			.on("touchmove", function (event) {
-				if (input_in_focus) return;
-
-				let moved_x;
-				let moved_y;
-
-				if (!horizontal && !vertical) {
-					moved_x = Math.abs(start_x - event.touches[0].clientX);
-					moved_y = Math.abs(start_y - event.touches[0].clientY);
-				}
-
-				if (!vertical && moved_x > 16) {
-					horizontal = true;
-				} else if (!horizontal && moved_y > 16) {
-					vertical = true;
-				}
-				if (horizontal) {
-					event.preventDefault();
-
-					let grid_start = inital_position_x - event.touches[0].clientX;
-					let grid_end = grid.clientWidth - grid_container.clientWidth + 2;
-
-					if (grid_start < 0) {
-						grid_start = 0;
-					} else if (grid_start > grid_end) {
-						grid_start = grid_end;
-					}
-					grid.style.left = `-${grid_start}px`;
-				}
-			})
-			.on("touchend", function () {
-				vertical = false;
-				horizontal = false;
-			})
 			.on("click", function () {
 				if (frappe.ui.form.editable_row !== me) {
 					var out = me.toggle_editable_row();
@@ -958,6 +908,30 @@ export default class GridRow {
 
 		$col.field_area = $('<div class="field-area"></div>').appendTo($col).toggle(false);
 		$col.static_area = $('<div class="static-area ellipsis"></div>').appendTo($col).html(txt);
+
+		$(document).ready(function () {
+			let $scrollBar = $(".grid-scroll-bar");
+			let form_grid = $(".form-grid");
+			let grid_container = $(".form-grid-container");
+			let grid_scroll_bar_rows = $(".grid-scroll-bar-rows");
+			// Make sure the grid container is scrollable
+			$scrollBar.on("scroll", function (event) {
+				grid_container = $(event.currentTarget).closest(".form-grid-container");
+				form_grid = $(event.currentTarget).closest(".form-grid");
+				grid_scroll_bar_rows = $(event.currentTarget).closest(".grid-scroll-bar-rows");
+
+				var scroll_left = $(this).scrollLeft();
+
+				// Sync the form grid's left position with the scroll bar
+				form_grid.css("position", "relative");
+				form_grid.css("left", -scroll_left + "px");
+				$(this).css("margin-left", scroll_left + "px");
+			});
+
+			$scrollBar.css("width", grid_container.width());
+
+			grid_scroll_bar_rows.css("width", form_grid[0].scrollWidth);
+		});
 
 		// set title attribute to see full label for columns in the heading row
 		if (!this.doc) {
