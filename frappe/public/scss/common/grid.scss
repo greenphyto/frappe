@@ -456,7 +456,9 @@
 		.grid-static-col.col-xs-12 {
 			flex: 12;
 		}
-		.grid-row > .row .col:last-child,
+		.grid-row > .row .col:last-child .pointer{
+			max-width: 60px;
+		}
 		.grid-row > .dialog-assignment-row .col:last-child {
 			max-width: 60px;
 		}
