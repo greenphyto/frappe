@@ -399,17 +399,21 @@ def export_query():
 		# Add filter view
 		title_report = []
 		filter_report = []
+		export_date = []
 		if include_filters:
 			title_report = add_title_report(report_name) 
 			filter_report = get_filters_data(filters, filters_settings=filters_settings)
 			xlsx_data = title_report + filter_report + [["Export date", date_str]] + xlsx_data
+			export_date = [["Export date", date_str]]
+			start_idx = 2
 		else:
 			xlsx_data = [[report_name], [], ["Export date", date_str]] + xlsx_data
-
+			export_date = [["Export date", date_str]]
+			start_idx = 4
 
 		bold_list = []
 		for i,d in enumerate(data_list):
-			base_idx = 2 + len(title_report) + len(filter_report)
+			base_idx = start_idx + len(title_report) + len(filter_report) + len(export_date) # to calculate the index of data rows in xlsx	
 			if type(d) in (list, tuple):
 				continue
 			
