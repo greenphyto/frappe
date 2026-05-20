@@ -187,8 +187,13 @@
 
 	.editable-row {
 		.grid-static-col {
-			padding: 0px !important;
-			height: 32px;
+			padding: 0px var(--padding-sm) !important;
+			background-color: var(--control-bg);
+		}
+
+		.grid-static-col .frappe-control.input-max-width {
+			max-width: 100% !important;
+			margin-bottom: 0 !important;
 		}
 
 		.checkbox {
@@ -204,9 +209,11 @@
 		.form-control {
 			border-radius: 0px;
 			border: 0px;
+			padding-left: 0px;
+			padding-right: 0px;
 			padding-top: 8px;
-			padding-bottom: 9px;
-			height: 34px;
+			padding-bottom: 8px;
+			height: auto;
 		}
 
 		.link-btn {
