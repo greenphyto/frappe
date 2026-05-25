@@ -434,7 +434,7 @@ def export_query():
 
 
 def add_title_report(title):
-	res = [["Report:"], [title]]
+	res = [[title]]
 	return res
 
 def get_filters_data(filters={}, filters_info=[], filters_settings={}):
