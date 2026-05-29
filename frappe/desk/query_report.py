@@ -400,16 +400,16 @@ def export_query():
 		title_report = []
 		filter_report = []
 		export_date = []
+		title_report = add_title_report(report_name, filters)
 		if include_filters:
-			title_report = add_title_report(report_name) 
 			filter_report = get_filters_data(filters, filters_settings=filters_settings)
 			xlsx_data = title_report + filter_report + [["Export date", date_str]] + xlsx_data
 			export_date = [["Export date", date_str]]
 			start_idx = 2
 		else:
-			xlsx_data = [[report_name], [], ["Export date", date_str]] + xlsx_data
+			xlsx_data = title_report + [ [], ["Export date", date_str]] + xlsx_data
 			export_date = [["Export date", date_str]]
-			start_idx = 4
+			start_idx = 3
 
 		bold_list = []
 		for i,d in enumerate(data_list):
@@ -433,9 +433,21 @@ def export_query():
 			frappe.response["type"] = "binary"
 
 
-def add_title_report(title):
+def add_title_report(title, filters):
 	res = [[title]]
+	company = get_filter_company(filters)
+	if company:
+		res.append([company])
+	else:
+		res.append([])
+
 	return res
+
+def get_filter_company(filters):
+	company = ""
+	if filters.get("company"):
+		company = filters.get("company")
+	return company
 
 def get_filters_data(filters={}, filters_info=[], filters_settings={}):
 	# filters: is dict type filter, usually on report page (custom report, etc)
