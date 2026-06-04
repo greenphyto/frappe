@@ -60,13 +60,20 @@ def make_xlsx(data, sheet_name, wb=None, column_widths=None, columns=[], bold_li
 			if col.get("fieldtype") in frappe.model.numeric_fieldtypes:
 				col_right.append(i)
 
-	# Loop through all cells to set right alignment
+	# Thousand format for number columns (skip Check/boolean)
+	THOUSAND_FORMAT = '#,##0.00;(#,##0.00)'
+
+	# Loop through all cells to set right alignment and number format
 	for row_index, row in enumerate(ws.iter_rows(values_only=False), start=1):
 
 		for col in col_right:
-			if len(row) >= col :
-				cell = row[col-1] 
+			if len(row) > col:
+				cell = row[col]
 				cell.alignment = Alignment(horizontal='right')
+				# Apply thousand format for numeric columns (skip header row)
+				if row_index > 1:
+					cell.number_format = THOUSAND_FORMAT
+
 		if row_index in bold_list:
 			for cell in row:
 				cell.font = Font(bold=True)
