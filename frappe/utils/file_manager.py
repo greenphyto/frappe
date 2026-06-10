@@ -152,7 +152,7 @@ def get_uploaded_content():
 		return None, None
 
 
-def save_file(fname, content, dt, dn, folder=None, decode=False, is_private=0, df=None):
+def save_file(fname, content, dt, dn, folder=None, decode=False, is_private=0, df=None, overwrite=False):
 	if decode:
 		if isinstance(content, str):
 			content = content.encode("utf-8")
@@ -166,6 +166,13 @@ def save_file(fname, content, dt, dn, folder=None, decode=False, is_private=0, d
 	content_type = mimetypes.guess_type(fname)[0]
 	fname = get_file_name(fname, content_hash[-6:])
 	file_data = get_file_data_from_hash(content_hash, is_private=is_private)
+
+	# verify if file is already present in the system
+	if file_data:
+		hardfile_exists = os.path.exists(file_data.get("file_url"))
+		if not hardfile_exists:
+			file_data = None
+
 	if not file_data:
 		call_hook_method("before_write_file", file_size=file_size)
 
@@ -188,17 +195,23 @@ def save_file(fname, content, dt, dn, folder=None, decode=False, is_private=0, d
 
 	f = frappe.get_doc(file_data)
 	f.flags.ignore_permissions = True
-	try:
-		f.insert()
-	except frappe.DuplicateEntryError:
-		return frappe.get_doc("File", f.duplicate_entry)
+	if overwrite:
+		f.flags.overwrite = True
+	f.insert()
+	# try:
+	# except frappe.DuplicateEntryError:
+	# 	return frappe.get_doc("File", f.duplicate_entry)
 
 	return f
 
 
-def get_file_data_from_hash(content_hash, is_private=0):
+def get_file_data_from_hash(content_hash, is_private=0, filename=""):
+	filters = {"content_hash": content_hash, "is_private": is_private}
+	if filename:
+		filters["file_name"] = filename
+		
 	for name in frappe.get_all(
-		"File", {"content_hash": content_hash, "is_private": is_private}, pluck="name"
+		"File", filters, pluck="name"
 	):
 		b = frappe.get_doc("File", name)
 		return {k: b.get(k) for k in frappe.get_hooks()["write_file_keys"]}
