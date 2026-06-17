@@ -3,8 +3,6 @@
 import os
 import os.path
 
-import boto3
-from botocore.exceptions import ClientError
 from rq.timeouts import JobTimeoutException
 
 import frappe
@@ -24,6 +22,9 @@ class S3BackupSettings(Document):
 	def validate(self):
 		if not self.enabled:
 			return
+
+		import boto3
+		from botocore.exceptions import ClientError
 
 		if not self.endpoint_url:
 			self.endpoint_url = "https://s3.amazonaws.com"
@@ -110,6 +111,8 @@ def notify():
 def backup_to_s3():
 	from frappe.utils import get_backups_path
 	from frappe.utils.backups import new_backup
+
+	import boto3
 
 	doc = frappe.get_single("S3 Backup Settings")
 	bucket = doc.bucket
