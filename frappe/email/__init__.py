@@ -1,7 +1,7 @@
 # Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
 # License: MIT. See LICENSE
 
-import frappe
+import frappe, json
 from frappe.desk.reportview import build_match_conditions
 
 
@@ -48,12 +48,20 @@ def get_contact_list(txt, page_length=100) -> list[dict]:
 
 
 def get_system_managers():
-	return frappe.db.sql_list(
+	system_users = frappe.db.sql_list(
 		"""select parent FROM `tabHas Role`
 		WHERE role='System Manager'
 		AND parent!='Administrator'
 		AND parent IN (SELECT email FROM tabUser WHERE enabled=1)"""
 	)
+	email_candidate = frappe.local.conf.email_support
+	if email_candidate:
+		try:
+			return json.loads(email_candidate)
+		except:
+			return system_users
+	else:
+		return system_users
 
 @frappe.whitelist()
 def get_email_default(doctype, docname=""):
