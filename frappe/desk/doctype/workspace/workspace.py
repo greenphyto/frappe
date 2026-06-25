@@ -213,6 +213,7 @@ def save_page(title, public, new_widgets, blocks):
 		doc = frappe.get_doc("Workspace", pages[0])
 
 	doc.content = blocks
+	doc.flags.ignore_links=1
 	doc.save(ignore_permissions=True)
 
 	save_new_widget(doc, title, blocks, new_widgets)
