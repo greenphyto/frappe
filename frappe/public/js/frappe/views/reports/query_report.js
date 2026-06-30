@@ -1471,7 +1471,7 @@ frappe.views.QueryReport = class QueryReport extends frappe.views.BaseList {
 			}
 		];
 
-		if (this.tree_report) {
+		if (this.tree_report || this.report_settings.tree) {
 			export_dialog_fields.push({
 				label: __("Include indentation"),
 				fieldname: "include_indentation",
