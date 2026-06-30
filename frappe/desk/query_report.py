@@ -413,12 +413,25 @@ def export_query():
 
 		bold_list = []
 		for i,d in enumerate(data_list):
-			base_idx = start_idx + len(title_report) + len(filter_report) + len(export_date) # to calculate the index of data rows in xlsx	
+			base_idx = start_idx + len(title_report) + len(filter_report) + len(export_date) # to calculate the index of data rows in xlsx
 			if type(d) in (list, tuple):
 				continue
-			
+
 			if d.get("bold") or d.get("is_group") or d.get("is_bold"):
 				bold_list.append(base_idx + i)
+
+		# Bold: export date row and column header row
+		# For include_filters=0: layout is title(2) + [empty, export_date] + data
+		#   export_date at 1-indexed = len(title_report) + 2, column_headers = +1 after that
+		# For include_filters=1: layout is title(2) + filter_report + export_date + data
+		#   export_date at 1-indexed = len(title_report) + len(filter_report) + 1, column_headers = +1 after that
+		if include_filters:
+			export_date_bold_idx = len(title_report) + len(filter_report) + 1
+		else:
+			export_date_bold_idx = len(title_report) + 2
+
+		bold_list.append(export_date_bold_idx)       # export date row
+		bold_list.append(export_date_bold_idx + 1)   # column header row
 
 		xlsx_file = make_xlsx(xlsx_data, "Query Report", column_widths=column_widths, columns=data.columns, bold_list=bold_list)
 
