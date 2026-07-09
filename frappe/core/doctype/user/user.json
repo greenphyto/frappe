@@ -75,6 +75,7 @@
   "simultaneous_sessions",
   "restrict_ip",
   "last_ip",
+  "is_api_user",
   "column_break1",
   "login_after",
   "user_type",
@@ -680,6 +681,12 @@
    "fieldname": "cannot_change_company",
    "fieldtype": "Check",
    "label": "Cannot change company"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_api_user",
+   "fieldtype": "Check",
+   "label": "is API user"
   }
  ],
  "icon": "fa fa-user",
@@ -742,7 +749,7 @@
    "link_fieldname": "user"
   }
  ],
- "modified": "2026-01-13 12:40:47.197551",
+ "modified": "2026-07-09 15:15:47.649635",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "User",

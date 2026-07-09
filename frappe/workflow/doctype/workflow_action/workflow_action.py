@@ -379,11 +379,15 @@ def get_users_next_action_data(transitions, doc):
 		users = get_users_with_role(transition.allowed)
 		filtered_users = filter_allowed_users(users, doc, transition)
 		for user in filtered_users:
+			# Skip API users - they should not receive workflow emails
+			if frappe.db.get_value("User", user, "is_api_user"):
+				continue
+
 			# custom validate
 			if custom_validate:
 				if not frappe.get_attr(custom_validate)(doc=doc, user=user, transition=transition):
 					continue
-			
+
 			if not user_data_map.get(user):
 				temp = frappe.db.get_value("User", user, ["email", "full_name"], as_dict=1)
 				user_data_map[user] = frappe._dict(
