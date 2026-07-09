@@ -1,4 +1,5 @@
 {
+ "actions": [],
  "creation": "2013-02-22 01:27:36",
  "description": "Represents the states allowed in one document and role assigned to change the state.",
  "doctype": "DocType",
@@ -14,6 +15,7 @@
   "is_optional_state",
   "next_action_email_template",
   "allow_edit",
+  "no_email",
   "section_break_9",
   "message"
  ],
@@ -88,15 +90,26 @@
   {
    "fieldname": "section_break_9",
    "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "description": "It will not send any notification on this state",
+   "fieldname": "no_email",
+   "fieldtype": "Check",
+   "label": "Do not send email"
   }
  ],
  "idx": 1,
  "istable": 1,
- "modified": "2019-06-14 11:43:20.271091",
+ "links": [],
+ "modified": "2026-07-09 15:30:00.000000",
  "modified_by": "Administrator",
  "module": "Workflow",
  "name": "Workflow Document State",
  "owner": "Administrator",
  "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
  "track_changes": 1
 }

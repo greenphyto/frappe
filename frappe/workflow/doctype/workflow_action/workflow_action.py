@@ -109,7 +109,8 @@ def process_workflow_actions(doc, state):
 
 	NOW = cint(frappe.local.conf.workflow_send_now)
 
-	if send_email_alert(workflow):
+	# Check if no_email is set for the current state - skip email if enabled
+	if send_email_alert(workflow) and not get_state_no_email(workflow, workflow_state):
 		enqueue(
 			send_workflow_action_email, now=NOW, queue="short", users_data=list(user_data_map.values()), doc=doc
 		)
@@ -147,8 +148,10 @@ def send_current_state_email(doctype, name):
 			is_own_role = True
 
 	NOW = cint(frappe.local.conf.workflow_send_now)
+	current_state = get_doc_workflow_state(doc)
 
-	if send_email_alert(workflow) and get_email_template(doc):
+	# Check if no_email is set for the current state - skip email if enabled
+	if send_email_alert(workflow) and get_email_template(doc) and not get_state_no_email(workflow, current_state):
 		enqueue(
 			send_workflow_action_email, queue="short",now=NOW, users_data=user_data, doc=doc
 		)
@@ -623,6 +626,15 @@ def get_state_optional_field_value(workflow_name, state):
 	return frappe.get_cached_value(
 		"Workflow Document State", {"parent": workflow_name, "state": state}, "is_optional_state"
 	)
+
+
+def get_state_no_email(workflow_name, state):
+	"""Check if no_email is set for the given workflow state.
+	When no_email is enabled, no email/notification should be triggered for this state.
+	"""
+	return cint(frappe.get_cached_value(
+		"Workflow Document State", {"parent": workflow_name, "state": state}, "no_email"
+	))
 
 def get_list_pending_document(doctype, state, cur_name=""):
 
