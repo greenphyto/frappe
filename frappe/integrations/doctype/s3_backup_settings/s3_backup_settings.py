@@ -23,6 +23,7 @@ class S3BackupSettings(Document):
 		if not self.enabled:
 			return
 
+		_patch_pyopenssl()
 		import boto3
 		from botocore.exceptions import ClientError
 
@@ -108,10 +109,27 @@ def notify():
 	send_email(False, "Amazon S3", "S3 Backup Settings", "notify_email", error_message)
 
 
+def _patch_pyopenssl():
+	"""Monkey-patch pyOpenSSL for compatibility with cryptography 42+.
+
+	pyOpenSSL v24.x references ``_lib.GEN_EMAIL``, ``_lib.GEN_DNS``, and
+	``_lib.GEN_URI`` which were removed from ``cryptography``'s ``lib``
+	module in version 42. Apply the constants before importing boto3."""
+	try:
+		import OpenSSL.crypto as _crypto
+
+		for _attr, _val in {"GEN_EMAIL": 1, "GEN_DNS": 2, "GEN_URI": 6}.items():
+			if not hasattr(_crypto._lib, _attr):
+				setattr(_crypto._lib, _attr, _val)
+	except ImportError:
+		pass  # OpenSSL not installed — nothing to patch
+
+
 def backup_to_s3():
 	from frappe.utils import get_backups_path
 	from frappe.utils.backups import new_backup
 
+	_patch_pyopenssl()
 	import boto3
 
 	doc = frappe.get_single("S3 Backup Settings")
