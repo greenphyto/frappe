@@ -114,15 +114,20 @@ def _patch_pyopenssl():
 
 	pyOpenSSL v24.x references ``_lib.GEN_EMAIL``, ``_lib.GEN_DNS``, and
 	``_lib.GEN_URI`` which were removed from ``cryptography``'s ``lib``
-	module in version 42. Apply the constants before importing boto3."""
+	module in version 42. Apply the constants on ``Binding().lib`` BEFORE
+	``OpenSSL`` is ever imported, because ``OpenSSL.crypto`` accesses
+	these constants at class-definition time (module level)."""
 	try:
-		import OpenSSL.crypto as _crypto
+		from cryptography.hazmat.bindings.openssl.binding import Binding
+
+		_binding = Binding()
+		_lib = _binding.lib  # this is a module object, not CFFI Lib
 
 		for _attr, _val in {"GEN_EMAIL": 1, "GEN_DNS": 2, "GEN_URI": 6}.items():
-			if not hasattr(_crypto._lib, _attr):
-				setattr(_crypto._lib, _attr, _val)
-	except ImportError:
-		pass  # OpenSSL not installed — nothing to patch
+			if not hasattr(_lib, _attr):
+				setattr(_lib, _attr, _val)
+	except Exception:
+		pass  # cryptography or OpenSSL not installed — nothing to patch
 
 
 def backup_to_s3():
