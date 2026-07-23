@@ -416,7 +416,7 @@ def export_query():
 		from frappe.utils.xlsxutils import make_xlsx
 
 		if include_filters:
-			data = add_title_report(title) + get_filters_data(filters_info=filters_info) + data
+			data = add_title_report(title, form_params.filters) + get_filters_data(filters_info=filters_info) + data
 
 		xlsx_file = make_xlsx(data, doctype)
 

@@ -458,7 +458,7 @@ def add_title_report(title, filters):
 
 def get_filter_company(filters):
 	company = ""
-	if filters.get("company"):
+	if isinstance(filters, dict) and filters.get("company"):
 		company = filters.get("company")
 	return company
 
