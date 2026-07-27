@@ -13,8 +13,9 @@ $gray-700: #525252;
 $gray-800: #383838;
 $gray-900: #171717;
 
-$primary: $gray-900;
-$primary-light: lighten($primary, 80%) !default;
+// v14-style brand blue (ponytail: v15 default is monochrome $gray-900; reverted per request)
+$primary: #2490ef;
+$primary-light: lighten($primary, 42%) !default;
 
 $danger: #e03636;
 $light-yellow: #fef4e2;

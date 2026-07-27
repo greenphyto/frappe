@@ -3,7 +3,7 @@ $disabled-input-height: 22px;
 
 :root,
 [data-theme="light"] {
-	--brand-color: var(--primary);
+	--brand-color: #0089ff;
 
 	--padding-xs: 5px;
 	--padding-sm: 6px;
@@ -24,7 +24,7 @@ $disabled-input-height: 22px;
 	--btn-shadow: var(--shadow-xs);
 
 	// navbar
-	--navbar-height: 48px;
+	--navbar-height: 60px;
 
 	// SVG Colors
 	--icon-fill: transparent;
@@ -94,12 +94,12 @@ $disabled-input-height: 22px;
 	--awesomplete-hover-bg: var(--control-bg);
 
 	// Button Colors
-	--btn-primary: var(--gray-900);
+	--btn-primary: var(--primary);
 	--btn-default-bg: var(--gray-100);
 	--btn-default-hover-bg: var(--gray-300);
 
 	// Border Colors
-	--border-primary: var(--gray-900);
+	--border-primary: var(--primary);
 
 	// Other Colors
 	--sidebar-select-color: var(--gray-100);
@@ -124,7 +124,7 @@ $disabled-input-height: 22px;
 	--code-block-bg: var(--gray-900);
 	--code-block-text: var(--gray-400);
 
-	--primary-color: var(--gray-900);
+	--primary-color: var(--primary);
 	--btn-height: 28px;
 
 	// input
