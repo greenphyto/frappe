@@ -419,6 +419,7 @@ def add_layouts(bootinfo):
 	bootinfo.doctype_layouts = frappe.get_all("DocType Layout", ["name", "route", "document_type"])
 
 
+@frappe.whitelist()
 def get_desk_settings():
 	from frappe.core.doctype.user.user import desk_properties
 

@@ -1,4 +1,5 @@
 frappe.listview_settings["Contact"] = {
+	total_fields: 7,
 	add_fields: ["image"],
 	onload: function (listview) {
 		listview.page.add_action_item(__("Download vCards"), function () {

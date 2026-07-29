@@ -137,6 +137,7 @@
   },
   {
    "fieldname": "attached_to_name",
+   "in_standard_filter": 1,
    "fieldtype": "Data",
    "label": "Attached To Name",
    "read_only": 1
@@ -155,6 +156,7 @@
   },
   {
    "fieldname": "content_hash",
+   "in_standard_filter": 1,
    "fieldtype": "Data",
    "label": "Content Hash",
    "read_only": 1
@@ -190,7 +192,7 @@
  "icon": "fa fa-file",
  "idx": 1,
  "links": [],
- "modified": "2025-01-15 11:46:42.917146",
+ "modified": "2026-06-10 13:52:44.011621",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "File",

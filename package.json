@@ -4,7 +4,9 @@
     "build": "node esbuild",
     "production": "node esbuild --production",
     "watch": "node esbuild --watch",
-    "coverage:report": "npx nyc report --reporter=clover"
+    "coverage:report": "npx nyc report --reporter=clover",
+    "prepare": "npm run snyk-protect",
+    "snyk-protect": "snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -23,6 +25,7 @@
     "@editorjs/editorjs": "~2.26.3",
     "@frappe/esbuild-plugin-postcss2": "^0.1.3",
     "@headlessui/vue": "^1.7.16",
+    "@snyk/protect": "^1.1107.0",
     "@popperjs/core": "^2.11.2",
     "@redis/client": "^1.5.8",
     "@sentry/browser": "^7.119.1",
@@ -84,6 +87,7 @@
   "nyc": {
     "report-dir": ".cypress-coverage"
   },
+  "snyk": true,
   "optionalDependencies": {
     "bufferutil": "^4.0.8",
     "utf-8-validate": "^6.0.3"

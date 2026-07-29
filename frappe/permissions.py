@@ -203,9 +203,13 @@ def get_doc_permissions(doc, user=None, ptype=None, debug=False):
 	def is_user_owner():
 		return (doc.get("owner") or "").lower() == user.lower()
 
-	if not has_controller_permissions(doc, ptype, user=user, debug=debug):
+	custom_allow = has_controller_permissions(doc, ptype, user=user, debug=debug)
+	if custom_allow is False:
 		push_perm_check_log(_("Not allowed via controller permission check"), debug=debug)
 		return {ptype: 0}
+
+	if custom_allow is True:
+		return {ptype: 1}
 
 	permissions = copy.deepcopy(get_role_permissions(meta, user=user, is_owner=is_user_owner(), debug=debug))
 
@@ -320,6 +324,9 @@ def get_user_permissions(user):
 def has_user_permission(doc, user=None, debug=False, ptype=None):
 	"""Return True if User is allowed to view considering User Permissions."""
 	from frappe.core.doctype.user_permission.user_permission import get_user_permissions
+
+	if ptype in ("write",) and has_controller_permissions(doc, user=user, ptype="write"):
+		return True
 
 	user_permissions = get_user_permissions(user)
 

@@ -28,6 +28,7 @@ from typing import TYPE_CHECKING, Any, Literal, Optional, TypeAlias, overload
 
 import click
 from werkzeug.local import Local, release_local
+from urllib.parse import quote
 
 import frappe
 from frappe.query_builder import (
@@ -581,6 +582,8 @@ def msgprint(
 		publish_realtime(event="msgprint", message=out)
 	else:
 		message_log.append(out)
+		
+	# local.response["error_message"] = msg
 	_raise_exception()
 
 
@@ -1622,13 +1625,17 @@ def get_hooks(
 	:param default: Default if no hook found.
 	:param app_name: Filter by app."""
 
+	hooks = None
+
 	if app_name:
 		hooks = _dict(_load_app_hooks(app_name))
 	else:
-		if conf.developer_mode:
+		try:
+			hooks = _dict(cache().get_value("app_hooks", _load_app_hooks))
+		except:
+			pass
+		if conf.developer_mode or not hooks:
 			hooks = _dict(_load_app_hooks())
-		else:
-			hooks = _dict(cache.get_value("app_hooks", _load_app_hooks))
 
 	if hook:
 		return hooks.get(hook, ([] if default == "_KEEP_DEFAULT_LIST" else default))

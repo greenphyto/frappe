@@ -140,7 +140,7 @@ def get_diff(old, new, for_child=False, compare_cancelled=False):
 		if df.fieldtype in FIELDTYPES_TO_IGNORE or getattr(df, "is_virtual", False):
 			continue
 
-		old_value, new_value = old.get(df.fieldname), new.get(df.fieldname)
+		old_value, new_value = old.get(df.fieldname) or [], new.get(df.fieldname) or []
 		if df.fieldtype in ("Link", "Dynamic Link"):
 			old_value, new_value = cstr(old_value), cstr(new_value)
 

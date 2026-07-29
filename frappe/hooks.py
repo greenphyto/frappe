@@ -138,7 +138,10 @@ has_permission = {
 has_website_permission = {"Address": "frappe.contacts.doctype.address.address.has_website_permission"}
 
 jinja = {
-	"methods": "frappe.utils.jinja_globals",
+	"methods": [
+		"frappe.utils.jinja_globals",
+        "frappe.contacts.doctype.contact.contact.get_contact_details"
+	],
 	"filters": [
 		"frappe.utils.data.global_date_format",
 		"frappe.utils.markdown",
@@ -218,6 +221,9 @@ scheduler_events = {
 		"30 * * * *": [],
 		# Daily but offset by 45 minutes
 		"45 0 * * *": [],
+        "*/20 * * * *": [
+           "frappe.email.doctype.email_account.email_account.resync_email_inbox", 
+		]
 	},
 	"all": [
 		"frappe.email.queue.flush",
@@ -232,7 +238,7 @@ scheduler_events = {
 	# Use these for when you don't care about when the job runs but just need some guarantee for
 	# frequency.
 	"hourly_maintenance": [
-		"frappe.model.utils.user_settings.sync_user_settings",
+		# "frappe.model.utils.user_settings.sync_user_settings",
 		"frappe.desk.page.backups.backups.delete_downloadable_backups",
 		"frappe.desk.form.document_follow.send_hourly_updates",
 		"frappe.website.doctype.personal_data_deletion_request.personal_data_deletion_request.process_data_deletion_request",

@@ -268,6 +268,7 @@ frappe.ui.form.Control = class BaseControl {
 	set_model_value(value) {
 		if (this.frm) {
 			this.last_value = value;
+			this.old_value = this.value;
 			return frappe.model.set_value(
 				this.doctype,
 				this.docname,

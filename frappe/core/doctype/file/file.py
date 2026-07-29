@@ -654,6 +654,8 @@ class File(Document):
 		if self.is_remote_file:
 			return
 
+		overwrite = overwrite or self.flags.overwrite
+
 		if not self.flags.new_file:
 			self.flags.original_content = self.get_content()
 
