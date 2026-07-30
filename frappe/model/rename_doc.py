@@ -495,16 +495,15 @@ def get_link_fields(doctype: str, skip_ignore_link=False) -> list[dict]:
 		standard_fields = standard_fields_query.run(as_dict=True)
 
 		cf_issingle = frappe.qb.from_(dt).select(dt.issingle).where(dt.name == cf.dt).as_("issingle")
-		custom_fields = (
+		custom_fields_query = (
 			frappe.qb.from_(cf)
 			.select(cf.dt.as_("parent"), cf.fieldname, cf_issingle)
 			.where(conditions)
-			.run(as_dict=True)
 		)
 		
 		if virtual_doctypes:
-			custom_fields = custom_fields.where(cf.dt.notin(virtual_doctypes))
-		custom_fields = custom_fields.run(as_dict=True)
+			custom_fields_query = custom_fields_query.where(cf.dt.notin(virtual_doctypes))
+		custom_fields = custom_fields_query.run(as_dict=True)
 
 		ps_issingle = frappe.qb.from_(dt).select(dt.issingle).where(dt.name == ps.doc_type).as_("issingle")
 		property_setter_fields = (
