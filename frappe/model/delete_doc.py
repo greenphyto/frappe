@@ -171,6 +171,8 @@ def delete_doc(
 		if not delete_permanently:
 			add_to_deleted_document(doc)
 
+		doc.run_method("finish_delete")
+
 		if doc and not for_reload:
 			if not frappe.flags.in_patch:
 				try:
@@ -261,13 +263,13 @@ def check_permission_and_not_submitted(doc):
 		)
 
 
-def check_if_doc_is_linked(doc, method="Delete"):
+def check_if_doc_is_linked(doc, method="Delete", validate=False):
 	"""
 	Raises excption if the given doc(dt, dn) is linked in another record.
 	"""
 	from frappe.model.rename_doc import get_link_fields
 
-	link_fields = get_link_fields(doc.doctype)
+	link_fields = get_link_fields(doc.doctype, skip_ignore_link=1)
 	ignored_doctypes = set()
 
 	if method == "Cancel" and (doc_ignore_flags := doc.get("ignore_linked_doctypes")):
@@ -290,6 +292,8 @@ def check_if_doc_is_linked(doc, method="Delete"):
 
 		if issingle:
 			if frappe.db.get_single_value(link_dt, link_field) == doc.name:
+				if validate:
+					return False
 				raise_link_exists_exception(doc, link_dt, link_dt)
 			continue
 
@@ -316,7 +320,11 @@ def check_if_doc_is_linked(doc, method="Delete"):
 				continue
 			else:
 				reference_docname = item_parent or item.name
+				if validate:
+					return False
 				raise_link_exists_exception(doc, linked_parent_doctype, reference_docname)
+
+	return True
 
 
 def check_if_doc_is_dynamically_linked(doc, method="Delete"):
@@ -374,6 +382,8 @@ def check_if_doc_is_dynamically_linked(doc, method="Delete"):
 
 
 def raise_link_exists_exception(doc, reference_doctype, reference_docname, row=""):
+	if not frappe.db.exists(reference_doctype, reference_docname):
+		return
 	doc_link = get_link_to_form(doc.doctype, doc.name, doc.name)
 	reference_link = get_link_to_form(reference_doctype, reference_docname, reference_docname)
 

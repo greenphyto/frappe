@@ -55,6 +55,10 @@
 	</li>
 </ul>
 <ul class="list-unstyled sidebar-menu form-attachments">
+		<li class="attachments-preview" style="display: none;">
+		<img src="" alt="" class="img-preview">
+		<div class="subtitle" style="display:none;"></div>
+    </li>
 	<li class="attachments-actions">
 		<span class="form-sidebar-items">
 			<span>
@@ -133,9 +137,12 @@
 		</a>
 	</li>
 </ul>
-<ul class="list-unstyled sidebar-menu">
+<ul class="list-unstyled sidebar-menu auto-repeat-menu hidden">
 	<a><li class="auto-repeat-status"><li></a>
 </ul>
+{% if(frappe.get_form_sidebar_extension_bottom) { %}
+	{{ frappe.get_form_sidebar_extension_bottom() }}
+{% } %}
 <ul class="list-unstyled sidebar-menu form-sidebar-stats">
 	<li class="flex">
 		<div class="form-stats d-flex">

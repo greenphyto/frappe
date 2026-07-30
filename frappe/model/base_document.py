@@ -531,7 +531,8 @@ class BaseDocument:
 
 	def get_table_field_doctype(self, fieldname):
 		try:
-			return self.meta.get_field(fieldname).options
+			field = self.meta.get_field(fieldname) or {}
+			return field.get("options")
 		except AttributeError:
 			if self.doctype == "DocType" and (table_doctype := TABLE_DOCTYPES_FOR_DOCTYPE.get(fieldname)):
 				return table_doctype
@@ -860,7 +861,7 @@ class BaseDocument:
 						and DocStatus(frappe.db.get_value(doctype, docname, "docstatus") or 0).is_cancelled()
 					):
 						cancelled_links.append((df.fieldname, docname, get_msg(df, docname)))
-
+		invalid_links = [t for t in invalid_links if t[0] != "item_name"]
 		return invalid_links, cancelled_links
 
 	def set_fetch_from_value(self, doctype, df, values):
@@ -1071,11 +1072,12 @@ class BaseDocument:
 					)
 				if self_value != db_value:
 					frappe.throw(
-						_("{0} Not allowed to change {1} after submission from {2} to {3}").format(
+						_("{0} Not allowed to change {1} after submission ({4}) from {2} to {3}").format(
 							f"Row #{self.idx}:" if self.get("parent") else "",
 							frappe.bold(_(df.label, context=df.parent)),
 							frappe.bold(db_value),
 							frappe.bold(self_value),
+							df.parent,
 						),
 						frappe.UpdateAfterSubmitError,
 						title=_("Cannot Update After Submit"),
@@ -1186,7 +1188,7 @@ class BaseDocument:
 		return self._precision[cache_key][fieldname]
 
 	def get_formatted(
-		self, fieldname, doc=None, currency=None, absolute_value=False, translated=False, format=None
+		self, fieldname, doc=None, currency=None, absolute_value=False, translated=False, format=None, hide_symbol=False
 	):
 		from frappe.utils.formatters import format_value
 
@@ -1216,7 +1218,7 @@ class BaseDocument:
 		if (absolute_value or doc.get("absolute_value")) and isinstance(val, int | float):
 			val = abs(self.get(fieldname))
 
-		return format_value(val, df=df, doc=doc, currency=currency, format=format)
+		return format_value(val, df=df, doc=doc, currency=currency, format=format, hide_symbol=hide_symbol)
 
 	def is_print_hide(self, fieldname, df=None, for_print=True):
 		"""Returns true if fieldname is to be hidden for print.

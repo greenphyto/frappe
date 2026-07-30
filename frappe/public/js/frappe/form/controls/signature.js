@@ -17,6 +17,7 @@ frappe.ui.form.ControlSignature = class ControlSignature extends frappe.ui.form.
 			new ResizeObserver(() => me.make_pad()).observe(me.body[0]);
 		});
 
+		this.$wrapper.find(".signature-display").remove();
 		this.img_wrapper = $(`<div class="signature-display">
 			<div class="missing-image attach-missing-image">
 				${frappe.utils.icon("restriction", "md")}</i>

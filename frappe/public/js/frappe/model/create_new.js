@@ -291,7 +291,7 @@ $.extend(frappe.model, {
 			const is_no_copy = !from_amend && df && cint(df.no_copy) == 1;
 			const is_password = df && df.fieldtype === "Password";
 
-			if (df && !is_internal_field && !is_blocked_field && !is_no_copy && !is_password) {
+			if (df && !is_internal_field && !is_blocked_field && !is_no_copy && !is_password && cint(df.no_amend_copy)==0) {
 				let value = doc[key] || [];
 				if (frappe.model.table_fields.includes(df.fieldtype)) {
 					for (let i = 0, j = value.length; i < j; i++) {

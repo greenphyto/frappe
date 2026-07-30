@@ -80,6 +80,9 @@ export default class Grid {
 								${__("No Data")}
 							</div>
 						</div>
+						<div class="grid-scroll-bar">
+							<div class="grid-scroll-bar-rows"></div>
+						</div>
 					</div>
 				</div>
 				<div class="small form-clickable-section grid-footer">
@@ -124,6 +127,18 @@ export default class Grid {
 		frappe.utils.bind_actions_with_object(this.wrapper, this);
 
 		this.form_grid = this.wrapper.find(".form-grid");
+
+		this.form_grid.on("scroll", (e) => {
+			if ($(e.currentTarget).scrollLeft() > 0) {
+				this.grid_rows.forEach((grid_row) => {
+					grid_row.on_grid_fields.forEach((field) => {
+						if (field.df.fieldtype === "Link" && field.awesomplete) {
+							field.awesomplete.close();
+						}
+					});
+				});
+			}
+		});
 
 		this.setup_add_row();
 
@@ -1023,7 +1038,6 @@ export default class Grid {
 				}
 
 				total_colsize += df.colsize;
-				if (total_colsize > 11) return false;
 				this.visible_columns.push([df, df.colsize]);
 			}
 		}

@@ -26,6 +26,7 @@ frappe.ui.form.Attachments = class Attachments {
 
 		this.add_attachment_wrapper = this.parent.find(".attachments-actions");
 		this.attachments_label = this.parent.find(".attachments-label");
+		this.attachments_preview = this.parent.find(".attachments-preview");
 	}
 	max_reached(raise_exception = false) {
 		const attachment_count = Object.keys(this.get_attachments()).length;
@@ -94,6 +95,7 @@ frappe.ui.form.Attachments = class Attachments {
 			attachments_to_render = attachments.slice(start, attachments.length);
 		}
 
+		var preview_image;
 		if (attachments_to_render.length) {
 			let exists = {};
 			let unique_attachments = attachments_to_render.filter((attachment) => {
@@ -103,12 +105,28 @@ frappe.ui.form.Attachments = class Attachments {
 			});
 			unique_attachments.forEach((attachment) => {
 				me.add_attachment(attachment);
+				if (frappe.utils.is_image_file(attachment.file_name)){
+					preview_image = attachment;
+				}
 			});
+		}
+
+		if (preview_image){
+			this.attachments_preview
+				.show()
+				.find(".img-preview")
+				.attr("src", preview_image.file_url)
+				.on("click", function(){
+					me.show_image_detail(preview_image.file_url, preview_image.file_name);
+				}
+			);
+			this.attachments_preview.find(".subtitle").show().text(preview_image.file_name);
 		}
 
 		if (!attachments.length) {
 			// If no attachments in totality
 			this.attachments_label.removeClass("has-attachments");
+			this.attachments_preview.hide();
 		}
 	}
 
@@ -155,7 +173,39 @@ frappe.ui.form.Attachments = class Attachments {
 
 		$(`<li class="attachment-row">`)
 			.append(frappe.get_data_pill(file_label, fileid, remove_action, icon))
-			.insertAfter(this.add_attachment_wrapper);
+			.insertAfter(this.attachments_preview.addClass("has-attachments"));
+	}
+
+	show_image_detail(img_path, title_dialog="Image Preview"){
+		var d = new frappe.ui.Dialog({
+			title: __(title_dialog),
+			fields: [
+				{
+					"label" : "",
+					"fieldname": "img",
+					"fieldtype": "HTML",
+					"default": ''
+				}
+			],
+			primary_action: function() {
+				$(".download-image-preview")[0].click();
+			},
+			primary_action_label: __('Download'),
+			secondary_action: function(){
+				d.hide();
+			},
+			secondary_action_label: __("Close"),
+		});
+		d.show();
+		var wrapper = d.fields_dict.img.$wrapper;
+		wrapper.append(`
+			<div class="qr-preview-wrapper text-center" style="min-height: 6cm;">
+				<a href="${img_path}" class="download-image-preview" download>
+					<img src="${img_path}"></img>
+				</a>
+			</div>
+		`);
+
 	}
 
 	can_delete_attachment() {

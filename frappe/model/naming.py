@@ -13,7 +13,7 @@ from frappe import _
 from frappe.model import log_types
 from frappe.monitor import get_trace_id
 from frappe.query_builder import DocType
-from frappe.utils import cint, cstr, now_datetime
+from frappe.utils import cint, cstr, now_datetime, get_datetime
 
 if TYPE_CHECKING:
 	from frappe.model.document import Document
@@ -157,7 +157,7 @@ def set_new_name(doc):
 		doc.name = frappe.db.get_next_sequence_val(doc.doctype)
 		return
 
-	if getattr(doc, "amended_from", None):
+	if getattr(doc, "amended_from", None) and not doc.flags.skip_amend_name:
 		_set_amended_name(doc)
 		if doc.name:
 			return
@@ -333,6 +333,12 @@ def parse_naming_series(
 
 	series_set = False
 	today = now_datetime()
+
+	if doc:
+		use_date = doc.get("transaction_date") or doc.get("posting_date") or doc.get("creation")
+		today = get_datetime(use_date)
+	
+	path_series = []
 	for e in parts:
 		if not e:
 			continue
@@ -341,27 +347,37 @@ def parse_naming_series(
 		if e.startswith("#"):
 			if not series_set:
 				digits = len(e)
-				part = number_generator(name, digits)
+
+				temp = '.'.join(path_series)
+				part = number_generator(temp, digits)
 				series_set = True
 		elif e == "YY":
 			part = today.strftime("%y")
+			path_series.append(part)
 		elif e == "MM":
 			part = today.strftime("%m")
+			path_series.append(part)
 		elif e == "DD":
 			part = today.strftime("%d")
+			path_series.append(part)
 		elif e == "YYYY":
 			part = today.strftime("%Y")
+			path_series.append(part)
 		elif e == "WW":
 			part = determine_consecutive_week_number(today)
+			path_series.append(part)
 		elif e == "timestamp":
 			part = str(today)
+			path_series.append(part)
 		elif doc and (e.startswith("{") or doc.get(e, _sentinel) is not _sentinel):
 			e = e.replace("{", "").replace("}", "")
 			part = doc.get(e)
+			path_series.append(part)
 		elif method := has_custom_parser(e):
 			part = frappe.get_attr(method[0])(doc, e)
 		else:
 			part = e
+			path_series.append(part)
 
 		if isinstance(part, str):
 			name += part

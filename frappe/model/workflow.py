@@ -4,6 +4,8 @@ import json
 from collections import defaultdict
 from typing import TYPE_CHECKING, Union
 
+import copy
+
 import frappe
 from frappe import _
 from frappe.model.docstatus import DocStatus
@@ -62,22 +64,36 @@ def get_transitions(
 
 	transitions = []
 	roles = frappe.get_roles()
+	user = frappe.session.user
 
 	for transition in workflow.transitions:
 		if transition.state == current_state and transition.allowed in roles:
-			if not is_transition_condition_satisfied(transition, doc):
+			if not is_transition_condition_satisfied(transition, doc, use_user=user):
 				continue
+			# validate from hooks
+			custom_validate = get_custom_validate(doc.doctype)
+			if custom_validate:
+				if not frappe.get_attr(custom_validate)(doc=doc, workflow=workflow, transition=transition):
+					continue
+
 			transitions.append(transition.as_dict())
 
 	return transitions
 
 
-def get_workflow_safe_globals():
+def get_custom_validate(doctype):
+	hooks = frappe.get_hooks("validate_workflow") or []
+	if doctype in hooks:
+		hook = hooks[doctype][-1]
+		return hook
+
+
+def get_workflow_safe_globals(use_user=None):
 	# access to frappe.db.get_value, frappe.db.get_list, and date time utils.
-	return dict(
+	data = dict(
 		frappe=frappe._dict(
 			db=frappe._dict(get_value=frappe.db.get_value, get_list=frappe.db.get_list),
-			session=frappe.session,
+			session=copy.deepcopy(frappe.session),
 			utils=frappe._dict(
 				now_datetime=frappe.utils.now_datetime,
 				add_to_date=frappe.utils.add_to_date,
@@ -86,17 +102,27 @@ def get_workflow_safe_globals():
 			),
 		)
 	)
+	if use_user:
+		data['frappe']['session']['user'] = use_user
+
+	return data
 
 
-def is_transition_condition_satisfied(transition, doc) -> bool:
+def is_transition_condition_satisfied(transition, doc, use_user=None) -> bool:
+	if not use_user and frappe.session.user == "Administrator":
+		return True
+	
 	if not transition.condition:
 		return True
 	else:
-		return frappe.safe_eval(transition.condition, get_workflow_safe_globals(), dict(doc=doc.as_dict()))
+		res = frappe.safe_eval(
+			transition.condition, get_workflow_safe_globals(use_user), dict(doc=doc.as_dict())
+		)
+		return res
 
 
 @frappe.whitelist()
-def apply_workflow(doc, action):
+def apply_workflow(doc, action, from_web=False):
 	"""Allow workflow action on the current doc"""
 	doc = frappe.get_doc(frappe.parse_json(doc))
 	doc.load_from_db()
@@ -111,10 +137,26 @@ def apply_workflow(doc, action):
 			transition = t
 
 	if not transition:
-		frappe.throw(_("Not a valid Workflow Action"), WorkflowTransitionError)
+		if from_web:
+			frappe.respond_as_web_page(
+				_("Not valid workflow"),
+				_("This document already processed."),
+				indicator_color="blue",
+			)
+			return
+		else:
+			frappe.throw(_("Not a valid Workflow Action"), WorkflowTransitionError)
 
 	if not has_approval_access(user, doc, transition):
-		frappe.throw(_("Self approval is not allowed"))
+		if from_web:
+			frappe.respond_as_web_page(
+				_("Forbiden"),
+				_("Self-approval is not allowed for this document."),
+				indicator_color="blue",
+			)
+			return
+		else:
+			frappe.throw(_("Self approval is not allowed"))
 
 	# update workflow state field
 	doc.set(workflow.workflow_state_field, transition.next_state)
@@ -219,11 +261,24 @@ def get_workflow(doctype) -> "Workflow":
 
 
 def has_approval_access(user, doc, transition):
-	return user == "Administrator" or transition.get("allow_self_approval") or user != doc.get("owner")
+	if user == "Administrator":
+		return True
+	
+	res = transition.get("allow_self_approval") or user != doc.get("owner")
+
+	allow = is_transition_condition_satisfied(transition, doc, use_user=user)
+	if allow:
+		return res
+	else:
+		return False
 
 
 def get_workflow_state_field(workflow_name):
 	return get_workflow_field_value(workflow_name, "workflow_state_field")
+
+
+def send_pending_approval(workflow_name):
+	return get_workflow_field_value(workflow_name, "send_pending_approval")
 
 
 def send_email_alert(workflow_name):

@@ -3,8 +3,6 @@
 import os
 import os.path
 
-import boto3
-from botocore.exceptions import ClientError
 from rq.timeouts import JobTimeoutException
 
 import frappe
@@ -46,6 +44,10 @@ class S3BackupSettings(Document):
 		if not self.enabled:
 			return
 
+		_patch_pyopenssl()
+		import boto3
+		from botocore.exceptions import ClientError
+
 		if not self.endpoint_url:
 			self.endpoint_url = "https://s3.amazonaws.com"
 
@@ -74,6 +76,27 @@ class S3BackupSettings(Document):
 				msg = e.args[0]
 
 			frappe.throw(msg)
+
+
+def _patch_pyopenssl():
+	"""Monkey-patch pyOpenSSL for compatibility with cryptography 42+.
+
+	pyOpenSSL v24.x references ``_lib.GEN_EMAIL``, ``_lib.GEN_DNS``, and
+	``_lib.GEN_URI`` which were removed from ``cryptography``'s ``lib``
+	module in version 42. Apply the constants on ``Binding().lib`` BEFORE
+	``OpenSSL`` is ever imported, because ``OpenSSL.crypto`` accesses
+	these constants at class-definition time (module level)."""
+	try:
+		from cryptography.hazmat.bindings.openssl.binding import Binding
+
+		_binding = Binding()
+		_lib = _binding.lib  # this is a module object, not CFFI Lib
+
+		for _attr, _val in {"GEN_EMAIL": 1, "GEN_DNS": 2, "GEN_URI": 6}.items():
+			if not hasattr(_lib, _attr):
+				setattr(_lib, _attr, _val)
+	except Exception:
+		pass  # cryptography or OpenSSL not installed — nothing to patch
 
 
 @frappe.whitelist()
@@ -134,6 +157,9 @@ def notify():
 def backup_to_s3():
 	from frappe.utils import get_backups_path
 	from frappe.utils.backups import new_backup
+
+	_patch_pyopenssl()
+	import boto3
 
 	doc = frappe.get_single("S3 Backup Settings")
 	bucket = doc.bucket

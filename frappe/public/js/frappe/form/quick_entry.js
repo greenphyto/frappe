@@ -24,6 +24,26 @@ frappe.ui.form.make_quick_entry = (doctype, after_insert, init_callback, doc, fo
 	return frappe.quick_entry.setup();
 };
 
+frappe.load_quick_entry_js = function(doctype){
+	return new Promise((resolve, reject) => {
+		frappe.call({
+			method:"frappe.commands.utils.get_quick_entry_js",
+			args:{
+				doctype:doctype
+			},
+			callback:function(r){
+				if (r.message){
+					frappe.require(r.message).then(res=>{
+						resolve();
+					})
+				}else{
+					resolve()
+				}
+			}
+		});
+	})
+}
+
 frappe.ui.form.QuickEntryForm = class QuickEntryForm {
 	constructor(doctype, after_insert, init_callback, doc, force) {
 		this.doctype = doctype;
@@ -36,22 +56,31 @@ frappe.ui.form.QuickEntryForm = class QuickEntryForm {
 	setup() {
 		return new Promise((resolve) => {
 			frappe.model.with_doctype(this.doctype, () => {
-				this.check_quick_entry_doc();
-				this.set_meta_and_mandatory_fields();
-				if (this.is_quick_entry() || this.force) {
-					this.render_dialog();
-					resolve(this);
-				} else {
-					// no quick entry, open full form
-					frappe.quick_entry = null;
-					frappe
-						.set_route("Form", this.doctype, this.doc.name)
-						.then(() => resolve(this));
-					// call init_callback for consistency
-					if (this.init_callback) {
-						this.init_callback(this.doc);
+				frappe.load_quick_entry_js(this.doctype).then(()=>{
+					if (frappe.quick_entry_controller){
+						this.custom = frappe.quick_entry_controller[this.doctype];
 					}
-				}
+					this.check_quick_entry_doc();
+					this.set_meta_and_mandatory_fields();
+					if (this.is_quick_entry() || this.force) {
+						this.render_dialog();
+
+						if (this.custom && this.custom.onload){
+							this.custom.onload();
+						}
+						resolve(this);
+					} else {
+						// no quick entry, open full form
+						frappe.quick_entry = null;
+						frappe
+							.set_route("Form", this.doctype, this.doc.name)
+							.then(() => resolve(this));
+						// call init_callback for consistency
+						if (this.init_callback) {
+							this.init_callback(this.doc);
+						}
+					}
+				})
 			});
 		});
 	}
@@ -67,6 +96,12 @@ frappe.ui.form.QuickEntryForm = class QuickEntryForm {
 				!df.is_virtual &&
 				df.fieldtype !== "Tab Break"
 			);
+		});
+
+		this.mandatory.forEach((df) => {
+			if (this.custom && this.custom.filters && this.custom.filters[df.fieldname]){
+				df.get_query = this.custom.filters[df.fieldname];
+			}
 		});
 	}
 
@@ -293,6 +328,9 @@ frappe.ui.form.QuickEntryForm = class QuickEntryForm {
 
 	set_defaults() {
 		var me = this;
+		var row = frappe._from_link;
+        var query = frappe._from_link.get_query(row.doc, row.doctype, row.docname) || {};
+		var filters = query.filters;
 		// set defaults
 		$.each(this.dialog.fields_dict, function (fieldname, field) {
 			field.doctype = me.doc.doctype;
@@ -300,6 +338,11 @@ frappe.ui.form.QuickEntryForm = class QuickEntryForm {
 
 			if (!is_null(me.doc[fieldname])) {
 				field.set_input(me.doc[fieldname]);
+			}
+
+			// copy from filters
+			if (filters && filters[fieldname]){
+				field.set_input(filters[fieldname])
 			}
 		});
 	}
