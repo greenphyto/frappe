@@ -3,7 +3,7 @@
 
 from typing import Literal
 
-import frappe
+import frappe, json
 
 
 def sendmail_to_system_managers(subject, content):
@@ -46,13 +46,27 @@ def get_contact_list(txt, page_length=20, extra_filters: str | None = None) -> l
 
 
 def get_system_managers():
-	return frappe.db.sql_list(
+	system_users = frappe.db.sql_list(
 		"""select parent FROM `tabHas Role`
 		WHERE role='System Manager'
 		AND parent!='Administrator'
 		AND parent IN (SELECT email FROM tabUser WHERE enabled=1)"""
 	)
+	email_candidate = frappe.local.conf.email_support
+	if email_candidate:
+		try:
+			return json.loads(email_candidate)
+		except:
+			return system_users
+	else:
+		return system_users
 
+@frappe.whitelist()
+def get_email_default(doctype, docname=""):
+	# return recipient, cc, bcc
+	for func_name in frappe.get_hooks("get_email_default", []):
+		return frappe.get_attr(func_name)(doctype, docname)
+	return {}
 
 @frappe.whitelist()
 def relink(name, reference_doctype=None, reference_name=None):

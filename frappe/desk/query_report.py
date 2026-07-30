@@ -74,7 +74,7 @@ def get_report_result(report, filters):
 
 @frappe.read_only()
 def generate_report_result(
-	report, filters=None, user=None, custom_columns=None, is_tree=False, parent_field=None
+	report, filters=None, user=None, custom_columns=None, remove_columns=None, is_tree=False, parent_field=None
 ):
 	user = user or frappe.session.user
 	filters = filters or []
@@ -99,6 +99,12 @@ def generate_report_result(
 	if custom_columns:
 		for custom_column in custom_columns:
 			columns.insert(custom_column["insert_after_index"] + 1, custom_column)
+
+	# remove column
+	if remove_columns:
+		for column in list(columns):
+			if column.get("fieldname") in remove_columns:
+				columns.remove(column)
 
 	# all columns which are not in original report
 	report_custom_columns = [column for column in columns if column["fieldname"] not in report_column_names]
@@ -196,6 +202,7 @@ def run(
 	user=None,
 	ignore_prepared_report=False,
 	custom_columns=None,
+	remove_columns=None,
 	is_tree=False,
 	parent_field=None,
 	are_default_filters=True,
@@ -226,7 +233,7 @@ def run(
 				dn = ""
 			result = get_prepared_report_result(report, filters, dn, user)
 		else:
-			result = generate_report_result(report, filters, user, custom_columns, is_tree, parent_field)
+			result = generate_report_result(report, filters, user, custom_columns, remove_columns, is_tree, parent_field)
 			add_data_to_monitor(report=report.reference_report or report.name)
 	except Exception:
 		frappe.log_error("Report Error")

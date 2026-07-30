@@ -260,17 +260,29 @@ def build_for_autosuggest(res: list[tuple], doctype: str) -> list[LinkSearchResu
 	meta = frappe.get_meta(doctype)
 	if meta.show_title_field_in_link:
 		for item in res:
+			if "value" in item:
+				results.append(item)
+				continue
+
 			item = list(item)
-			if len(item) == 1:
-				item = [item[0], item[0]]
-			label = item[1]  # use title as label
-			item[1] = item[0]  # show name in description instead of title
-			if len(item) >= 3 and item[2] == label:
-				# remove redundant title ("label") value
-				del item[2]
-			results.append({"value": item[0], "label": label, "description": to_string(item[1:])})
+			if len(item) > 1:
+				label = item[1]
+			else:
+				label = item[0]
+			
+			description = ""
+			if len(item) > 2:
+				description = to_string(item[1:])
+			
+			results.append({"value": item[0], "label": label, "description": description})
 	else:
-		results.extend({"value": item[0], "description": to_string(item[1:])} for item in res)
+		if res:
+			if type(res) == list and "value" in res[0]:
+				for item in res:
+					if "value" in item:
+						results.append(item)
+			else:
+				results.extend({"value": item[0], "description": to_string(item[1:])} for item in res)
 
 	return results
 

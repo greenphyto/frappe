@@ -1206,4 +1206,3 @@ commands = [
 @frappe.whitelist()
 def get_quick_entry_js(doctype):
 	return frappe.get_hooks("quick_entry_js", {}).get(doctype)
-	return frappe.get_hooks("quick_entry_js", {}).get(doctype)

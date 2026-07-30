@@ -77,6 +77,11 @@ class Contact(Document):
 			frappe.throw(_("Select Google Contacts to which contact should be synced."))
 
 		deduplicate_dynamic_links(self)
+		self.clear_cache()
+
+	def clear_cache(self):
+		cache = frappe.cache()
+		cache.delete_keys("contacts")
 
 	def set_user(self):
 		if not self.user and self.email_id:
@@ -290,41 +295,44 @@ def get_default_contact(doctype, name):
 
 
 @frappe.whitelist()
-def invite_user(contact: str):
+def invite_user(contact):
 	contact = frappe.get_doc("Contact", contact)
-	contact.check_permission()
 
 	if not contact.email_id:
 		frappe.throw(_("Please set Email Address"))
 
-	user = frappe.get_doc(
-		{
-			"doctype": "User",
-			"first_name": contact.first_name,
-			"last_name": contact.last_name,
-			"email": contact.email_id,
-			"user_type": "Website User",
-			"send_welcome_email": 1,
-		}
-	).insert()
+	if contact.has_permission("write"):
+		user = frappe.get_doc(
+			{
+				"doctype": "User",
+				"first_name": contact.first_name,
+				"last_name": contact.last_name,
+				"email": contact.email_id,
+				"user_type": "Website User",
+				"send_welcome_email": 1,
+			}
+		).insert(ignore_permissions=True)
 
-	return user.name
+		return user.name
 
 
 @frappe.whitelist()
 def get_contact_details(contact):
 	contact = frappe.get_doc("Contact", contact)
-	contact.check_permission()
-
-	return {
+	out = {
 		"contact_person": contact.get("name"),
-		"contact_display": contact.get("full_name"),
+		"contact_display": " ".join(
+			filter(None, [contact.get("salutation"), contact.get("first_name"), contact.get("last_name")])
+		),
 		"contact_email": contact.get("email_id"),
 		"contact_mobile": contact.get("mobile_no"),
 		"contact_phone": contact.get("phone"),
+		"contact_phone_all": ", ".join([d.phone for d in contact.get("phone_nos")]),
+		"contact_email_all": ", ".join([d.email_id for d in contact.get("email_ids")]),
 		"contact_designation": contact.get("designation"),
 		"contact_department": contact.get("department"),
 	}
+	return out
 
 
 def update_contact(doc, method):

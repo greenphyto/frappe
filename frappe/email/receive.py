@@ -241,20 +241,30 @@ class EmailServer:
 				if folder[0] == folder[-1] == '"':
 					folder = folder[1:-1]
 				# new update for the IMAP Folder DocType
+				cleaned_folder_name = folder.strip(' "\'\t\r\n\\')
 				IMAPFolder = frappe.qb.DocType("IMAP Folder")
 				frappe.qb.update(IMAPFolder).set(IMAPFolder.uidvalidity, current_uid_validity).set(
 					IMAPFolder.uidnext, uidnext
 				).where(IMAPFolder.parent == self.settings.email_account_name).where(
-					IMAPFolder.folder_name == folder
-				).run()
+					IMAPFolder.folder_name == cleaned_folder_name
+				).run(debug=0)
 			else:
 				EmailAccount = frappe.qb.DocType("Email Account")
 				frappe.qb.update(EmailAccount).set(EmailAccount.uidvalidity, current_uid_validity).set(
 					EmailAccount.uidnext, uidnext
 				).where(EmailAccount.name == self.settings.email_account_name).run()
 
+			# if not uid_validity and not self.settings.get("custom_email_sync_rule"):
+			# 	self.settings.email_sync_rule = "UNSEEN"
+			# 	return
+			if self.settings.get("custom_email_sync_rule"):
+				self.settings.email_sync_rule = self.settings.custom_email_sync_rule
+
 			sync_count = 100 if uid_validity else int(self.settings.initial_sync_count)
-			from_uid = 1 if uidnext < (sync_count + 1) or (uidnext - sync_count) < 1 else uidnext - sync_count
+			from_uid = (
+				1 if uidnext < (sync_count + 1) or (uidnext - sync_count) < 1 else uidnext - sync_count
+			)
+			# from_uid = 1 if uidnext < (sync_count + 1) or (uidnext - sync_count) < 1 else uidnext - sync_count
 			# sync last 100 email
 			self.settings.email_sync_rule = f"UID {from_uid}:{uidnext}"
 			self.uid_reindexed = True
@@ -327,7 +337,7 @@ class EmailServer:
 			self.seen_status.update({uid: "UNSEEN"})
 
 	def has_login_limit_exceeded(self, e):
-		return "-ERR Exceeded the login limit" in strip(cstr(e))
+		return "-ERR Exceeded the login limit" in strip(cstr(getattr(e, 'message', str(e))))
 
 	def _post_retrieve_cleanup(self, uid, msg_num):
 		with suppress(Exception):
@@ -645,7 +655,7 @@ class Email:
 class InboundMail(Email):
 	"""Class representation of incoming mail along with mail handlers."""
 
-	def __init__(self, content, email_account, uid=None, seen_status=None, append_to=None):
+	def __init__(self, content, email_account, uid=None, seen_status=None, append_to=None, custom_args={}):
 		super().__init__(content)
 		self.email_account = email_account
 		self.uid = uid or -1
@@ -656,7 +666,7 @@ class InboundMail(Email):
 		self._parent_email_queue = None
 		self._parent_communication = None
 		self._reference_document = None
-
+		self.custom_args = frappe._dict(custom_args)
 		self.flags = frappe._dict()
 
 	def get_content(self):
