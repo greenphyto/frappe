@@ -290,6 +290,24 @@ frappe.ui.form.on("User", {
 			}
 			frm.dirty();
 		}
+
+		try {
+			frappe.db.get_list("Company", {
+				fields: ["name"],
+				limit: 1000
+			}).then(records => {
+				let companies = records.map(r => r.name);
+				let f = frm.fields_dict.company;
+				if (f) {
+					f.df.fieldtype = "Select";
+					f.df.options = ["",...companies];
+					frm.refresh_field("company");
+				}
+			});
+		} catch (err) {
+			console.warn("⚠️ Failed to load Company list or DocType not available:", err);
+		}
+
 		frm.trigger("time_zone");
 	},
 	validate: function (frm) {

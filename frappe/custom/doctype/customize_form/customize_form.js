@@ -17,7 +17,7 @@ frappe.ui.form.on("Customize Form", {
 		frm.set_query("doc_type", function () {
 			return {
 				filters: [
-					["DocType", "issingle", "=", 0],
+					// ["DocType", "issingle", "=", 0],
 					["DocType", "custom", "=", 0],
 					["DocType", "name", "not in", frappe.model.core_doctypes_list],
 					["DocType", "restrict_to_domain", "in", frappe.boot.active_domains],
@@ -30,6 +30,15 @@ frappe.ui.form.on("Customize Form", {
 				filters: {
 					print_format_type: ["!=", "JS"],
 					doc_type: ["=", frm.doc.doc_type],
+				},
+			};
+		});
+
+		frm.set_query("default_report", function () {
+			return {
+				filters: {
+					report_type: "Report Builder",
+					ref_doctype: ["=", frm.doc.doc_type],
 				},
 			};
 		});

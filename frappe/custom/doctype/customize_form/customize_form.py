@@ -124,8 +124,8 @@ class CustomizeForm(Document):
 		if self.doc_type in core_doctypes_list:
 			frappe.throw(_("Core DocTypes cannot be customized."))
 
-		if meta.issingle:
-			frappe.throw(_("Single DocTypes cannot be customized."))
+		# if meta.issingle:
+		# 	frappe.throw(_("Single DocTypes cannot be customized."))
 
 		if meta.custom:
 			frappe.throw(_("Only standard DocTypes are allowed to be customized from Customize Form."))
@@ -727,6 +727,7 @@ doctype_properties = {
 	"sort_field": "Data",
 	"sort_order": "Data",
 	"default_print_format": "Data",
+	"default_report": "Data",
 	"allow_copy": "Check",
 	"istable": "Check",
 	"quick_entry": "Check",

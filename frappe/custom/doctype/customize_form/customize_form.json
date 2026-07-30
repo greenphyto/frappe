@@ -40,6 +40,7 @@
   "show_title_field_in_link",
   "translated_doctype",
   "default_print_format",
+  "default_report",
   "default_view",
   "force_re_route_to_default_view",
   "column_break_29",
@@ -437,6 +438,13 @@
    "fieldname": "show_name_in_global_search",
    "fieldtype": "Check",
    "label": "Make \"name\" searchable in Global Search"
+  },
+  {
+   "description": "Only Report Builder can set as default",
+   "fieldname": "default_report",
+   "fieldtype": "Link",
+   "label": "Default Report",
+   "options": "Report"
   }
  ],
  "hide_toolbar": 1,
@@ -445,7 +453,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-09-23 07:13:52.631903",
+ "modified": "2025-09-24 07:13:52.631903",
  "modified_by": "Administrator",
  "module": "Custom",
  "name": "Customize Form",
