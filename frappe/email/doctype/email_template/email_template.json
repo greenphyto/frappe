@@ -10,6 +10,7 @@
  "field_order": [
   "subject",
   "use_html",
+  "custom_action",
   "response_html",
   "response",
   "section_break_4",
@@ -52,12 +53,18 @@
    "fieldname": "response_html",
    "fieldtype": "Code",
    "label": "Response ",
-   "options": "Jinja"
+   "options": "HTML"
+  },
+  {
+   "default": "0",
+   "fieldname": "custom_action",
+   "fieldtype": "Check",
+   "label": "Custom Action Template"
   }
  ],
  "icon": "fa fa-comment",
  "links": [],
- "modified": "2023-12-12 20:01:07.080625",
+ "modified": "2025-08-13 17:14:30.093320",
  "modified_by": "Administrator",
  "module": "Email",
  "name": "Email Template",
@@ -65,8 +72,11 @@
  "owner": "Administrator",
  "permissions": [
   {
+   "create": 1,
    "read": 1,
-   "role": "Desk User"
+   "role": "All",
+   "share": 1,
+   "write": 1
   },
   {
    "create": 1,

@@ -302,6 +302,7 @@ class Document(BaseDocument):
 		self._validate_links()
 		self.run_method("before_insert")
 		self.set_new_name(set_name=set_name, set_child_names=set_child_names)
+		self.run_method("after_naming")
 		self.set_parent_in_children()
 		self.validate_higher_perm_levels()
 
@@ -799,7 +800,7 @@ class Document(BaseDocument):
 		for df in self.meta.get_table_fields():
 			high_permlevel_fields = frappe.get_meta(df.options).get_high_permlevel_fields()
 			if high_permlevel_fields:
-				for d in self.get(df.fieldname):
+				for d in self.get(df.fieldname) or []:
 					d.reset_values_if_no_permlevel_access(has_access_to, high_permlevel_fields)
 
 	def get_permlevel_access(self, permission_type="write"):

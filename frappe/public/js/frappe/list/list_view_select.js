@@ -37,7 +37,32 @@ frappe.views.ListViewSelect = class ListViewSelect {
 		}
 	}
 
+	load_report_list(){
+		this.report_list = this.get_reports();
+	}
+
+	get_default_report(){
+		if(!this.report_list) this.load_report_list();
+
+		if (this.default_report) return this.default_report;
+
+		// send default if have default report builder
+		var def_report = this.list_view.meta.default_report || this.list_view.settings.default_report;
+		if (def_report){
+			var temp = $.grep(this.report_list, (d)=>{ 
+				if (d.report_type=="Report Builder" && d.name==def_report) return d});
+			if (temp.length){
+				this.default_report = temp[0];
+				return this.default_report;
+			}
+		}
+	}
+
 	set_route(view, calendar_name) {
+		if (view=="report" && this.default_report){
+			frappe.set_route(this.default_report.route);
+			return
+		}
 		const route = [this.slug(), "view", view];
 		if (calendar_name) route.push(calendar_name);
 
@@ -199,13 +224,12 @@ frappe.views.ListViewSelect = class ListViewSelect {
 		let perms = this.list_view.board_perms;
 		let can_create = perms ? perms.create : true;
 		if (can_create) {
-			this.page.add_custom_menu_item(
-				kanban_switcher,
-				__("Create New Kanban Board"),
-				() => frappe.views.KanbanView.show_kanban_dialog(this.doctype),
-				true
-			);
-		}
+		this.page.add_custom_menu_item(
+			kanban_switcher,
+			__("Create New Kanban Board"),
+			() => frappe.views.KanbanView.show_kanban_dialog(this.doctype),
+			true
+		);
 	}
 
 	get_page_name() {
@@ -233,6 +257,7 @@ frappe.views.ListViewSelect = class ListViewSelect {
 						reports_to_add.push({
 							name: __(r.title || r.name),
 							route: route,
+							report_type: r.report_type
 						});
 					}
 				}
