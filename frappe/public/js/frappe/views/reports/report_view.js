@@ -1658,7 +1658,13 @@ frappe.views.ReportView = class ReportView extends frappe.views.ListView {
 							default: 1,
 						});
 					}
+					extra_fields.push({
+						label: __("Include filters"),
+						fieldname: "include_filters",
+						fieldtype: "Check",
+					});
 
+					var filters = this.get_filters_for_args();
 					const d = frappe.report_utils.get_export_dialog(
 						__(this.doctype),
 						extra_fields,
@@ -1667,6 +1673,8 @@ frappe.views.ReportView = class ReportView extends frappe.views.ListView {
 							args.file_format_type = data.file_format;
 							args.title = this.report_name || this.doctype;
 							args.translate_values = data.translate_values;
+							args.include_filters = data.include_filters;
+							args.filters_info = filters;
 
 							if (data.file_format == "CSV") {
 								args.csv_delimiter = data.csv_delimiter;

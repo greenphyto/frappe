@@ -12,8 +12,9 @@
   "document_type",
   "is_active",
   "override_status",
-  "send_email_alert",
-  "states_head",
+   "send_email_alert",
+   "send_pending_approval",
+   "states_head",
   "states",
   "transition_rules",
   "transitions",
@@ -99,15 +100,22 @@
    "fieldtype": "JSON",
    "hidden": 1,
    "label": "Workflow Data"
+  },
+  {
+   "default": "0",
+   "fieldname": "send_pending_approval",
+   "fieldtype": "Check",
+   "label": "Send pending approval"
   }
  ],
  "icon": "fa fa-random",
  "idx": 1,
  "links": [],
- "modified": "2023-12-08 15:52:37.525003",
+ "modified": "2026-07-30 08:25:00.000000",
  "modified_by": "Administrator",
  "module": "Workflow",
  "name": "Workflow",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {

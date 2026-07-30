@@ -98,11 +98,11 @@
 	}
 
 	.level-left {
-		flex: 4;
+		flex: 14;
 		min-width: 80%;
 	}
 	.level-right {
-		flex: 1;
+		flex: 2;
 		overflow: visible;
 		align-items: center;
 	}
@@ -165,6 +165,14 @@
 		padding: 10px 0 10px 11px;
 	}
 }
+
+@media (max-width: 767px) {
+	.list-row {
+		.level-right {
+			flex: 4;
+		}
+	}
+  }
 
 .list-row-head {
 	@extend .list-row;
@@ -491,4 +499,8 @@ input.list-check-all {
 	width: 100%;
 	height: calc(100vh - 284px);
 	z-index: 0;
+}
+
+.dt-scrollable .dt-row .dt-cell__content:last-child > div{
+	padding-right: 12px;
 }

@@ -52,6 +52,12 @@ def get_context(context):
 	if frappe.get_system_settings("enable_telemetry") and os.getenv("FRAPPE_SENTRY_DSN"):
 		include_js.append("sentry.bundle.js")
 
+	include_css_custom = hooks.get("css_include_custom")
+	if include_css_custom:
+		for method in include_css_custom:
+			if method:
+				include_css = include_css + (frappe.call(frappe.get_attr(method)) or [])
+
 	context.update(
 		{
 			"no_cache": 1,

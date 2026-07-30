@@ -115,7 +115,7 @@ def enqueue(
 			"Using enqueue with is_async=False outside of tests is not recommended, use now=True instead."
 		)
 
-	call_directly = now or (not is_async and not frappe.flags.in_test)
+	call_directly = now or frappe.flags.in_migrate or (not is_async and not frappe.flags.in_test) or frappe.local.conf.in_test
 	if call_directly:
 		return frappe.call(method, **kwargs)
 

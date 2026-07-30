@@ -328,10 +328,16 @@ frappe.views.TreeView = class TreeView {
 		this.prepare_fields();
 
 		// the dialog
+		me.args['parent'] = node.data.value;
+
 		var d = new frappe.ui.Dialog({
 			title: __("New {0}", [__(me.doctype)]),
 			fields: me.fields,
 		});
+
+		if (this.opts.node_onload){
+			this.opts.node_onload(d);
+		}
 
 		var args = $.extend({}, me.args);
 		args["parent_" + me.doctype.toLowerCase().replace(/ /g, "_").replace(/-/g, "_")] =
@@ -394,12 +400,20 @@ frappe.views.TreeView = class TreeView {
 
 		this.ignore_fields = this.opts.ignore_fields || [];
 
-		var mandatory_fields = $.map(me.opts.meta.fields, function (d) {
-			return d.reqd || (d.bold && !d.read_only && !!d.is_virtual) ? d : null;
+		var mandatory_fields = $.map(me.opts.meta.fields, function (df) {
+			return (df.reqd || df.bold || df.allow_in_quick_entry) && !df.read_only && !df.is_virtual ? df : null;
 		});
 
 		var opts_field_names = this.fields.map(function (d) {
 			return d.fieldname;
+		});
+
+		// parent field
+		var parent_field = ["parent_" + me.doctype.toLowerCase().replace(/ /g, "_")];
+		this.fields.push({
+			fieldtype: "Data",
+			fieldname: parent_field,
+			hidden:1
 		});
 
 		mandatory_fields.map(function (d) {

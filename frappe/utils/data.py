@@ -12,6 +12,7 @@ import re
 import time
 import typing
 from code import compile_command
+from decimal import Decimal, ROUND_HALF_UP
 from collections import defaultdict
 from enum import Enum
 from functools import lru_cache
@@ -928,14 +929,14 @@ def cast(fieldtype, value=None):
 
 
 @typing.overload
-def flt(s: NumericType | str, precision: Literal[0]) -> int: ...
+def flt(s: NumericType | str, precision: Literal[0], floor=None) -> int: ...
 
 
 @typing.overload
-def flt(s: NumericType | str, precision: int | None = None) -> float: ...
+def flt(s: NumericType | str, precision: int | None = None, floor=None) -> float: ...
 
 
-def flt(s: NumericType | str, precision: int | None = None, rounding_method: str | None = None) -> float:
+def flt(s: NumericType | str, precision: int | None = None, floor=None) -> float:
 	"""Convert to float (ignoring commas in string)
 
 	:param s: Number in string or other numeric format.
@@ -955,19 +956,36 @@ def flt(s: NumericType | str, precision: int | None = None, rounding_method: str
 	>>> flt("a")
 	0.0
 	"""
-	if isinstance(s, str):
-		s = s.replace(",", "")
+	if s is None or s == "":
+		return 0.0
 
 	try:
-		num = float(s)
-		if precision is not None:
-			num = rounded(num, precision, rounding_method)
-	except Exception as e:
-		if isinstance(e, frappe.InvalidRoundingMethod):
-			raise
-		num = 0.0
+		# LAKUKAN INI:
+		# Jika input adalah angka (float), ubah ke string dengan presisi tinggi 
+		# tapi tetap (misal 10 desimal) agar noise floating point hilang.
+		if isinstance(s, (float, int)):
+			raw = "{:.10f}".format(s).rstrip('0').rstrip('.')
+		else:
+			raw = str(s).replace(",", "")
 
-	return num
+		d = Decimal(raw)
+
+		if precision is None:
+			return float(d)
+
+		# Proses pembulatan
+		q = Decimal(10) ** -precision
+		# Gunakan ROUND_HALF_UP
+		d = d.quantize(q, rounding=ROUND_HALF_UP)
+
+		return float(d)
+
+	except Exception:
+		return 0.0
+
+
+def safe_abs(value):
+	return abs(flt(value))
 
 
 def cint(s: NumericType | str, default: int = 0) -> int:
@@ -1066,7 +1084,7 @@ def sbool(x: str) -> bool | Any:
 		return x
 
 
-def rounded(num, precision=0, rounding_method=None):
+def rounded(num, precision=0, rounding_method=None, floor=None):
 	"""Round according to method set in system setting, defaults to banker's rounding"""
 	precision = cint(precision)
 
@@ -1098,7 +1116,9 @@ def _bankers_rounding_legacy(num, precision):
 	if not precision and decimal_part == 0.5:
 		num = floor_num if (floor_num % 2 == 0) else floor_num + 1
 	else:
-		if decimal_part == 0.5:
+		if floor:
+			num = floor_num
+		elif decimal_part == 0.5:
 			num = floor_num + 1
 		else:
 			num = round(num)
@@ -1225,6 +1245,9 @@ def fmt_money(
 	precision: int | None = None,
 	currency: str | None = None,
 	format: str | None = None,
+	symbol: str = None,
+	right_symbol = None,
+	hide_symbol= False
 ) -> str:
 	"""
 	Convert to string with commas for thousands, millions etc
@@ -1295,9 +1318,10 @@ def fmt_money(
 	if amount != "0":
 		amount = minus + amount
 
-	if currency and frappe.defaults.get_global_default("hide_currency_symbol") != "Yes":
-		symbol = frappe.db.get_value("Currency", currency, "symbol", cache=True) or currency
-		symbol_on_right = frappe.db.get_value("Currency", currency, "symbol_on_right", cache=True)
+	if currency and frappe.defaults.get_global_default("hide_currency_symbol") != "Yes" and not hide_symbol:
+		use_symbol = symbol
+		symbol = use_symbol or frappe.db.get_value("Currency", currency, "symbol", cache=True) or currency
+		symbol_on_right = right_symbol or frappe.db.get_value("Currency", currency, "symbol_on_right", cache=True)
 
 		if symbol_on_right:
 			amount = f"{amount} {frappe._(symbol)}"

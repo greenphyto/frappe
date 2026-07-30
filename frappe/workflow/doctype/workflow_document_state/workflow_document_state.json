@@ -15,9 +15,10 @@
   "is_optional_state",
   "avoid_status_override",
   "next_action_email_template",
-  "allow_edit",
-  "send_email",
-  "section_break_9",
+   "allow_edit",
+   "send_email",
+   "no_email",
+   "section_break_9",
   "message",
   "workflow_builder_id"
  ],
@@ -113,12 +114,19 @@
    "fieldname": "send_email",
    "fieldtype": "Check",
    "label": "Send Email On State"
+  },
+  {
+   "default": "0",
+   "description": "It will not send any notification on this state",
+   "fieldname": "no_email",
+   "fieldtype": "Check",
+   "label": "Do not send email"
   }
  ],
  "idx": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-04-01 23:35:56.203734",
+ "modified": "2026-07-30 08:25:00.000000",
  "modified_by": "Administrator",
  "module": "Workflow",
  "name": "Workflow Document State",

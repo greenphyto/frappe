@@ -140,6 +140,7 @@
 .row-check {
 	height: 38px;
 	text-align: center;
+	max-width: 50px;
 
 	input {
 		margin-right: 0 !important;
@@ -152,6 +153,10 @@
 
 .grid-row-check {
 	margin-top: 2px;
+}
+.row-index{
+	max-width: 60px;
+}
 
 	&::after {
 		// Extend the checkbox's clickable area
@@ -194,6 +199,8 @@
 	.col:last-child {
 		border-right: none;
 		min-width: 0;
+		display: flex;
+		justify-content: center;
 	}
 
 	.col {
@@ -226,7 +233,13 @@
 		--control-bg: var(--neutral);
 		--input-disabled-bg: var(--gray-50);
 		.grid-static-col {
-			padding: 0px !important;
+			padding: 0px var(--padding-sm) !important;
+			background-color: var(--control-bg);
+		}
+
+		.grid-static-col .frappe-control.input-max-width {
+			max-width: 100% !important;
+			margin-bottom: 0 !important;
 		}
 
 		.frappe-control[data-fieldtype="Select"].form-group .select-icon {
@@ -247,9 +260,11 @@
 		.ql-editor {
 			border-radius: 0px;
 			border: 0px;
+			padding-left: 0px;
+			padding-right: 0px;
 			padding-top: 10px;
-			padding-bottom: 10px;
-			height: 38px;
+			padding-bottom: 8px;
+			height: auto;
 		}
 
 		.link-btn {
@@ -443,12 +458,14 @@
 	overflow: visible;
 	margin: 0px calc(-1 * var(--margin-md));
 	padding: var(--padding-sm) var(--padding-md);
+	max-width: 865px;
 }
 
 .grid-form-heading {
 	padding: var(--padding-sm) var(--padding-md);
 	font-size: var(--text-xl);
 	font-weight: 600;
+	margin-bottom: 4px;
 	// border-bottom: 1px solid var(--border-color);
 }
 
@@ -570,7 +587,6 @@
 
 @media (max-width: map-get($grid-breakpoints, "md")) {
 	.form-grid-container {
-		overflow-x: clip;
 
 		.form-grid {
 			min-width: 738px;
@@ -580,16 +596,6 @@
 	.form-column.col-sm-6 .form-grid {
 		.row-index {
 			display: block;
-		}
-	}
-}
-
-@media (min-width: map-get($grid-breakpoints, "md")) {
-	.form-grid-container {
-		overflow-x: unset !important;
-
-		.form-grid {
-			position: unset !important;
 		}
 	}
 }

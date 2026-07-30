@@ -333,11 +333,38 @@ frappe.search.AwesomeBar = class AwesomeBar {
 				onclick: function () {
 					cur_list.show();
 				},
-				index: 90,
-				default: "Current",
-				match: txt,
+			index: 100,
+			default: "Current",
+			match: txt,
+		});
+
+			// add more options search in item list
+			var fields = frappe.container.page.list_view.get_fields_in_list_view();
+			var idx = 100;
+
+			$.each(fields, (i, field)=>{
+				var fieldname = field.fieldname;
+				if (fieldname != search_field){
+					idx--;
+					var label = field.label;
+					var options = {};
+					options[fieldname] = ["like", "%" + txt + "%"];
+					this.options.push({
+						label: __("Find {0} in {1} ({2})", [txt.bold(), __(route[1]).bold(), label]),
+						value: __("Find {0} in {1} ({2})", [txt, __(route[1]), label]),
+						route_options: options,
+						onclick: function () {
+							cur_list.show();
+						},
+						index: idx,
+						default: "Current",
+						match: txt,
+					});
+				}
 			});
-		}
+
+	}
+
 	}
 
 	make_calculator(txt) {
