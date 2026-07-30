@@ -1,0 +1,171 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-12-27 16:30:51.856713",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "doc_type",
+  "docname",
+  "update_type",
+  "doc_method",
+  "column_break_4",
+  "sync_on",
+  "method",
+  "result_section",
+  "status_code",
+  "request",
+  "error",
+  "print_to_console",
+  "more_information_section",
+  "status",
+  "trial",
+  "save_log"
+ ],
+ "fields": [
+  {
+   "fieldname": "doc_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Doctype",
+   "options": "DocType",
+   "read_only": 1
+  },
+  {
+   "fieldname": "docname",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Docname",
+   "read_only": 1
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Pending\nSuccess\nError\nExpired",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sync_on",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Sync On",
+   "read_only": 1
+  },
+  {
+   "default": "Update",
+   "fieldname": "update_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Update Type",
+   "options": "Update\nCancel\nDelete",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "result_section",
+   "fieldtype": "Section Break",
+   "label": "Result"
+  },
+  {
+   "fieldname": "status_code",
+   "fieldtype": "Data",
+   "label": "Status Code",
+   "read_only": 1
+  },
+  {
+   "fieldname": "error",
+   "fieldtype": "Text",
+   "label": "Error",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.error",
+   "fieldname": "print_to_console",
+   "fieldtype": "Button",
+   "label": "Print to Console"
+  },
+  {
+   "fieldname": "request",
+   "fieldtype": "Text",
+   "label": "Request",
+   "read_only": 1
+  },
+  {
+   "fieldname": "method",
+   "fieldtype": "Data",
+   "label": "Method",
+   "read_only": 1
+  },
+  {
+   "fieldname": "more_information_section",
+   "fieldtype": "Section Break",
+   "label": "More Information"
+  },
+  {
+   "fieldname": "trial",
+   "fieldtype": "Int",
+   "label": "Trial",
+   "read_only": 1
+  },
+  {
+   "fieldname": "doc_method",
+   "fieldtype": "Data",
+   "label": "Doc Method",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "save_log",
+   "fieldtype": "Check",
+   "label": "Save Log"
+  }
+ ],
+ "in_create": 1,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-10-21 15:52:55.972299",
+ "modified_by": "Administrator",
+ "module": "Core",
+ "name": "Sync Log",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "All",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -51,7 +51,7 @@ frappe.search.SearchDialog = class {
 				no_results_status: () => __("No Results found"),
 				get_results: (keywords, callback) => {
 					let start = 0,
-						limit = 100;
+						limit = 1000;
 					let results = frappe.search.utils.get_nav_results(keywords);
 					frappe.search.utils.get_global_results(keywords, start, limit).then(
 						(global_results) => {
@@ -59,6 +59,7 @@ frappe.search.SearchDialog = class {
 							callback(results, keywords);
 						},
 						(err) => {
+							// eslint-disable-next-line no-console
 							console.error(err);
 						}
 					);
@@ -77,6 +78,7 @@ frappe.search.SearchDialog = class {
 							callback(results, keywords);
 						},
 						(err) => {
+							// eslint-disable-next-line no-console
 							console.error(err);
 						}
 					);
@@ -175,6 +177,7 @@ frappe.search.SearchDialog = class {
 							doctype_results.length && this.add_more_results(doctype_results);
 						},
 						(err) => {
+							// eslint-disable-next-line no-console
 							console.error(err);
 						}
 					);
@@ -317,7 +320,12 @@ frappe.search.SearchDialog = class {
 	get_link(result) {
 		let link = "";
 		if (result.route) {
-			link = `href="${frappe.router.make_url(result.route)}"`;
+			if (result.route[0] == "Form" && result.route.length > 2){
+				var url = frappe.utils.get_form_link(result.route[1], result.route[2]);
+				link = `href="${url}" `;
+			}else{
+				link = `href="/app/${ result.route.join("/") }" `;
+			}
 		} else if (result.data_path) {
 			link = `data-path=${result.data_path}"`;
 		}
