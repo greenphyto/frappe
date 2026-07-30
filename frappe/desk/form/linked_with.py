@@ -234,7 +234,7 @@ def get_references_across_doctypes_by_link_field(
 	:param to_doctypes: Get links to these doctypes.
 	:param limit_link_doctypes: limit links to these doctypes.
 	"""
-	filters = [["fieldtype", "=", "Link"]]
+	filters = [["fieldtype", "=", "Link"], ["ignore_link", "=", 0]]
 
 	if to_doctypes:
 		filters += [["options", "in", tuple(to_doctypes)]]
@@ -275,7 +275,7 @@ def get_references_across_doctypes_by_dynamic_link_field(
 	:param limit_link_doctypes: limit links to these doctypes.
 	"""
 
-	filters = [["fieldtype", "=", "Dynamic Link"]]
+	filters = [["fieldtype", "=", "Dynamic Link"], ["ignore_link", "=", 0]]
 
 	filters_for_docfield = filters[:]
 	filters_for_customfield = filters[:]
@@ -588,7 +588,7 @@ def _get_linked_doctypes(doctype, without_ignore_user_permissions_enabled=False)
 
 
 def get_linked_fields(doctype, without_ignore_user_permissions_enabled=False):
-	filters = [["fieldtype", "=", "Link"], ["options", "=", doctype]]
+	filters = [["fieldtype", "=", "Link"], ["ignore_link", "=", 0], ["options", "=", doctype]]
 	if without_ignore_user_permissions_enabled:
 		filters.append(["ignore_user_permissions", "!=", 1])
 

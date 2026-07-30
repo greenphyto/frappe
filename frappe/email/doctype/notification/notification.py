@@ -106,8 +106,17 @@ class Notification(Document):
 		if path and self.message:
 			extension = FORMATS.get(self.message_type, ".md")
 			file_path = path + extension
-			with open(file_path, "w") as f:
-				f.write(self.message)
+			if os.path.exists(file_path):
+				with open(file_path, "w") as f:
+					f.write(self.message)
+
+			elif os.path.exists(path + ".md"):
+				with open(path + ".md", "w") as f:
+					f.write(self.message)
+
+			elif os.path.exists(path + ".html"):
+				with open(path + ".html", "w") as f:
+					f.write(self.message)
 
 			# py
 			if not os.path.exists(path + ".py"):
@@ -280,6 +289,12 @@ def get_context(context):
 		if self.sender and self.sender_email:
 			sender = formataddr((self.sender, self.sender_email))
 
+		if frappe.flags.in_test:
+			print("Recipient:", recipients)
+			print("Subject:", subject)
+			print("Message:", message)
+			return
+
 		communication = None
 		# Add mail notification to communication list
 		# No need to add if it is already a communication.
@@ -358,6 +373,11 @@ def get_context(context):
 						email_ids = email_ids_value.replace(",", "\n")
 						recipients = recipients + email_ids.split("\n")
 
+			if recipient.email:
+				# Split by comma, strip spasi berlebih, dan append satu per satu
+				emails = [e.strip() for e in recipient.email.split(",") if e.strip()]
+				recipients.extend(emails)
+
 			cc.extend(get_emails_from_template(recipient.cc, context))
 			bcc.extend(get_emails_from_template(recipient.bcc, context))
 
@@ -371,7 +391,22 @@ def get_context(context):
 		if self.send_to_all_assignees:
 			recipients = recipients + get_assignees(doc)
 
-		return list(set(recipients)), list(set(cc)), list(set(bcc))
+		# exclude
+		ex_list = [d.strip() for d in (self.get("exclude_recipients") or "").split(",")]
+		for d in list(set(recipients)):
+			if d in ex_list:
+				recipients.remove(d)
+
+		for d in list(set(cc)):
+			if d in ex_list:
+				cc.remove(d)
+
+		for d in list(set(bcc)):
+			if d in ex_list:
+				bcc.remove(d)
+
+		res = list(set(recipients)), list(set(cc)), list(set(bcc))
+		return res
 
 	def get_receiver_list(self, doc, context):
 		"""return receiver list based on the doc field and role specified"""

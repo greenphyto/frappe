@@ -166,6 +166,10 @@ class EmailQueue(Document):
 		if not self.can_send_now() and not force_send:
 			return
 
+		whitelist = frappe.conf.get("email_whitelist") or []
+		allowed_domains = [rule.split('@')[-1] for rule in whitelist if rule.startswith('*@')]
+		excluded_domains = [rule.split('@')[-1] for rule in whitelist if rule.startswith('-@')]
+
 		with SendMailContext(self, smtp_server_instance) as ctx:
 			ctx.fetch_smtp_server()
 			message = None
@@ -174,17 +178,19 @@ class EmailQueue(Document):
 					continue
 
 				message = ctx.build_message(recipient.recipient)
+				domain = recipient.recipient.split('@')[-1]
 				if method := get_hook_method("override_email_send"):
 					method(self, self.sender, recipient.recipient, message)
 				else:
 					if not frappe.flags.in_test or frappe.flags.testing_email:
-						ctx.smtp_server.session.sendmail(
-							from_addr=self.sender,
-							to_addrs=recipient.recipient,
-							msg=message.decode("utf-8").encode(),
-						)
-
-				ctx.update_recipient_status_to_sent(recipient)
+						# use whitelist method
+						if not whitelist or recipient.recipient in whitelist or (domain in allowed_domains and domain not in excluded_domains):
+							ctx.smtp_server.session.sendmail(
+								from_addr=self.sender,
+								to_addrs=recipient.recipient,
+								msg=message.decode("utf-8").encode(),
+							)
+							ctx.update_recipient_status_to_sent(recipient)
 
 			if frappe.flags.in_test and not frappe.flags.testing_email:
 				frappe.flags.sent_mail = message

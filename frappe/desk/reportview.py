@@ -24,8 +24,9 @@ DISALLOWED_PARAMS = ("cmd", "data", "ignore_permissions", "view", "user", "csrf_
 
 @frappe.whitelist()
 @frappe.read_only()
-def get():
-	args = get_form_params()
+def get(args=None):
+	if not args:
+		args = get_form_params()
 	# If virtual doctype, get data from controller get_list method
 	if is_virtual_doctype(args.doctype):
 		controller = get_controller(args.doctype)
@@ -345,6 +346,7 @@ def delete_report(name):
 @frappe.whitelist()
 @frappe.read_only()
 def export_query():
+	from frappe.desk.query_report import get_filters_data, add_title_report
 	"""export from report builder"""
 	from frappe.desk.utils import pop_csv_params
 
@@ -396,6 +398,14 @@ def _export_query(form_params, csv_params, populate_response=True):
 	title = form_params.pop("title", doctype)
 	add_totals_row = 1 if form_params.pop("add_totals_row", None) == "1" else None
 	translate_values = 1 if form_params.pop("translate_values", None) == "1" else None
+
+	filters_info = frappe.form_dict.get('filters_info') or []
+	if isinstance(filters_info, str):
+		filters_info = json.loads(filters_info)
+	frappe.form_dict.pop("filters_info", None)
+
+	include_filters = cint(frappe.form_dict.get("include_filters"))
+	frappe.form_dict.pop("include_filters", None)
 
 	if selection := form_params.pop("selected_items", None):
 		form_params["filters"] = {"name": ("in", json.loads(selection))}
@@ -451,6 +461,9 @@ def _export_query(form_params, csv_params, populate_response=True):
 		)
 	elif file_format_type == "Excel":
 		file_extension = "xlsx"
+		if include_filters:
+			data = add_title_report(title, form_params.filters) + get_filters_data(filters_info=filters_info) + data
+
 		content = make_xlsx(data, doctype).getvalue()
 
 	if not populate_response:
@@ -767,8 +780,11 @@ def get_match_cond(doctype, as_condition=True):
 	return ((" and (" + cond + ")") if cond else "").replace("%", "%%")
 
 
-def build_match_conditions(doctype, user=None, as_condition=True):
-	match_conditions = DatabaseQuery(doctype, user=user).build_match_conditions(as_condition=as_condition)
+def build_match_conditions(doctype, user=None, as_condition=True, table_alias=""):
+	match_conditions = DatabaseQuery(doctype, user=user).build_match_conditions(
+		as_condition=as_condition,
+		table_alias=table_alias
+	)
 	if as_condition:
 		return match_conditions.replace("%", "%%")
 	return match_conditions
