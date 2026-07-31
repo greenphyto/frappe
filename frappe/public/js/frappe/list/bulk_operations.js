@@ -179,7 +179,6 @@ export default class BulkOperations {
 				doctype: "Letter Head",
 				filters: filters,
 				fields: ["name", "is_default"],
-				filters: { disabled: 0 },
 				limit_page_length: 0,
 			},
 			async: false,

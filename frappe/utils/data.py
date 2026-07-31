@@ -929,14 +929,14 @@ def cast(fieldtype, value=None):
 
 
 @typing.overload
-def flt(s: NumericType | str, precision: Literal[0], floor=None) -> int: ...
+def flt(s: NumericType | str, precision: Literal[0], floor=None, rounding_method=None) -> int: ...
 
 
 @typing.overload
-def flt(s: NumericType | str, precision: int | None = None, floor=None) -> float: ...
+def flt(s: NumericType | str, precision: int | None = None, floor=None, rounding_method=None) -> float: ...
 
 
-def flt(s: NumericType | str, precision: int | None = None, floor=None) -> float:
+def flt(s: NumericType | str, precision: int | None = None, floor=None, rounding_method=None) -> float:
 	"""Convert to float (ignoring commas in string)
 
 	:param s: Number in string or other numeric format.

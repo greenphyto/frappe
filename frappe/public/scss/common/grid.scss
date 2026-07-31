@@ -153,10 +153,6 @@
 
 .grid-row-check {
 	margin-top: 2px;
-}
-.row-index{
-	max-width: 60px;
-}
 
 	&::after {
 		// Extend the checkbox's clickable area
@@ -166,6 +162,10 @@
 		position: absolute;
 		opacity: 0;
 	}
+}
+
+.row-index{
+	max-width: 60px;
 }
 
 .template-row-index {
