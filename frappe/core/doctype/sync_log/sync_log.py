@@ -51,7 +51,7 @@ def create_log(doctype, docname, update_type="", method="", doc_method=""):
 	})
 
 	if not log:
-		doc = frappe.new_doc("Sync Log", log)
+		doc = frappe.new_doc("Sync Log")
 		doc.doc_type = doctype
 		doc.docname = docname
 		doc.status = 'Pending'
