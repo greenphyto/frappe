@@ -757,19 +757,13 @@ export default class GridRow {
 	set_dependant_property(df) {
 		let changed = false;
 
-		if (df.depends_on) {
-			const result = this.evaluate_depends_on_value(df.depends_on);
-			const new_value = (!result) ? 1 : 0;
-			changed ||= df.hidden_due_to_dependency !== new_value;
-			df.hidden_due_to_dependency = new_value;
-		}
-
-		if (df.mandatory_depends_on){
-			df.reqd = cint(this.evaluate_depends_on_value(df.mandatory_depends_on));
-		}
-
-		if (df.read_only_depends_on){
-			df.read_only = cint(this.evaluate_depends_on_value(df.read_only_depends_on));
+		for (const { expr, prop, negate } of DEPENDENCY_PROPERTIES) {
+			if (df[expr]) {
+				const result = this.evaluate_depends_on_value(df[expr]);
+				const new_value = (negate ? !result : result) ? 1 : 0;
+				changed ||= df[prop] !== new_value;
+				df[prop] = new_value;
+			}
 		}
 
 		return changed;
