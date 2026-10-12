@@ -76,6 +76,9 @@ class User(Document):
 		block_modules: DF.Table[BlockModule]
 		bulk_actions: DF.Check
 		bypass_restrict_ip_check_if_2fa_enabled: DF.Check
+		cannot_change_company: DF.Check
+		company: DF.Literal[None]
+		company_selected: DF.Data | None
 		dashboard: DF.Check
 		default_app: DF.Literal[None]
 		default_workspace: DF.Link | None
@@ -97,6 +100,7 @@ class User(Document):
 		gender: DF.Link | None
 		home_settings: DF.Code | None
 		interest: DF.SmallText | None
+		is_api_user: DF.Check
 		language: DF.Link | None
 		last_active: DF.Datetime | None
 		last_ip: DF.ReadOnly | None

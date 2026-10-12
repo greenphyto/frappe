@@ -28,6 +28,7 @@ def get_context(context):
 
 	redirect_to = frappe.local.request.args.get("redirect-to")
 	redirect_to = sanitize_redirect(redirect_to)
+	mobile = cint(frappe.local.request.args.get("mobile"))
 
 	if frappe.session.user != "Guest":
 		if not redirect_to:
@@ -47,6 +48,7 @@ def get_context(context):
 	context["provider_logins"] = []
 	context["disable_signup"] = cint(frappe.get_website_settings("disable_signup"))
 	context["show_footer_on_login"] = cint(frappe.get_website_settings("show_footer_on_login"))
+	context["login_info"] = frappe.get_website_settings("login_info")
 	context["disable_user_pass_login"] = cint(frappe.get_system_settings("disable_user_pass_login"))
 	context["logo"] = get_app_logo()
 	context["app_name"] = (
@@ -90,7 +92,7 @@ def get_context(context):
 				{
 					"name": provider.name,
 					"provider_name": provider.provider_name,
-					"auth_url": get_oauth2_authorize_url(provider.name, redirect_to),
+					"auth_url": get_oauth2_authorize_url(provider.name, redirect_to, mobile=mobile),
 					"icon": icon,
 				}
 			)

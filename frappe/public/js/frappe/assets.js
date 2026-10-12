@@ -84,6 +84,20 @@ class AssetManager {
 		}
 	}
 
+	check_exists(items, callback) {
+		// check whether the given asset paths exist on the server
+		frappe.call({
+			type: "GET",
+			method: "frappe.client.get_exists_js",
+			args: {
+				items: items,
+			},
+			callback: function (r) {
+				callback(r.message);
+			},
+		});
+	}
+
 	execute(items, callback) {
 		// this is virtual page load, only get the the source
 		let me = this;

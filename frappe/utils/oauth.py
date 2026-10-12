@@ -5,12 +5,13 @@ import base64
 import json
 from collections.abc import Callable
 from typing import TYPE_CHECKING
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 
 import frappe
 import frappe.utils
 from frappe import _
 from frappe.apps import get_default_path
+from frappe.utils import cint
 from frappe.utils.password import get_decrypted_password
 
 if TYPE_CHECKING:
@@ -46,7 +47,7 @@ def build_oauth_url(base_url: str, url: str | None = None) -> str:
 	return url
 
 
-def get_oauth2_providers() -> dict[str, dict]:
+def get_oauth2_providers(mobile=0) -> dict[str, dict]:
 	out = {}
 	providers = frappe.get_all("Social Login Key", fields=["*"])
 	for provider in providers:
@@ -60,6 +61,12 @@ def get_oauth2_providers() -> dict[str, dict]:
 			authorize_url = build_oauth_url(provider.base_url, provider.authorize_url)
 			access_token_url = build_oauth_url(provider.base_url, provider.access_token_url)
 			api_endpoint_url = build_oauth_url(provider.base_url, provider.api_endpoint)
+
+		if cint(mobile) and provider.redirect_url:
+			# temporary from google only
+			provider.redirect_url = provider.redirect_url.replace(
+				"login_via_google", "login_via_google_mobile"
+			)
 
 		out[provider.name] = {
 			"flow_params": {
@@ -92,7 +99,7 @@ def get_oauth_keys(provider: str) -> dict[str, str]:
 	}
 
 
-def get_oauth2_authorize_url(provider: str, redirect_to: str) -> str:
+def get_oauth2_authorize_url(provider: str, redirect_to: str, mobile=0) -> str:
 	flow = get_oauth2_flow(provider)
 
 	state = {
@@ -103,7 +110,7 @@ def get_oauth2_authorize_url(provider: str, redirect_to: str) -> str:
 
 	# relative to absolute url
 	data = {
-		"redirect_uri": get_redirect_uri(provider),
+		"redirect_uri": get_redirect_uri(provider, mobile=mobile),
 		"state": base64.b64encode(bytes(json.dumps(state).encode("utf-8"))),
 	}
 
@@ -130,23 +137,23 @@ def get_oauth2_flow(provider: str):
 	return OAuth2Service(**params)
 
 
-def get_redirect_uri(provider: str) -> str:
+def get_redirect_uri(provider: str, mobile=0) -> str:
 	keys = frappe.conf.get(f"{provider}_login")
 
 	if keys and keys.get("redirect_uri"):
 		# this should be a fully qualified redirect uri
 		return keys["redirect_uri"]
 
-	oauth2_providers = get_oauth2_providers()
+	oauth2_providers = get_oauth2_providers(mobile)
 	redirect_uri = oauth2_providers[provider]["redirect_uri"]
 
 	# this uses the site's url + the relative redirect uri
 	return frappe.utils.get_url(redirect_uri)
 
 
-def login_via_oauth2(provider: str, code: str, state: str, decoder: Callable | None = None):
+def login_via_oauth2(provider: str, code: str, state: str, decoder: Callable | None = None, mobile=0):
 	info = get_info_via_oauth(provider, code, decoder)
-	login_oauth_user(info, provider=provider, state=state)
+	login_oauth_user(info, provider=provider, state=state, mobile=mobile)
 
 
 def login_via_oauth2_id_token(provider: str, code: str, state: str, decoder: Callable | None = None):
@@ -200,6 +207,7 @@ def login_oauth_user(
 	provider: str | None = None,
 	state: dict | str,
 	generate_login_token: bool = False,
+	mobile=0,
 ):
 	# json.loads data and state
 	if isinstance(data, str):
@@ -248,11 +256,15 @@ def login_oauth_user(
 
 	else:
 		redirect_to = state.get("redirect_to")
-		redirect_post_login(
-			desk_user=frappe.local.response.get("message") == "Logged In",
-			redirect_to=redirect_to,
-			provider=provider,
-		)
+		intent_link = frappe.request.cookies.get("redirect_to")
+		if mobile and intent_link:
+			redirect_to_mobile(user, unquote(intent_link))
+		else:
+			redirect_post_login(
+				desk_user=frappe.local.response.get("message") == "Logged In",
+				redirect_to=redirect_to,
+				provider=provider,
+			)
 
 
 def get_user_record(user: str, data: dict, provider: str) -> "User":
@@ -350,3 +362,14 @@ def redirect_post_login(desk_user: bool, redirect_to: str | None = None, provide
 		redirect_to = frappe.utils.get_url(desk_uri if desk_user else "/me")
 
 	frappe.local.response["location"] = redirect_to
+
+
+def redirect_to_mobile(user=None, intent_link=""):
+	from frappe.www.login import _generate_temporary_login_link
+
+	user = user or frappe.session.user
+	login_link = _generate_temporary_login_link(user, 5)  # only 5 minutes
+	# use placeholder after login_link=placeholder
+	url = intent_link.replace("placeholder", login_link)
+	frappe.local.response["type"] = "redirect"
+	frappe.local.response["location"] = url

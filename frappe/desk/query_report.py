@@ -459,6 +459,94 @@ def format_fields(data: frappe._dict) -> None:
 					row[index] = format_datetime(val)
 
 
+def add_title_report(title, filters):
+	res = [[title]]
+	company = get_filter_company(filters)
+	if company:
+		res.append([company])
+	else:
+		res.append([])
+
+	return res
+
+
+def get_filter_company(filters):
+	company = ""
+	if isinstance(filters, dict) and filters.get("company"):
+		company = filters.get("company")
+	return company
+
+
+def get_filters_data(filters={}, filters_info=[], filters_settings={}):
+	# filters: is dict type filter, usually on report page (custom report, etc)
+	# filters_info: is list filter value, usually on report view (list view, tree view, etc)
+	if not filters and not filters_info:
+		return [['']]
+
+	filter_fields = {}
+	for d in filters_settings:
+		if d.get("fieldname"):
+			filter_fields[d['fieldname']] = d
+
+	res = [[''], ["Filters:"]]
+	if filters:
+		for key, val in filters.items():
+			val = val or ""
+			label = key
+			data = []
+			if key in filter_fields:
+				label = filter_fields[key].get("label")
+
+			data.append(label)
+			if type(val) == list:
+				data += val
+			else:
+				data.append(val)
+
+			res.append(data)
+
+	elif filters_info:
+		label_filter = ""
+		meta_list = {}
+		for d in filters_info:
+			data = []
+			doctype = d[0]
+			fieldname = d[1]
+			if not meta_list.get(doctype):
+				meta_list[doctype] = frappe.get_meta(doctype)
+
+			field = meta_list[doctype].get_field(fieldname)
+			label = field.label or fieldname
+			label_filter = "{} ({})".format(label, d[0])
+			data.append(label_filter)
+
+			d[2] = get_filter_operation(d[2])
+
+			data.append(d[2])
+
+			if type(d[3]) == list:
+				data += d[3]
+			else:
+				data.append(d[3])
+
+			res.append(data)
+	res.append([''])
+	return res
+
+
+def get_filter_operation(opr):
+	cond = {
+		"=": "Equals",
+		"!=": "Not Equals",
+		"like": "Like",
+		"not like": "Not Like",
+		"in": "In",
+		"not in": "Not In",
+		"is": "Is"
+	}
+	return cond.get(opr, opr)
+
+
 def build_xlsx_data(
 	data,
 	visible_idx,
@@ -621,6 +709,18 @@ def get_data_for_custom_field(doctype, field, names=None):
 		filters.update({"name": ["in", names]})
 
 	return frappe._dict(frappe.get_list(doctype, filters=filters, fields=["name", field], as_list=1))
+
+
+@frappe.whitelist()
+def get_data_for_custom_field_all(custom_columns=[]):
+	result = []
+	if isinstance(custom_columns, str):
+		custom_columns = json.loads(custom_columns)
+	for d in custom_columns:
+		res = get_data_for_custom_field(d.get("doctype"), d.get("fieldname"))
+		result.append(res)
+
+	return result
 
 
 def get_data_for_custom_report(columns, result):

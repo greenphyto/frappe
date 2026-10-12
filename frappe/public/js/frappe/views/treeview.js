@@ -328,20 +328,41 @@ frappe.views.TreeView = class TreeView {
 		this.prepare_fields();
 
 		// the dialog
-		me.args['parent'] = node.data.value;
+		me.args["parent"] = node.data.value;
+
+		var args = $.extend({}, me.args);
+		args["parent_" + me.doctype.toLowerCase().replace(/ /g, "_").replace(/-/g, "_")] =
+			me.args["parent"];
+
+		if (this.opts.disable_quick_entry) {
+			frappe.new_doc(me.doctype).then(() => {
+				var v = args;
+				if (!v) return;
+
+				v.parent = node.label;
+				v.doctype = me.doctype;
+
+				if (node.is_root) {
+					v["is_root"] = node.is_root;
+				} else {
+					v["is_root"] = false;
+				}
+
+				if (window.cur_frm) {
+					cur_frm.set_value(v);
+				}
+			});
+			return;
+		}
 
 		var d = new frappe.ui.Dialog({
 			title: __("New {0}", [__(me.doctype)]),
 			fields: me.fields,
 		});
 
-		if (this.opts.node_onload){
+		if (this.opts.node_onload) {
 			this.opts.node_onload(d);
 		}
-
-		var args = $.extend({}, me.args);
-		args["parent_" + me.doctype.toLowerCase().replace(/ /g, "_").replace(/-/g, "_")] =
-			me.args["parent"];
 
 		d.set_value("is_group", 0);
 		d.set_values(args);
@@ -401,7 +422,11 @@ frappe.views.TreeView = class TreeView {
 		this.ignore_fields = this.opts.ignore_fields || [];
 
 		var mandatory_fields = $.map(me.opts.meta.fields, function (df) {
-			return (df.reqd || df.bold || df.allow_in_quick_entry) && !df.read_only && !df.is_virtual ? df : null;
+			return (df.reqd || df.bold || df.allow_in_quick_entry) &&
+				!df.read_only &&
+				!df.is_virtual
+				? df
+				: null;
 		});
 
 		var opts_field_names = this.fields.map(function (d) {
@@ -413,7 +438,7 @@ frappe.views.TreeView = class TreeView {
 		this.fields.push({
 			fieldtype: "Data",
 			fieldname: parent_field,
-			hidden:1
+			hidden: 1,
 		});
 
 		mandatory_fields.map(function (d) {

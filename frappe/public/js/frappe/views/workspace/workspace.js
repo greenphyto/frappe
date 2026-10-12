@@ -451,7 +451,24 @@ frappe.views.Workspace = class Workspace {
 			$(".item-anchor").removeClass("disable-click");
 
 			this.remove_page_skeleton();
+			this.after_render_page(page);
 		}
+	}
+
+	after_render_page(page) {
+		// load custom public JS for this workspace if it exists
+		let me = this;
+		let workspace_title = frappe.scrub(page.title || page.name);
+		let src = `/assets/erpnext/js/workspace/${workspace_title}.js`;
+		frappe.assets.check_exists([src], (r) => {
+			if (r[src]) {
+				frappe.require(src).then(() => {
+					if (frappe.custom_workspace) {
+						frappe.custom_workspace(me);
+					}
+				});
+			}
+		});
 	}
 
 	add_custom_cards_in_content() {

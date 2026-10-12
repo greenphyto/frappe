@@ -8,9 +8,12 @@
  "document_type": "Document",
  "engine": "InnoDB",
  "field_order": [
-  "form_builder_tab",
-  "form_builder",
-  "settings_tab",
+   "form_builder_tab",
+   "form_builder",
+   "fields_tab",
+   "fields_section",
+   "fields",
+   "settings_tab",
   "sb0",
   "module",
   "is_submittable",
@@ -94,12 +97,10 @@
   "is_published_field",
   "website_search_field",
   "advanced",
-  "engine",
-  "migration_hash",
-  "fields_section",
-  "fields",
-  "row_format",
-  "connections_tab"
+   "engine",
+   "migration_hash",
+   "row_format",
+   "connections_tab"
  ],
  "fields": [
   {
@@ -658,7 +659,11 @@
    "label": "Form Builder"
   },
   {
-   "collapsible": 1,
+   "fieldname": "fields_tab",
+   "fieldtype": "Tab Break",
+   "label": "Fields"
+  },
+  {
    "fieldname": "fields_section",
    "fieldtype": "Section Break",
    "label": "Fields"

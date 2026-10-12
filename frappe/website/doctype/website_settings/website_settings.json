@@ -18,9 +18,10 @@
   "title_prefix",
   "misc_section",
   "app_name",
-  "disable_signup",
-  "show_footer_on_login",
-  "column_break_9",
+   "disable_signup",
+   "show_footer_on_login",
+   "login_info",
+   "column_break_9",
   "app_logo",
   "section_break_6",
   "website_theme",
@@ -476,6 +477,12 @@
    "fieldname": "show_footer_on_login",
    "fieldtype": "Check",
    "label": "Show footer on login"
+  },
+  {
+   "description": "Short descriptive text shown below the logo on the login page.",
+   "fieldname": "login_info",
+   "fieldtype": "Small Text",
+   "label": "Login Info"
   }
  ],
  "icon": "fa fa-cog",
@@ -483,7 +490,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-01-08 11:50:34.750809",
+ "modified": "2026-10-12 03:45:23.000000",
  "modified_by": "Administrator",
  "module": "Website",
  "name": "Website Settings",

@@ -369,6 +369,25 @@ def get_js(items):
 	return out
 
 
+@frappe.whitelist()
+def get_exists_js(items):
+	"""Check whether the given JS file paths exist under the assets directory.
+
+	:param items: JSON list of paths of the js files to be checked."""
+	items = json.loads(items)
+	out = {}
+	for src in items:
+		src_name = frappe.utils.cstr(src)
+		src = src.strip("/").split("/")
+		if ".." in src or src[0] != "assets":
+			frappe.throw(_("Invalid file path: {0}").format("/".join(src)))
+
+		contentpath = os.path.join(frappe.local.sites_path, *src)
+		out[src_name] = os.path.exists(contentpath)
+
+	return out
+
+
 @frappe.whitelist(allow_guest=True)
 def get_time_zone():
 	"""Returns default time zone"""
