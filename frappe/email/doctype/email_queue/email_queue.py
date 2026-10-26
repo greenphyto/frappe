@@ -67,7 +67,7 @@ class EmailQueue(Document):
 		send_after: DF.Datetime | None
 		sender: DF.Data | None
 		show_as_cc: DF.SmallText | None
-		status: DF.Literal["Not Sent", "Sending", "Sent", "Partially Sent", "Error"]
+		status: DF.Literal["Not Sent", "Sending", "Sent", "Partially Sent", "Error", "Expired"]
 		unsubscribe_method: DF.Data | None
 		unsubscribe_param: DF.Data | None
 	# end: auto-generated types

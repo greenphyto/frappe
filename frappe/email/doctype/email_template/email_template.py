@@ -17,11 +17,11 @@ class EmailTemplate(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		custom_action: DF.Check
 		response: DF.TextEditor | None
 		response_html: DF.Code | None
 		subject: DF.Data
 		use_html: DF.Check
-
 	# end: auto-generated types
 
 	@property
