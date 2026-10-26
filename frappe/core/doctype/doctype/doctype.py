@@ -112,6 +112,7 @@ class DocType(Document):
 		custom: DF.Check
 		default_email_template: DF.Link | None
 		default_print_format: DF.Data | None
+		default_report: DF.Data | None
 		default_view: DF.Literal[None]
 		description: DF.SmallText | None
 		document_type: DF.Literal["", "Document", "Setup", "System", "Other"]
@@ -135,23 +136,13 @@ class DocType(Document):
 		is_virtual: DF.Check
 		issingle: DF.Check
 		istable: DF.Check
-		link_filters: DF.JSON
 		links: DF.Table[DocTypeLink]
 		make_attachments_public: DF.Check
 		max_attachments: DF.Int
 		migration_hash: DF.Data | None
 		module: DF.Link
-		naming_rule: DF.Literal[
-			"",
-			"Set by user",
-			"Autoincrement",
-			"By fieldname",
-			'By "Naming Series" field',
-			"Expression",
-			"Expression (old style)",
-			"Random",
-			"By script",
-		]
+		naming_rule: DF.Literal["", "Set by user", "Autoincrement", "By fieldname", "By \"Naming Series\" field", "Expression", "Expression (old style)", "Random", "By script"]
+		no_reset_number: DF.Check
 		nsm_parent_field: DF.Data | None
 		permissions: DF.Table[DocPerm]
 		protect_attached_files: DF.Check

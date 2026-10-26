@@ -2,18 +2,18 @@
  "actions": [],
  "allow_rename": 1,
  "autoname": "Prompt",
- "creation": "2013-02-18 13:36:19",
+ "creation": "2026-10-12 11:23:37.052469",
  "description": "DocType is a Table / Form in the application.",
  "doctype": "DocType",
  "document_type": "Document",
  "engine": "InnoDB",
  "field_order": [
-   "form_builder_tab",
-   "form_builder",
-   "fields_tab",
-   "fields_section",
-   "fields",
-   "settings_tab",
+  "form_builder_tab",
+  "form_builder",
+  "fields_tab",
+  "fields_section",
+  "fields",
+  "settings_tab",
   "sb0",
   "module",
   "is_submittable",
@@ -37,6 +37,7 @@
   "naming_rule",
   "autoname",
   "allow_rename",
+  "no_reset_number",
   "column_break_15",
   "description",
   "documentation",
@@ -57,9 +58,9 @@
   "show_title_field_in_link",
   "translated_doctype",
   "search_fields",
-   "default_print_format",
-   "default_report",
-   "sort_field",
+  "default_print_format",
+  "default_report",
+  "sort_field",
   "sort_order",
   "default_view",
   "force_re_route_to_default_view",
@@ -97,10 +98,10 @@
   "is_published_field",
   "website_search_field",
   "advanced",
-   "engine",
-   "migration_hash",
-   "row_format",
-   "connections_tab"
+  "engine",
+  "migration_hash",
+  "row_format",
+  "connections_tab"
  ],
  "fields": [
   {
@@ -681,12 +682,12 @@
    "label": "Sender Name Field"
   },
   {
-    "default": "50",
-    "depends_on": "istable",
-    "fieldname": "grid_page_length",
-    "fieldtype": "Int",
-    "label": "Grid Page Length",
-    "non_negative": 1
+   "default": "50",
+   "depends_on": "istable",
+   "fieldname": "grid_page_length",
+   "fieldtype": "Int",
+   "label": "Grid Page Length",
+   "non_negative": 1
   },
   {
    "default": "Dynamic",
@@ -721,6 +722,12 @@
    "fieldname": "default_report",
    "fieldtype": "Data",
    "label": "Default Report"
+  },
+  {
+   "default": "0",
+   "fieldname": "no_reset_number",
+   "fieldtype": "Check",
+   "label": "No-Reset Number"
   }
  ],
  "grid_page_length": 50,
@@ -804,7 +811,7 @@
    "link_fieldname": "reference_doctype"
   }
  ],
- "modified": "2025-09-24 06:48:13.555017",
+ "modified": "2026-10-26 15:12:02.819628",
  "modified_by": "Administrator",
  "module": "Core",
  "name": "DocType",
